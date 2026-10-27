@@ -1,3 +1,4 @@
+import emblema from '../../assets/vertex-emblema.jpg';
 import { ArbolEquipos } from './ArbolEquipos';
 import type { CeroCheck } from './ArbolEquipos';
 import type { NodoArbol } from './jerarquiaDemo';
@@ -16,7 +17,9 @@ export function Sidebar({ ruta, onRutaChange, verificacion, onLogout }: SidebarP
   return (
     <aside className={styles.sidebar}>
       <div className={styles.sidebarLogo}>
-        <div className={styles.logoMark}>VX</div>
+        <div className={styles.logoMark}>
+          <img src={emblema} alt="" />
+        </div>
         <span className={styles.logoText}>VERTEX</span>
       </div>
       <nav className={styles.sidebarArbol} aria-label="Equipos">

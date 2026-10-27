@@ -139,12 +139,14 @@ async function ejecutarResumenEstados(
   codigo: string,
   periodo: Periodo,
   detalle: boolean,
+  ciclos = false,
 ): Promise<sql.IRecordSet<Fila>[] | null> {
   if (codigo.length > MAX_CODIGO_LENGTH) return null;
   try {
     const result = await conPeriodo(new sql.Request(), periodo)
       .input('equipo_codigo', sql.VarChar(MAX_CODIGO_LENGTH), codigo)
       .input('detalle', sql.Bit, detalle)
+      .input('ciclos', sql.Bit, ciclos)
       .execute('dbo.sp_vx_resumen_estados');
     return result.recordsets as sql.IRecordSet<Fila>[];
   } catch (err) {
@@ -214,6 +216,33 @@ export interface BloqueEstado {
   marcas: number;
 }
 
+/** A state block of a whole cycle (not clipped to the period) */
+export interface TramoCiclo {
+  inicio: Date;
+  fin: Date;
+  segmento: EstadoMotor;
+  /** Rule that decided the block, as in BloqueEstado */
+  regla: string;
+  /** Records of the block with an event mark */
+  marcas: number;
+}
+
+/**
+ * A whole maintenance cycle touching the period: from the end of the
+ * previous maintenance to the end of the one that closes it (that
+ * maintenance is part of the cycle), or to the latest record while it runs.
+ */
+export interface CicloCompleto {
+  inicio: Date;
+  fin: Date;
+  /** Closed by a maintenance (false: the cycle in progress) */
+  completo: boolean;
+  /** Hours per state over the whole cycle */
+  horas: Record<EstadoMotor, number>;
+  /** Oldest first */
+  tramos: TramoCiclo[];
+}
+
 export interface BloquesEquipo {
   /** Period end: the latest record of the equipment (null: no records) */
   fecha_referencia: Date | null;
@@ -225,19 +254,47 @@ export interface BloquesEquipo {
   estado_actual: EstadoMotor | null;
   /** Newest first */
   bloques: BloqueEstado[];
+  /** Whole cycles touching the period, oldest first */
+  ciclos: CicloCompleto[];
 }
 
 /**
  * Consecutive blocks with the same state over a period, newest first, plus
  * the hours per state of the same execution of dbo.sp_vx_resumen_estados:
- * the donut and the events table come from a single database query.
+ * the cycles chart and the events table come from a single database query,
+ * which also returns the whole cycles touching the period.
  * Null when the equipment does not exist.
  */
 export async function findBloques(codigo: string, periodo: Periodo): Promise<BloquesEquipo | null> {
-  const recordsets = await ejecutarResumenEstados(codigo, periodo, true);
+  const recordsets = await ejecutarResumenEstados(codigo, periodo, true, true);
   if (!recordsets) return null;
 
   const r = recordsets[0][0];
+  // Results 5 and 6: the cycles and their blocks, joined by the cycle number
+  const tramos = new Map<number, TramoCiclo[]>();
+  for (const t of recordsets[5] ?? []) {
+    const lista = tramos.get(Number(t.ciclo)) ?? [];
+    lista.push({
+      inicio: t.inicio as Date,
+      fin: t.fin as Date,
+      segmento: t.segmento as EstadoMotor,
+      regla: t.regla as string,
+      marcas: Number(t.marcas),
+    });
+    tramos.set(Number(t.ciclo), lista);
+  }
+  const ciclos = (recordsets[4] ?? []).map((c) => ({
+    inicio: c.inicio as Date,
+    fin: c.fin as Date,
+    completo: Boolean(c.completo),
+    horas: {
+      ENCENDIDO: horasDeMinutos(c.min_encendido),
+      APAGADO: horasDeMinutos(c.min_apagado),
+      EVENTO: horasDeMinutos(c.min_evento),
+      MANTENIMIENTO: horasDeMinutos(c.min_mantenimiento),
+    },
+    tramos: tramos.get(Number(c.ciclo)) ?? [],
+  }));
   const bloques = (recordsets[3] ?? [])
     .map((b) => ({
       inicio: b.inicio as Date,
@@ -248,7 +305,7 @@ export async function findBloques(codigo: string, periodo: Periodo): Promise<Blo
       marcas: Number(b.marcas),
     }))
     .reverse();
-  return { ...cabeceraResumen(r), bloques };
+  return { ...cabeceraResumen(r), bloques, ciclos };
 }
 
 /** Variables the trend chart can request (dbo.Variables.codigo) */

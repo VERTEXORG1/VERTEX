@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import emblema from '../../assets/vertex-emblema.jpg';
 import { DEMO_MODE } from '../../shared/api';
 import type { TrendVariable, TrendVariableId } from '../../contracts/dashboard';
 import { mockData } from './mockData';
@@ -6,13 +7,12 @@ import { ArbolMovil } from './ArbolEquipos';
 import type { CeroCheck } from './ArbolEquipos';
 import { DonutFilters } from './DonutFilters';
 import { DonutPanel } from './DonutPanel';
-import type { DonutPeriodo } from './DonutPanel';
 import type { PeriodoFechas } from './PeriodoSelector';
 import { fetchEquipo } from './equipos.service';
 import type { CeroId, DonutData } from './donutSimulation';
 import { resolverRuta } from './jerarquiaDemo';
 import { demoBloquesData, fetchBloques } from './bloques.service';
-import type { BloquesData } from './bloques.service';
+import type { BloquesData, CicloCompleto } from './bloques.service';
 import { demoMedicionesData, fetchMediciones, fetchMedicionesDetalle, minutosDetalle } from './operacion.service';
 import type { MedicionesData } from './operacion.service';
 import { esRango, PERIODO_INICIAL, periodoClave } from './periodo';
@@ -30,7 +30,7 @@ import styles from './dashboard.module.css';
 
 type Notice = { text: string; error?: boolean; reintentar?: () => void };
 
-type DonutView = DonutData & { periodo?: DonutPeriodo; notice?: Notice };
+type DonutView = DonutData & { ciclos: CicloCompleto[]; periodo?: string; notice?: Notice };
 
 /** dd/mm from YYYY-MM-DD… (UTC, as stored) */
 const diaMes = (iso: string) => `${iso.slice(8, 10)}/${iso.slice(5, 7)}`;
@@ -41,9 +41,6 @@ const diaMes = (iso: string) => `${iso.slice(8, 10)}/${iso.slice(5, 7)}`;
  */
 const ultimoDia = (fin: string) =>
   fin.endsWith('T00:00:00.000Z') ? new Date(Date.parse(fin) - 1).toISOString() : fin;
-
-/** "2026", or "2025 – 2026" when the period crosses a new year */
-const anios = (desde: string, hasta: string) => (desde === hasta ? hasta : `${desde} – ${hasta}`);
 
 /** Demo mode (Netlify): simulated blocks and their hours, same shape as the backend */
 function bloquesDemo(cero: string, periodo: Periodo): BackendState<BloquesData> {
@@ -73,8 +70,9 @@ function medicionesDemo(
 }
 
 /**
- * Donut from the backend hours; zeros plus a message while loading, on error
- * or without data. The evaluated period goes inside the donut, not in the notice.
+ * Donut from the blocks request: one sector per whole cycle touching the
+ * period, and the legend with the hours of the period asked for; zeros, no
+ * cycles and a message while loading, on error or without data.
  */
 function donutFromBloques(state: BackendState<BloquesData>, cero: string): DonutView {
   const horas = state.status === 'data' ? state.data.horas : null;
@@ -83,22 +81,34 @@ function donutFromBloques(state: BackendState<BloquesData>, cero: string): Donut
     hours: horas ? Math.round(horas[seg.status]) : 0,
   }));
   const totalHours = segments.reduce((sum, s) => sum + s.hours, 0);
-  const base = { segments, totalHours, totalLabel: mockData.donut.totalLabel };
+  const base = { segments, totalHours, totalLabel: mockData.donut.totalLabel, ciclos: [] };
 
   if (state.status === 'error') return { ...base, notice: { text: state.message, error: true, reintentar: state.reintentar } };
-  if (state.status !== 'data') return { ...base, notice: { text: 'Cargando horas…' } };
-  const { desde, fecha_referencia, ultimo_registro } = state.data;
+  if (state.status !== 'data') return { ...base, notice: { text: 'Cargando ciclos…' } };
+  const { desde, fecha_referencia, ultimo_registro, ciclos } = state.data;
   if (!desde || !fecha_referencia) return { ...base, notice: { text: `Sin mediciones de ${cero} en la base de datos` } };
   const hasta = ultimoDia(fecha_referencia);
   return {
     ...base,
-    periodo: {
-      rango: `Del ${diaMes(desde)} al ${diaMes(hasta)}`,
-      anio: anios(desde.slice(0, 4), hasta.slice(0, 4)),
-      // Only when the period reaches the latest record (not for an earlier range)
-      detalle: fecha_referencia === ultimo_registro ? '(última medición)' : undefined,
-    },
+    ciclos,
+    // "(última medición)" only when the period reaches the latest record
+    periodo: `del ${diaMes(desde)}/${desde.slice(0, 4)} al ${diaMes(hasta)}/${hasta.slice(0, 4)}${
+      fecha_referencia === ultimo_registro ? ' (última medición)' : ''
+    }`,
   };
+}
+
+/**
+ * The blocks request seen through one cycle: its own blocks (newest first,
+ * not clipped to the period asked for), its hours and its dates as the
+ * period, for the events table and the trend.
+ */
+function bloquesDelCiclo(datos: BloquesData, ciclo: CicloCompleto): BloquesData {
+  const bloques = [...ciclo.tramos].reverse().map((t) => ({
+    ...t,
+    duracion_min: (Date.parse(t.fin) - Date.parse(t.inicio)) / 60_000,
+  }));
+  return { ...datos, desde: ciclo.inicio, fecha_referencia: ciclo.fin, horas: ciclo.horas, bloques };
 }
 
 /**
@@ -211,20 +221,41 @@ export function DashboardPage({ onLogout }: DashboardPageProps) {
   );
   const bloquesSimulados = useMemo(() => (DEMO_MODE && cero ? bloquesDemo(cero, periodo) : null), [cero, periodo]);
   const bloques = bloquesSimulados ?? bloquesBackend;
+
+  // Cycle chosen with the donut's "Período" buttons, only for this list of
+  // cycles (a new period goes back to "Todo"). The events table and the
+  // trend then show that cycle alone: `vista` is the blocks request seen
+  // through it (its blocks come with the cycles, no new request).
+  const [seleccionCiclo, setSeleccionCiclo] = useState<{ ciclos: CicloCompleto[]; inicio: string } | null>(null);
+  const ciclosActuales = bloques.status === 'data' ? bloques.data.ciclos : null;
+  const cicloElegido =
+    seleccionCiclo && seleccionCiclo.ciclos === ciclosActuales
+      ? (ciclosActuales.find((c) => c.inicio === seleccionCiclo.inicio) ?? null)
+      : null;
+  const vista = useMemo<BackendState<BloquesData>>(
+    () => (cicloElegido && bloques.status === 'data' ? { status: 'data', data: bloquesDelCiclo(bloques.data, cicloElegido) } : bloques),
+    [cicloElegido, bloques],
+  );
+  const vistaSimulada = bloquesSimulados ? vista : null;
+
+  // Trend of the chosen cycle: the whole days it touches, clipped to it below
+  const periodoTrend: Periodo = cicloElegido
+    ? { desde: cicloElegido.inicio.slice(0, 10), hasta: ultimoDia(cicloElegido.fin).slice(0, 10) }
+    : periodo;
   const trendCodigo = DEMO_MODE || !cero ? undefined : variable.codigo;
   const medicionesBackend = useBackend(
-    trendCodigo ? `${cero}|${trendCodigo}|${clave}` : null,
-    (signal) => fetchMediciones(cero ?? '', trendCodigo ?? '', periodo, signal),
+    trendCodigo ? `${cero}|${trendCodigo}|${periodoClave(periodoTrend)}` : null,
+    (signal) => fetchMediciones(cero ?? '', trendCodigo ?? '', periodoTrend, signal),
   );
   const medicionesSimuladas = useMemo(
-    () => (cero && bloquesSimulados ? medicionesDemo(cero, variable, bloquesSimulados) : null),
-    [cero, variable, bloquesSimulados],
+    () => (cero && vistaSimulada ? medicionesDemo(cero, variable, vistaSimulada) : null),
+    [cero, variable, vistaSimulada],
   );
 
   // Detalle: shorter intervals over the resolved period of the blocks (a
   // fixed number of days only has dates once its blocks arrive)
   const detalle = trendModo === 'detalle';
-  const bloquesListos = bloques.status === 'data' ? bloques.data : null;
+  const bloquesListos = vista.status === 'data' ? vista.data : null;
   const detalleDesde = bloquesListos?.desde;
   const detalleHasta = bloquesListos?.fecha_referencia;
   const detalleBackend = useBackend(
@@ -232,19 +263,26 @@ export function DashboardPage({ onLogout }: DashboardPageProps) {
     (signal) => fetchMedicionesDetalle(cero ?? '', trendCodigo ?? '', detalleDesde ?? '', detalleHasta ?? '', signal),
   );
   const detalleSimulado = useMemo(
-    () => (cero && detalle && bloquesSimulados ? medicionesDemo(cero, variable, bloquesSimulados, true) : null),
-    [detalle, cero, variable, bloquesSimulados],
+    () => (cero && detalle && vistaSimulada ? medicionesDemo(cero, variable, vistaSimulada, true) : null),
+    [detalle, cero, variable, vistaSimulada],
   );
   // Blocks failed: their error; no records in the period: the (empty) Resumen data
   const detalleMediciones: BackendState<MedicionesData> =
     detalleSimulado ??
-    (bloques.status === 'error' ? bloques : bloquesListos && !detalleDesde ? medicionesBackend : detalleBackend);
+    (vista.status === 'error' ? vista : bloquesListos && !detalleDesde ? medicionesBackend : detalleBackend);
   const mediciones = detalle ? detalleMediciones : (medicionesSimuladas ?? medicionesBackend);
-  // Each point at the middle of its interval; drawn value: the interval maximum
+  // Each point at the middle of its interval; drawn value: the interval
+  // maximum. A chosen cycle keeps only the intervals that start in it.
+  const recorteDesde = cicloElegido ? Date.parse(cicloElegido.inicio) : -Infinity;
+  const recorteHasta = cicloElegido ? Date.parse(cicloElegido.fin) : Infinity;
   const puntosMedidos = useMemo(() => {
     if (mediciones.status !== 'data') return null;
     const puntoMs = mediciones.data.minutos_punto * 60_000;
-    const points: TrendSeriesPoint[] = mediciones.data.puntos.map((p) => ({
+    const enRango = mediciones.data.puntos.filter((p) => {
+      const t = Date.parse(p.inicio);
+      return t >= recorteDesde && t < recorteHasta;
+    });
+    const points: TrendSeriesPoint[] = enRango.map((p) => ({
       t: Date.parse(p.inicio) + puntoMs / 2,
       value: p.promedio,
       max: p.maximo,
@@ -252,7 +290,7 @@ export function DashboardPage({ onLogout }: DashboardPageProps) {
       marcas: p.marcas,
     }));
     return { points, puntoMs };
-  }, [mediciones]);
+  }, [mediciones, recorteDesde, recorteHasta]);
 
   // Last loaded data: keeps the selector dates steady while a new period
   // loads (a fixed period shows its own dates once its data arrives)
@@ -261,15 +299,20 @@ export function DashboardPage({ onLogout }: DashboardPageProps) {
   const periodoFechas = fechasDelPeriodo(periodo, ultimosBloques);
 
   const donut = donutFromBloques(bloques, cero ?? '');
-  const motorInfo =
-    bloques.status === 'data' && bloques.data.estado_actual
-      ? { ...mockData.motorInfo, estado: bloques.data.estado_actual }
-      : mockData.motorInfo;
+  // State at the end of what is shown: the chosen cycle (its maintenance
+  // if one closed it, its latest state while it runs), or the latest record
+  // of the period asked for
+  const estadoMostrado = cicloElegido
+    ? (cicloElegido.tramos.at(-1)?.segmento ?? null)
+    : bloques.status === 'data'
+      ? bloques.data.estado_actual
+      : null;
+  const motorInfo = estadoMostrado ? { ...mockData.motorInfo, estado: estadoMostrado } : mockData.motorInfo;
 
-  // Trend X axis = the period of the donut and the events table. Only data of
-  // the current period counts: while its blocks load, the trend's own period
-  // (same dates); the previous blocks only as a last resort
-  const bloquesActuales = bloques.status === 'data' ? bloques.data : null;
+  // Trend X axis = the period of the events table (or the chosen cycle). Only
+  // data of the current period counts: while its blocks load, the trend's own
+  // period (same dates); the previous blocks only as a last resort
+  const bloquesActuales = vista.status === 'data' ? vista.data : null;
   // State blocks (the same as the donut and the events table) for the Detalle timeline
   const trendEstados = useMemo<TrendEstado[]>(
     () =>
@@ -316,7 +359,9 @@ export function DashboardPage({ onLogout }: DashboardPageProps) {
 
       {/* Phone portrait: header, then the tree as a folding panel */}
       <header className={styles.mobileHeader}>
-        <div className={styles.mobileLogo}>VX</div>
+        <div className={styles.mobileLogo}>
+          <img src={emblema} alt="" />
+        </div>
         <span className={styles.mobileTitle}>VERTEX</span>
         <button
           type="button"
@@ -339,13 +384,15 @@ export function DashboardPage({ onLogout }: DashboardPageProps) {
           {/* Donut column: period selector on top, then the donut card */}
           <div className={`${styles.col5} ${styles.colStack}`}>
             {seleccion.cero === null ? (
-              <AvisoCard titulo="Horas por estado" texto={seleccion.aviso} />
+              <AvisoCard titulo="Ciclos entre mantenimientos" texto={seleccion.aviso} />
             ) : (
               <>
                 <DonutFilters periodoFechas={periodoFechas} onPeriodoChange={setPeriodo} />
                 <DonutPanel
                   segments={donut.segments}
-                  totalHours={donut.totalHours}
+                  ciclos={donut.ciclos}
+                  elegido={cicloElegido}
+                  onElegir={(c) => setSeleccionCiclo(c && ciclosActuales ? { ciclos: ciclosActuales, inicio: c.inicio } : null)}
                   motorInfo={motorInfo}
                   periodo={donut.periodo}
                   notice={donut.notice}
@@ -384,12 +431,12 @@ export function DashboardPage({ onLogout }: DashboardPageProps) {
             )}
           </div>
 
-          {/* State blocks of the selected CERO: same request and period as the donut */}
+          {/* State blocks of the selected CERO: same request and period as the donut (or its chosen cycle) */}
           <div className={styles.col5}>
             {seleccion.cero === null ? (
-              <AvisoCard titulo="Resumen de eventos" texto={seleccion.aviso} />
+              <AvisoCard titulo="Resumen del período" texto={seleccion.aviso} />
             ) : (
-              <EventsSummary state={bloques} periodo={periodo} onPeriodoChange={setPeriodo} />
+              <EventsSummary state={vista} periodo={periodo} onPeriodoChange={setPeriodo} />
             )}
           </div>
 

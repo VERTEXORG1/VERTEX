@@ -15,9 +15,36 @@ export interface Bloque {
   marcas: number;
 }
 
+/** A state block of a whole cycle (not clipped to the period) */
+export interface TramoCiclo {
+  inicio: string;
+  fin: string;
+  segmento: ValidationStatus;
+  /** Rule that decided the block, as in Bloque */
+  regla: string;
+  /** Records of the block with an event mark */
+  marcas: number;
+}
+
+/**
+ * A whole maintenance cycle touching the period: from the end of the
+ * previous maintenance to the end of the one that closes it (that
+ * maintenance is part of the cycle), or to the latest record while it runs.
+ */
+export interface CicloCompleto {
+  inicio: string;
+  fin: string;
+  /** Closed by a maintenance (false: the cycle in progress) */
+  completo: boolean;
+  /** Hours per state over the whole cycle */
+  horas: Record<ValidationStatus, number>;
+  /** Oldest first */
+  tramos: TramoCiclo[];
+}
+
 /**
  * GET /api/equipos/:codigo/bloques: one execution of dbo.sp_vx_resumen_estados
- * feeds both the donut (horas, estado_actual) and the events table (bloques)
+ * feeds the cycles chart (ciclos, estado_actual) and the events table (bloques)
  */
 export interface BloquesData {
   /** Period end, clipped to the latest record (null: no records) */
@@ -31,6 +58,8 @@ export interface BloquesData {
   estado_actual: ValidationStatus | null;
   /** Newest first */
   bloques: Bloque[];
+  /** Whole cycles touching the period, oldest first */
+  ciclos: CicloCompleto[];
 }
 
 const NETWORK_ERROR = 'Sin conexión con el servidor';
@@ -55,7 +84,7 @@ export async function fetchBloques(codigo: string, periodo: Periodo, signal?: Ab
 
   const body = (await res.json().catch(() => null)) as (BloquesData & { mensaje?: string }) | null;
 
-  if (res.ok && body && Array.isArray(body.bloques)) return body;
+  if (res.ok && body && Array.isArray(body.bloques) && Array.isArray(body.ciclos)) return body;
   throw errorDeRespuesta(res.status, body?.mensaje || GENERIC_ERROR);
 }
 
@@ -173,9 +202,45 @@ function demoBloques(p: DemoPerfil): Bloque[] {
   return bloques.reverse();
 }
 
+const sinHoras = (): Record<ValidationStatus, number> => ({ ENCENDIDO: 0, APAGADO: 0, EVENTO: 0, MANTENIMIENTO: 0 });
+
+/** Hours per state of some blocks, with 2 decimals as the backend */
+function horasDe(bloques: { duracion_min: number; segmento: ValidationStatus }[]) {
+  const horas = sinHoras();
+  for (const b of bloques) horas[b.segmento] += b.duracion_min / 60;
+  for (const k of Object.keys(horas) as ValidationStatus[]) horas[k] = Math.round(horas[k] * 100) / 100;
+  return horas;
+}
+
+/**
+ * Whole cycles of the profile touching [desde, hasta), as the stored
+ * procedure: each one ends when the maintenance that closes it ends; the
+ * last one runs to the latest record. `todos`: the blocks of the whole
+ * profile, newest first.
+ */
+function demoCiclos(p: DemoPerfil, todos: Bloque[], desde: number, hasta: number): CicloCompleto[] {
+  const cortes = [Date.parse(p.desde), ...p.mantenimientos.map((m) => Date.parse(m.fin)), Date.parse(p.hasta)];
+  const cronologicos = [...todos].reverse();
+  const ciclos: CicloCompleto[] = [];
+  for (let k = 0; k + 1 < cortes.length; k++) {
+    const [inicio, fin] = [cortes[k], cortes[k + 1]];
+    // A period with no time (it starts at the latest record) touches nothing
+    if (fin <= desde || inicio >= hasta) continue;
+    const bloques = cronologicos.filter((b) => Date.parse(b.inicio) >= inicio && Date.parse(b.fin) <= fin);
+    ciclos.push({
+      inicio: new Date(inicio).toISOString(),
+      fin: new Date(fin).toISOString(),
+      completo: k < p.mantenimientos.length,
+      horas: horasDe(bloques),
+      tramos: bloques.map(({ inicio: a, fin: b, segmento, regla, marcas }) => ({ inicio: a, fin: b, segmento, regla, marcas })),
+    });
+  }
+  return ciclos;
+}
+
 /**
  * Demo data with the same shape as the backend: the simulated blocks of the
- * period plus their hours per state, so the donut and the table always agree.
+ * period plus their hours per state, and the whole cycles touching it.
  * Same period rules: `dias` counts back from the latest record, a date range
  * covers whole UTC days; both are clipped to the simulated records.
  * Throws "Equipo no encontrado" for an unknown CERO.
@@ -198,7 +263,8 @@ export function demoBloquesData(codigo: string, periodo: Periodo): BloquesData {
   desde = Math.min(Math.max(desde, primero), hasta);
 
   // Blocks clipped to the period, as the stored procedure does
-  const bloques = demoBloques(perfil)
+  const todos = demoBloques(perfil);
+  const bloques = todos
     .filter((b) => Date.parse(b.fin) > desde && Date.parse(b.inicio) < hasta)
     .map((b) => {
       const inicio = Math.max(Date.parse(b.inicio), desde);
@@ -206,17 +272,14 @@ export function demoBloquesData(codigo: string, periodo: Periodo): BloquesData {
       return { ...b, inicio: new Date(inicio).toISOString(), fin: new Date(fin).toISOString(), duracion_min: (fin - inicio) / MIN_MS };
     });
 
-  const horas: Record<ValidationStatus, number> = { ENCENDIDO: 0, APAGADO: 0, EVENTO: 0, MANTENIMIENTO: 0 };
-  for (const b of bloques) horas[b.segmento] += b.duracion_min / 60;
-  for (const k of Object.keys(horas) as ValidationStatus[]) horas[k] = Math.round(horas[k] * 100) / 100;
-
   return {
     fecha_referencia: new Date(hasta).toISOString(),
     desde: new Date(desde).toISOString(),
     primer_registro: perfil.desde,
     ultimo_registro: perfil.hasta,
-    horas,
+    horas: horasDe(bloques),
     estado_actual: bloques[0]?.segmento ?? null,
     bloques,
+    ciclos: demoCiclos(perfil, todos, desde, hasta),
   };
 }

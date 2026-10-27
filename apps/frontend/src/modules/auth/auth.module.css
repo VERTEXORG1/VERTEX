@@ -73,6 +73,17 @@
   color: rgba(255, 255, 255, 0.55);
 }
 
+/* Brand emblem, centered at the top of the panel; smaller on short screens
+   so the subtitle and features still fit */
+.brandEmblema {
+  display: block;
+  width: min(220px, 34vh);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border-radius: 16px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
 /* ── Logo ─────────────────────────────────────────────────── */
 .logo {
   display: flex;
@@ -80,17 +91,20 @@
   gap: 10px;
 }
 
+/* The emblem in a small rounded box */
 .logoMark {
   width: 40px;
   height: 40px;
   border-radius: var(--vx-radius);
-  background: rgba(255, 255, 255, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.logoMark img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .logoText {
@@ -99,12 +113,7 @@
   letter-spacing: 0.5px;
 }
 
-/* On the white card: solid mark, title in the primary color */
-.logoDark .logoMark {
-  background: var(--vx-primary);
-  color: var(--vx-white);
-}
-
+/* On the white card: title in the primary color */
 .logoDark .logoText {
   color: var(--vx-primary);
 }

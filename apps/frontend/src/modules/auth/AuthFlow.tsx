@@ -1,3 +1,4 @@
+import emblema from '../../assets/vertex-emblema.jpg';
 import { LoginForm } from './LoginForm';
 import styles from './auth.module.css';
 
@@ -11,10 +12,13 @@ const FEATURES = [
   'Registro de mantenimientos e intervenciones',
 ];
 
-function Logo({ variant }: { variant: 'light' | 'dark' }) {
+/** Small logo of the card on phones: the emblem in its box and the name */
+function Logo() {
   return (
-    <div className={`${styles.logo} ${variant === 'dark' ? styles.logoDark : ''}`}>
-      <span className={styles.logoMark}>VX</span>
+    <div className={`${styles.logo} ${styles.logoDark}`}>
+      <span className={styles.logoMark}>
+        <img src={emblema} alt="" />
+      </span>
       <span className={styles.logoText}>VERTEX</span>
     </div>
   );
@@ -28,7 +32,8 @@ export function AuthFlow({ onSuccess }: AuthFlowProps) {
   return (
     <div className={styles.page}>
       <aside className={styles.brandPanel}>
-        <Logo variant="light" />
+        {/* The brand emblem (it already reads "VERTEX"), centered on top */}
+        <img src={emblema} alt="VERTEX" className={styles.brandEmblema} />
         <div className={styles.brandBody}>
           <p className={styles.brandSubtitle}>Sistema de Monitoreo Industrial</p>
           <ul className={styles.features}>
@@ -45,7 +50,7 @@ export function AuthFlow({ onSuccess }: AuthFlowProps) {
       <main className={styles.formPanel}>
         <div className={styles.card}>
           <div className={styles.cardLogo}>
-            <Logo variant="dark" />
+            <Logo />
           </div>
           <LoginForm onSuccess={onSuccess} />
         </div>

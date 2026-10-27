@@ -62,7 +62,7 @@ interface EventsSummaryProps {
 }
 
 /**
- * "Resumen de eventos": state blocks of the selected CERO, as classified by
+ * "Resumen del período (N)": state blocks of the selected CERO (N = rows), as classified by
  * dbo.sp_vx_resumen_estados. The buttons set fixed periods (up to the latest
  * record); a custom range from the donut selector leaves none checked.
  */
@@ -71,7 +71,9 @@ export function EventsSummary({ state, periodo, onPeriodoChange }: EventsSummary
 
   return (
     <div className={styles.card}>
-      <h3 className={styles.cardTitle}>Resumen de eventos</h3>
+      <h3 className={styles.cardTitle}>
+        Resumen del período{state.status === 'data' ? ` (${state.data.bloques.length})` : ''}
+      </h3>
 
       <fieldset className={styles.eventsRanges}>
         <legend className={styles.srOnly}>Período</legend>

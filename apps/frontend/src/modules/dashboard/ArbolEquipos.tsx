@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import { JERARQUIA_DEMO, textoRuta } from './jerarquiaDemo';
 import type { NodoArbol } from './jerarquiaDemo';
@@ -20,8 +20,11 @@ interface ArbolEquiposProps {
   verificacion: CeroCheck;
 }
 
-/** Indentation of a row: one character per level */
+/** Indentation of a row (and of the guide line of its children): its depth */
 const sangria = (nivel: number) => ({ '--nivel': nivel }) as CSSProperties;
+
+/** Root (área) of a node: the first part of its id, e.g. "prensas" */
+const raizDe = (id: string) => id.split('/')[0];
 
 function Verificacion({ estado }: { estado: CeroCheck }) {
   if (estado.status === 'loading') {
@@ -45,106 +48,108 @@ function Verificacion({ estado }: { estado: CeroCheck }) {
 }
 
 /**
- * Equipment tree (Área → Sección → Grupo → Equipo → Componente). In each
- * level at most one option is open (it is in the route, with "−"):
- * - the options above it stay visible, closed with "+";
- * - the options below it are hidden, and its children show under it.
- * Opening another option (name or "+") closes the open one; the name of an
- * open option drops the levels under it; its "−" closes it and shows the
- * whole level again, closed. Lower selections are never kept: they must be
- * chosen again.
+ * Equipment tree (Área → Sección → Grupo → Equipo → Componente), like the
+ * VS Code explorer: a chevron (▶ / ▼) opens or closes a node and its
+ * children stay visible under it, with one guide line per level.
+ * - Which nodes are open (`expandidos`) is separate from the chosen route:
+ *   choosing a node never hides other nodes.
+ * - Only one área can be open: opening one closes the others with all
+ *   their levels. Inside it, levels open and close freely.
+ * - The name chooses the node (the route of the dashboard) and opens it;
+ *   the name of the chosen node, already open, closes it.
  */
 export function ArbolEquipos({ ruta, onRutaChange, verificacion }: ArbolEquiposProps) {
-  const lista = useRef<HTMLUListElement>(null);
+  // On mount (F5, phone panel opened again): the chosen route is open
+  const [expandidos, setExpandidos] = useState<ReadonlySet<string>>(() => new Set(ruta));
+  const elegido = ruta.at(-1);
 
-  // The clicked button may disappear: keep the keyboard focus in the tree,
-  // on the node chosen by the last change
-  const enfocar = useRef<string | null>(null);
-  useEffect(() => {
-    const id = enfocar.current;
-    if (!id) return;
-    enfocar.current = null;
-    lista.current?.querySelector<HTMLElement>(`[data-nodo="${CSS.escape(id)}"]`)?.focus();
-  }, [ruta]);
+  const abrir = (id: string) =>
+    setExpandidos((actual) => {
+      const raiz = raizDe(id);
+      // Root accordion: everything under another área is closed
+      const siguiente = new Set([...actual].filter((e) => raizDe(e) === raiz));
+      siguiente.add(id);
+      return siguiente;
+    });
 
-  const cambiar = (siguiente: string[], foco: string, elegido?: NodoArbol) => {
-    enfocar.current = foco;
-    onRutaChange(siguiente, elegido);
-  };
+  const cerrar = (id: string) =>
+    setExpandidos((actual) => {
+      // Closing an área also forgets its levels; inner nodes keep them (VS Code)
+      const raiz = !id.includes('/');
+      return new Set([...actual].filter((e) => e !== id && !(raiz && raizDe(e) === id)));
+    });
 
-  /** Rows of one level (`nivel` = its depth) and, under its open option, the next levels */
-  const filas = (opciones: NodoArbol[], nivel: number): ReactNode[] => {
-    const abierta = opciones.findIndex((o) => o.id === ruta[nivel]);
-    const visibles = abierta < 0 ? opciones : opciones.slice(0, abierta + 1);
-    return visibles.flatMap((o, k) => {
-      if (k !== abierta) {
-        // Closed: opening it replaces the route from this level down
-        const abrir = () => cambiar([...ruta.slice(0, nivel), o.id], o.hijos?.[0]?.id ?? o.id, o);
-        return [
-          <li key={o.id} className={styles.arbolItem}>
-            <div className={styles.arbolFila} style={sangria(nivel)}>
+  /** Rows of one level (`nivel` = its depth; `camino` = ids of its parents) */
+  const filas = (opciones: NodoArbol[], nivel: number, camino: string[]): ReactNode =>
+    opciones.map((o) => {
+      const hijos = o.hijos ?? [];
+      const abierto = hijos.length > 0 && expandidos.has(o.id);
+      const esElegido = o.id === elegido;
+      const enRuta = ruta.includes(o.id);
+      // The check belongs to the CERO of the route (the equipment or its Motor chosen)
+      const verifica = o.cero && enRuta;
+      const error = verifica && verificacion.status === 'error' ? verificacion.message : null;
+
+      const elegir = () => {
+        if (hijos.length) {
+          if (!abierto) abrir(o.id);
+          else if (esElegido) cerrar(o.id);
+        }
+        onRutaChange([...camino, o.id], o);
+      };
+
+      return (
+        <li key={o.id} className={styles.arbolItem}>
+          <div
+            className={`${styles.arbolFila} ${enRuta ? styles.arbolRuta : ''} ${esElegido ? styles.arbolElegido : ''}`}
+            style={sangria(nivel)}
+          >
+            {hijos.length ? (
               <button
                 type="button"
                 className={styles.arbolBoton}
-                aria-label={`Abrir ${o.nombre}`}
-                aria-expanded={o.hijos?.length ? false : undefined}
-                title={`Abrir ${o.nombre}`}
-                onClick={abrir}
+                aria-label={`${abierto ? 'Contraer' : 'Expandir'} ${o.nombre}`}
+                aria-expanded={abierto}
+                title={`${abierto ? 'Contraer' : 'Expandir'} ${o.nombre}`}
+                onClick={() => (abierto ? cerrar(o.id) : abrir(o.id))}
               >
-                <span className={styles.arbolSigno} data-signo="+" aria-hidden="true" />
+                <svg className={styles.arbolFlecha} width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="M6 3.5l4.5 4.5L6 12.5" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </button>
-              <button type="button" className={styles.arbolNombre} title={o.nombre} data-nodo={o.id} onClick={abrir}>
-                {o.nombre}
-              </button>
-            </div>
-          </li>,
-        ];
-      }
-
-      const hijos = o.hijos ?? [];
-      const esUltimo = nivel === ruta.length - 1;
-      // An open leaf (a chosen component): highlighted
-      const hoja = !hijos.length;
-      const error = o.cero && verificacion.status === 'error' ? verificacion.message : null;
-      return [
-        <li key={o.id} className={styles.arbolItem}>
-          <div className={`${styles.arbolFila} ${styles.arbolRuta} ${hoja ? styles.arbolElegido : ''}`} style={sangria(nivel)}>
-            <button
-              type="button"
-              className={styles.arbolBoton}
-              aria-label={`Cerrar ${o.nombre}`}
-              aria-expanded={hoja ? undefined : true}
-              title={`Cerrar ${o.nombre}`}
-              onClick={() => cambiar(ruta.slice(0, nivel), o.id)}
-            >
-              <span className={styles.arbolSigno} data-signo="−" aria-hidden="true" />
-            </button>
+            ) : (
+              // A leaf keeps the chevron's space, so names stay aligned
+              <span className={styles.arbolBoton} aria-hidden="true" />
+            )}
             <button
               type="button"
               className={styles.arbolNombre}
               title={o.nombre}
-              aria-current={esUltimo ? 'location' : undefined}
-              data-nodo={o.id}
-              onClick={() => cambiar(ruta.slice(0, nivel + 1), hijos[0]?.id ?? o.id)}
+              aria-current={esElegido ? 'location' : undefined}
+              onClick={elegir}
             >
               {o.nombre}
             </button>
-            {o.cero && <Verificacion estado={verificacion} />}
+            {verifica && <Verificacion estado={verificacion} />}
           </div>
           {error && (
-            <p className={styles.arbolError} style={sangria(nivel + 2)} role="alert">
+            <p className={styles.arbolError} style={sangria(nivel + 1)} role="alert">
               {error}
             </p>
           )}
-        </li>,
-        ...filas(hijos, nivel + 1),
-      ];
+          {abierto && (
+            // Its guide line goes from the first child to the last one
+            <ul className={styles.arbolGrupo} style={sangria(nivel)}>
+              {filas(hijos, nivel + 1, [...camino, o.id])}
+            </ul>
+          )}
+        </li>
+      );
     });
-  };
 
   return (
-    <ul ref={lista} className={styles.arbol} aria-label="Equipos de la planta">
-      {filas(JERARQUIA_DEMO, 0)}
+    <ul className={styles.arbol} aria-label="Equipos de la planta">
+      {filas(JERARQUIA_DEMO, 0, [])}
     </ul>
   );
 }

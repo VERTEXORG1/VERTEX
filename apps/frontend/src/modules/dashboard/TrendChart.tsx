@@ -63,7 +63,9 @@ const OSCURO = 'var(--vx-primary)';
 const TENUE = 'var(--vx-text-muted)';
 const REJILLA = 'var(--vx-border)';
 const BLANCO = 'var(--vx-white)';
-const BANDA_COLOR = { EVENTO: '#FFEBEE', MANTENIMIENTO: '#FFF3E0' } as const;
+// Pastel pink and green of the same lightness (L 94.7 / 94.0), easier to tell
+// apart than the former pink and cream (ΔE 16, was 12)
+const BANDA_COLOR = { EVENTO: '#FFEBEE', MANTENIMIENTO: '#E3F2E1' } as const;
 
 /** Text size in screen pixels: the chart is drawn at its real size, not scaled */
 const FONT = 11;

@@ -81,17 +81,21 @@
   margin-bottom: 16px;
 }
 
+/* The brand emblem in a small rounded box (sidebar and phone header) */
 .logoMark {
   width: 40px;
   height: 40px;
-  background: rgba(255, 255, 255, 0.12);
   border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 16px;
-  letter-spacing: -0.5px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.logoMark img,
+.mobileLogo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .logoText {
@@ -183,14 +187,8 @@
 .mobileLogo {
   width: 40px;
   height: 40px;
-  background: var(--vx-primary);
   border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--vx-white);
-  font-weight: 700;
-  font-size: 14px;
+  overflow: hidden;
   flex-shrink: 0;
 }
 
@@ -204,26 +202,50 @@
 }
 
 /* ── Equipment tree (ArbolEquipos.tsx) ─────────────────────── */
-/* Works on the dark sidebar and on the white phone panel: the text and the
-   +/− borders take the container's color. One character of indentation per
-   level, so five levels fit without horizontal scroll. */
+/* Like the VS Code explorer: 13 px text, 22 px rows, a 16 px chevron and
+   8 px of indentation per level, with a 1 px guide line per open level.
+   Works on the dark sidebar and on the white phone panel: the text takes
+   the container's color and --arbol-guia the line's. */
 .sidebarArbol {
+  --arbol-guia: rgba(255, 255, 255, 0.1);
   flex: 1 1 auto;
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  padding: 0 8px 12px;
+  padding: 0 0 12px;
   color: var(--vx-white);
 }
 
-.arbol {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
+.arbol,
+.arbolGrupo {
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+.arbol {
+  --arbol-sangria: 8px;
+  --arbol-fila: 22px;
   font-size: 13px;
+  line-height: var(--arbol-fila);
+}
+
+/* The children of an open node: its guide line runs from the first child
+   to the last one, under the parent's chevron. Nested groups add theirs,
+   so a level-3 row has one line per parent level. */
+.arbolGrupo {
+  position: relative;
+}
+
+.arbolGrupo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--nivel, 0) * var(--arbol-sangria) + 12px);
+  width: 1px;
+  background: var(--arbol-guia, rgba(0, 0, 0, 0.1));
+  pointer-events: none;
 }
 
 .arbolItem {
@@ -233,73 +255,68 @@
 .arbolFila {
   display: flex;
   align-items: center;
-  gap: 2px;
   min-width: 0;
-  padding-left: calc(var(--nivel, 0) * 1ch);
+  min-height: var(--arbol-fila);
+  padding-left: calc(var(--nivel, 0) * var(--arbol-sangria) + 4px);
+  padding-right: 4px;
 }
 
-/* "+" / "−": a small box (smaller than the letters) like a folder tree.
-   The click area reaches beyond the box (::after) without showing it. */
+@media (hover: hover) {
+  .arbolFila:hover {
+    background: rgba(127, 127, 127, 0.18);
+  }
+}
+
+/* Chevron ▶ (closed) that turns to ▼ (open). A leaf has the same empty
+   space. The click area reaches beyond it (::after) without showing it. */
 .arbolBoton {
   position: relative;
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 11px;
-  height: 11px;
-  margin: 0 1px 0 2px;
+  width: 16px;
+  height: 16px;
   padding: 0;
   border: 0;
   background: transparent;
   color: inherit;
-  opacity: 0.75;
+  opacity: 0.8;
   cursor: pointer;
   touch-action: manipulation;
 }
 
-.arbolBoton::after {
+span.arbolBoton {
+  cursor: default;
+}
+
+button.arbolBoton::after {
   content: '';
   position: absolute;
-  inset: -8px -3px;
+  inset: -3px -2px;
 }
 
-.arbolSigno {
-  position: relative;
-  box-sizing: border-box;
-  width: 11px;
-  height: 11px;
-  border: 1px solid currentColor;
-  border-radius: 2px;
+.arbolFlecha {
+  display: block;
+  transition: transform 0.1s ease-out;
 }
 
-/* Thin sign, centered: horizontal bar, plus a vertical one for "+" */
-.arbolSigno::before,
-.arbolSigno[data-signo='+']::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  background: currentColor;
+.arbolBoton[aria-expanded='true'] .arbolFlecha {
+  transform: rotate(90deg);
 }
 
-.arbolSigno::before {
-  width: 5px;
-  height: 1px;
-}
-
-.arbolSigno[data-signo='+']::after {
-  width: 1px;
-  height: 5px;
+@media (prefers-reduced-motion: reduce) {
+  .arbolFlecha {
+    transition: none;
+  }
 }
 
 .arbolNombre {
   flex: 1 1 auto;
   min-width: 0;
-  min-height: 28px;
-  padding: 2px 5px;
+  min-height: var(--arbol-fila);
+  padding: 0 4px 0 2px;
   border: 0;
-  border-radius: 4px;
   background: transparent;
   color: inherit;
   font: inherit;
@@ -316,10 +333,6 @@
   .arbolBoton:hover {
     opacity: 1;
   }
-
-  .arbolNombre:hover {
-    background: rgba(127, 127, 127, 0.18);
-  }
 }
 
 /* Levels of the route: bold, full color */
@@ -328,21 +341,23 @@
   font-weight: 600;
 }
 
-/* Chosen component: the selection color of the project */
-.arbolElegido .arbolNombre,
-.arbolElegido .arbolNombre:hover {
+/* Chosen node: the whole row with the selection color of the project */
+.arbolElegido,
+.arbolElegido:hover {
   background: var(--vx-accent);
   color: var(--vx-primary);
+}
+
+.arbolElegido .arbolNombre {
   font-weight: 700;
 }
 
 .arbolBoton:focus-visible,
 .arbolNombre:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: 1px;
+  outline: 1px solid currentColor;
+  outline-offset: -1px;
 }
 
-/* CERO check next to the chosen equipment: spinner, ✓ or ! */
 .arbolCheck {
   flex: 0 0 auto;
   width: 16px;
@@ -382,7 +397,7 @@
 }
 
 .arbolError {
-  margin: 2px 0 4px calc(var(--nivel, 0) * 1ch);
+  margin: 2px 4px 4px calc(var(--nivel, 0) * var(--arbol-sangria) + 4px);
   padding: 2px 6px;
   border-radius: 4px;
   background: var(--vx-danger);
@@ -443,20 +458,21 @@
 }
 
 .arbolMovilPanel {
+  --arbol-guia: rgba(0, 0, 0, 0.1);
   max-height: 60vh;
   overflow-y: auto;
-  padding: 4px 12px 10px;
+  padding: 4px 4px 10px;
   border-top: 1px solid var(--vx-border);
 }
 
 /* Bigger touch rows in the phone panel */
-.arbolMovilPanel .arbolNombre {
-  min-height: 36px;
+.arbolMovilPanel .arbol {
+  --arbol-fila: 36px;
 }
 
-/* Wider click area on the phone; the box keeps its size */
-.arbolMovilPanel .arbolBoton::after {
-  inset: -12px -5px;
+/* Wider click area on the phone; the chevron keeps its size */
+.arbolMovilPanel button.arbolBoton::after {
+  inset: -10px -6px;
 }
 
 @media (min-width: 768px) and (min-height: 501px), (orientation: landscape) and (max-height: 500px) {
@@ -1175,6 +1191,102 @@
   margin-top: 2px;
 }
 
+/* Cycles donut: dates beside the axes between the cycles (inside the
+   hole), the axis line in a faint maintenance color and the cut through
+   the ring in the maintenance color (each axis is a maintenance).
+   SVG units: the text scales with the donut (11 of 200). */
+.donutFecha {
+  font-size: 11px;
+  font-weight: 600;
+  fill: #455A64;
+  font-variant-numeric: tabular-nums;
+}
+
+.donutEje {
+  stroke: var(--vx-warning);
+  stroke-opacity: 0.45;
+  stroke-width: 1;
+}
+
+.donutCorte {
+  stroke: var(--vx-warning);
+  stroke-width: 2.5;
+}
+
+/* Top row of the donut card: "Período:", one button per cycle (I, II…)
+   and "Todo" at the right; the donut and its legend show the chosen cycle
+   alone, or all of them */
+.donutPeriodos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.donutPeriodoTodo {
+  margin-left: auto;
+}
+
+/* Number of each sector (I, II…) centered in its wedge of the hole, as on
+   its button (SVG units: 18 of 200) */
+.donutNumero {
+  font-size: 18px;
+  font-weight: 700;
+  fill: var(--vx-primary);
+  opacity: 0.75;
+}
+
+.donutPeriodosTitulo {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--vx-text-muted);
+}
+
+.donutPeriodoBoton {
+  position: relative;
+  min-width: 30px;
+  padding: 2px 8px;
+  border: 1px solid var(--vx-border);
+  border-radius: 4px;
+  background: var(--vx-white);
+  color: var(--vx-text-muted);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.donutPeriodoBoton[aria-pressed='true'] {
+  border-color: var(--vx-secondary);
+  background: var(--vx-accent);
+  color: var(--vx-primary);
+}
+
+@media (hover: hover) {
+  .donutPeriodoBoton:hover {
+    border-color: var(--vx-secondary);
+  }
+}
+
+.donutPeriodoBoton:focus-visible {
+  outline: 2px solid var(--vx-secondary);
+  outline-offset: 1px;
+}
+
+/* Larger touch area on phones; the buttons keep their size */
+@media not all and (min-width: 768px) and (min-height: 501px) {
+  .donutPeriodoBoton::after {
+    content: '';
+    position: absolute;
+    inset: -8px -2px;
+  }
+}
+
 .unitPicker {
   flex: 0 0 auto;
   border: 0;
@@ -1866,6 +1978,276 @@
   width: 12px;
   height: 10px;
   border: 1px solid var(--vx-border);
+}
+
+/* ── Cycles card (CiclosPanel.tsx) ─────────────────────────── */
+/* One row per cycle between maintenances: header (name, dates, length),
+   a bar as long as the cycle on the common scale with its state blocks in
+   time order, and the hours of its four states. Outside the period asked
+   for the bar is dimmed; the period is the blue mark over it. */
+.ciclosHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.ciclosHeader .cardTitle {
+  margin: 0;
+}
+
+/* Time unit as a compact segmented control: H | D | S | M */
+.ciclosUnidades {
+  display: inline-flex;
+  flex-shrink: 0;
+  border: 1px solid var(--vx-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ciclosUnidad {
+  position: relative;
+  min-width: 26px;
+  height: 22px;
+  padding: 0 6px;
+  border: 0;
+  border-left: 1px solid var(--vx-border);
+  background: var(--vx-white);
+  color: var(--vx-text-muted);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.ciclosUnidad:first-child {
+  border-left: 0;
+}
+
+.ciclosUnidad[aria-checked='true'] {
+  background: var(--vx-accent);
+  color: var(--vx-primary);
+}
+
+.ciclosUnidad:focus-visible {
+  outline: 2px solid var(--vx-secondary);
+  outline-offset: -2px;
+}
+
+/* Larger touch area on phones; the buttons keep their size */
+@media not all and (min-width: 768px) and (min-height: 501px) {
+  .ciclosUnidad::after {
+    content: '';
+    position: absolute;
+    inset: -10px 0;
+  }
+}
+
+.ciclosMotor {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+  margin: 6px 0 8px;
+  font-size: 12px;
+  color: var(--vx-text-muted);
+  flex-shrink: 0;
+}
+
+.ciclosMotor strong {
+  color: var(--vx-primary);
+  font-weight: 700;
+}
+
+/* Indicators of the cycles shown */
+.ciclosKpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0 0 8px;
+  border: 1px solid var(--vx-border);
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.ciclosKpis > div {
+  min-width: 0;
+  padding: 4px 8px;
+}
+
+.ciclosKpis > div + div {
+  border-left: 1px solid var(--vx-border);
+}
+
+.ciclosKpis dt {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: var(--vx-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ciclosKpis dd {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--vx-primary);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The rows scroll inside the card when they do not fit (desktop) */
+.ciclosLista {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0 2px 0 0;
+  list-style: none;
+}
+
+.ciclo {
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.cicloCabecera {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  font-size: 12px;
+}
+
+.cicloNombre {
+  font-weight: 700;
+  color: var(--vx-primary);
+  white-space: nowrap;
+}
+
+.cicloFechas {
+  min-width: 0;
+  color: var(--vx-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+
+.cicloEnCurso {
+  padding: 0 6px;
+  border-radius: 8px;
+  background: var(--vx-accent);
+  color: var(--vx-primary);
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.cicloDuracion {
+  margin-left: auto;
+  font-weight: 700;
+  color: var(--vx-text);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Room above the bar for the period mark */
+.cicloPista {
+  padding-top: 6px;
+  margin-top: 1px;
+}
+
+.cicloBarra {
+  position: relative;
+  min-width: 24px;
+  height: 14px;
+  border-radius: 2px;
+  background: #E8EEF5;
+}
+
+.cicloTramo {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+/* A maintenance is short next to its cycle: always at least 3px wide */
+.cicloTramoMtto {
+  min-width: 3px;
+}
+
+.cicloFuera {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.cicloConsulta {
+  position: absolute;
+  top: -6px;
+  height: 3px;
+  min-width: 2px;
+  border-radius: 2px;
+  background: var(--vx-secondary);
+}
+
+.cicloEstados {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 12px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 11px;
+  color: var(--vx-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.cicloEstados li {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.ciclosPunto {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.ciclosLeyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--vx-text-muted);
+  flex-shrink: 0;
+}
+
+.ciclosLeyenda > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.ciclosLeyendaConsulta {
+  flex-shrink: 0;
+  width: 14px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--vx-secondary);
 }
 
 /* Loading / empty / error line of the donut and trend cards */

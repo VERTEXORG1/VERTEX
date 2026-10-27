@@ -101,8 +101,8 @@ export async function getEquipo(req: Request<{ codigo: string }>, res: Response)
 
 /**
  * GET /api/equipos/:codigo/bloques?dias=N | ?desde=&hasta= →
- * { fecha_referencia, desde, primer_registro, ultimo_registro, horas, estado_actual, bloques }
- * (dbo.sp_vx_resumen_estados): one call feeds the donut and the events table.
+ * { fecha_referencia, desde, primer_registro, ultimo_registro, horas, estado_actual, bloques, ciclos }
+ * (dbo.sp_vx_resumen_estados): one call feeds the cycles chart and the events table.
  * Without a period, all the data of the equipment.
  */
 export async function getBloques(req: Request<{ codigo: string }>, res: Response) {
