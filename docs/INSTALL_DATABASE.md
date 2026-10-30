@@ -127,12 +127,12 @@ Variables mínimas para que arranque el backend:
 VERTEX_DEMO_SERVER=localhost,1433
 VERTEX_DEMO_DB=VERTEX_DEMO
 VERTEX_DEMO_SA_USER=app_demo_user
-VERTEX_DEMO_SA_PWD=Demo@2024!          # misma que usaste arriba
+VERTEX_DEMO_SA_PWD=<contraseña-de-app_demo_user>          # misma que usaste arriba
 
 VERTEX_REAL_SERVER=localhost,1433
 VERTEX_REAL_DB=VERTEX_REAL
 VERTEX_REAL_SA_USER=app_real_user
-VERTEX_REAL_SA_PWD=Real@2024!
+VERTEX_REAL_SA_PWD=<contraseña-de-app_real_user>
 
 JWT_SECRET=genera-un-valor-aleatorio-largo-aqui
 NODE_ENV=development
@@ -155,13 +155,13 @@ pnpm install
 ### 4b. Definir contraseñas de los 7 usuarios demo
 
 ```powershell
-$env:DEMO_PWD_ADMIN     = "Admin@Demo2024!"
-$env:DEMO_PWD_ING_MANT  = "Ing@Demo2024!"
-$env:DEMO_PWD_TEC_MEC   = "TecM@Demo2024!"
-$env:DEMO_PWD_TEC_ELEC  = "TecE@Demo2024!"
-$env:DEMO_PWD_DIR_PROD  = "Dir@Demo2024!"
-$env:DEMO_PWD_CONSULTA  = "Cons@Demo2024!"
-$env:DEMO_PWD_AUDITOR   = "Audit@Demo2024!"
+$env:DEMO_PWD_ADMIN     = "<define-tu-contraseña>"
+$env:DEMO_PWD_ING_MANT  = "<define-tu-contraseña>"
+$env:DEMO_PWD_TEC_MEC   = "<define-tu-contraseña>"
+$env:DEMO_PWD_TEC_ELEC  = "<define-tu-contraseña>"
+$env:DEMO_PWD_DIR_PROD  = "<define-tu-contraseña>"
+$env:DEMO_PWD_CONSULTA  = "<define-tu-contraseña>"
+$env:DEMO_PWD_AUDITOR   = "<define-tu-contraseña>"
 ```
 
 ### 4c. Ejecutar el script
