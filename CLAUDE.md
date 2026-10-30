@@ -220,7 +220,7 @@ Express y base de datos SQL Server.
 - Hashes reales de los 7 usuarios demo: `scripts/create_demo_users.ts`, que lee `DEMO_PWD_*` del `.env` raíz.
 
 ### Despliegue
-- GitHub: `https://github.com/Arturo-Civer/VERTEX` (rama `main`), conectado a Netlify.
+- GitHub: `https://github.com/VERTEXORG1/VERTEX` (rama `main`), conectado a Netlify.
 - Sitio: `https://vertexdashboar.netlify.app`.
 - Netlify solo sirve el frontend en **modo demo**; el backend corre en la red interna, porque necesita SQL Server.
   - Allí solo entra el usuario demo (`VITE_DEMO_EMAIL` / `VITE_DEMO_PASSWORD`); los usuarios de `dbo.Usuarios` (admin, etc.) no funcionan.
