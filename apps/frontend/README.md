@@ -1,49 +1,30 @@
-# VERTEX Dashboard — CERO (Cerámica Italia)
+# VERTEX · Frontend (dashboard web)
 
-Dashboard industrial responsive para la plataforma de monitoreo de equipos CERO.
+Dashboard de VERTEX: inicio de sesión, árbol de equipos, dona por ciclos entre mantenimientos, estado del motor, tabla "Resumen del período" y tendencia de variables. Publicado en modo demostración en https://vertexdashboar.netlify.app.
 
-## Stack
+## Quién
+- **Desarrollo:** el dashboard inicial lo desarrollaron Jhoan Sebastián Blanco Rincón y Ronal Gabriel Ure Carrillo según el tablero (tarea #4, Fase III: interfaz visual); la evolución desde el 12/10/2026 la desarrolló Islender Arturo Alfonso Contreras según el tablero (tarea #5). Integrado y subido al repositorio por Islender.
+- **Responsable según la matriz:** Jhoan (actividad 2: Interfaz y C3/C4).
+- **Acepta:** Islender.
+- Detalle en [docs/EQUIPO.md](../../docs/EQUIPO.md).
 
-- React 18/19 + TypeScript + Vite
-- Recharts (donut + línea de tendencia)
-- CSS Modules (sin Material UI / Ant Design)
+## Tecnologías
+React 19, TypeScript, Vite 8 y CSS Modules. Las gráficas (dona y tendencia) son SVG propio, sin librerías de gráficos. Lint con `oxlint`.
 
-## Estructura
-
-```
-src/
-  contracts/dashboard.ts     # Tipos compartidos
-  modules/dashboard/
-    DashboardPage.tsx        # Página principal
-    DonutChart.tsx
-    KpiRow.tsx
-    HorizontalBars.tsx
-    TrendChart.tsx
-    NavTabs.tsx              # Tabs móviles
-    Sidebar.tsx              # Sidebar desktop
-    mockData.ts
-    dashboard.module.css
-```
-
-## Cómo ejecutar
-
-```bash
-cd vertex-dashboard   # o apps/frontend
+## Ejecutar
+```powershell
 npm install
-npm run dev
+npm run dev        # http://localhost:5173
+npm run build      # tsc -b && vite build → dist/
+npm run lint
 ```
 
-Abre http://localhost:5173
+Variables (copiar [`.env.example`](.env.example) a `.env`):
+- `VITE_API_URL`: dirección de la API (por defecto `http://localhost:3000`).
+- `VITE_DEMO_MODE`: `false` en local, con la API y la base; `true` para el modo demostración sin backend (el de Netlify).
 
-## Responsive
-
-- **Móvil** (`< 768px`): header fijo + tabs horizontales + stack vertical
-- **Desktop** (`≥ 768px`): sidebar 200px + grid 12 columnas
-
-## Datos demo (mock)
-
-- Motor: CERO-010 — WEG W22 3CV-4P
-- Período: últimos 30 días
-- Donut: Confirmado 840 h / Provisional 192 h / Pend. Valid. 28 h
-- KPIs: 4 080 mediciones · 30 días · 96 % confianza
-- Barras por turno: mañana 340 · tarde 310 · noche 410
+## Dónde está cada cosa
+- `src/modules/auth/`: inicio de sesión (normal y demo).
+- `src/modules/dashboard/`: árbol de equipos, dona (`DonutPanel.tsx`), tendencia (`TrendChart.tsx`), tabla (`EventsSummary.tsx`) y servicios que llaman a la API o simulan los datos en modo demo.
+- `src/modules/reporting/` y `src/modules/admin/`: estructura pendiente (archivos vacíos).
+- `src/shared/api.ts`: `API_URL` y `DEMO_MODE`.
