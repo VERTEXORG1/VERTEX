@@ -1,0 +1,12 @@
+// Cloudflare Workers: the demo-mode frontend served as static assets (no
+// Worker script). Format: https://developers.cloudflare.com/workers/static-assets/routing/single-page-application/
+// and https://developers.cloudflare.com/workers/wrangler/configuration/
+// The name must match the Worker in the Cloudflare dashboard.
+{
+	"name": "vertex",
+	"compatibility_date": "2026-10-31",
+	"assets": {
+		"directory": "./dist/",
+		"not_found_handling": "single-page-application"
+	}
+}
