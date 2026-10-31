@@ -27,9 +27,9 @@ Cada integrante sube su propio trabajo con su propia cuenta de GitHub, para que 
 - **Netlify:** cada push a `main` despliega el sitio y consume créditos del plan. Si el cambio no afecta al frontend (por ejemplo, solo documentación, `database/` o `apps/backend/`), escribe `[skip netlify]` en el mensaje del commit.
 - **Archivos `.sql` en UTF-16:** varios scripts de `database/` están en UTF-16 LE con BOM. Al editarlos, conserva esa codificación.
 - **Antes de abrir el pull request**, ejecuta los chequeos que tenga tu parte:
-  - `apps/frontend`: `npm run lint` y `npm run build`.
-  - `apps/backend`: `npm run typecheck`.
+  - `apps/frontend`: `npm run lint`, `npm test` y `npm run build`.
+  - `apps/backend`: `npm run typecheck` y `npm test`.
 
 ## Tareas que siguen abiertas
 
-Las tareas del Sprint 3 (del 12/11 al 27/11/2026) son las que cada integrante debe subir con su cuenta: [#7 Fase VI: validación en línea](https://github.com/VERTEXORG1/VERTEX/issues/7) y [#8 Cierre de alcance](https://github.com/VERTEXORG1/VERTEX/issues/8). Ver el detalle en [EQUIPO.md](EQUIPO.md).
+Las tareas abiertas son la 21 a la 25 (sprint S5, hasta el 12/11/2026) y la 26 a la 30 (sprint S6, del 13/11 al 30/11/2026). Cada integrante sube con su cuenta las de las que es responsable principal; cada tarea es un issue del [tablero](https://github.com/orgs/VERTEXORG1/projects/2). Ver el reparto en [EQUIPO.md](EQUIPO.md).

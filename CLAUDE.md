@@ -4,6 +4,30 @@ Sistema de monitoreo industrial: horas de operación, estados, eventos y
 mantenimiento de motores en planta. Monorepo con frontend React, backend
 Express y base de datos SQL Server.
 
+## Plan y tablero
+- **Objetivo general:** capturar automáticamente las horas de funcionamiento de un motor (por ejemplo, el de un equipo CERO), iniciando con el CERO-010 como prototipo.
+- **Fuente del plan:** Taller Inception §6.2, DERS §06 y Proyecto Integrador §25 (`docs/*.docx`, versión del 30–31/10/2026). Las fechas y los responsables son de planificación, no un registro de ejecución.
+- **3 fases y 6 sprints** (30 tareas, 5 por sprint):
+
+| Fase | Sprint | Fechas | Tareas |
+|---|---|---|---|
+| 1 · Levantamiento y estructura del negocio | S1 Contexto y objetivos | 06/08–28/08/2026 | 1–5 |
+| | S2 Requisitos y reglas | 29/08–20/09 | 6–10 |
+| 2 · Base de datos demo y dashboard | S3 Base de datos | 21/09–08/10 | 11–15 |
+| | S4 Dashboard en modo demo | 09/10–25/10 | 16–20 |
+| 3 · Integración, seguridad y cierre | S5 API, conexión y acceso | 26/10–12/11 | 21–25 |
+| | S6 Pruebas, documentación y aceptación | 13/11–30/11 | 26–30 |
+
+- **Entregable (hasta el 30/11/2026):** aceptación del dashboard, conexión frontend → API → base de datos y visualización por fechas, con la base demo `VERTEX_DEMO` (654.470 registros del CERO-010) y acceso por roles.
+- **Evolución futura (sin tareas ni fechas en el tablero):** Etapa A, prototipo y piloto físico en el CERO-010 de la Línea 6; Etapa B, expansión (demás equipos, consumo por lote, SAP/MPR). Fuera del semestre: captura física, despliegue en la Línea 6, consumo por lote, SAP/MPR, Directorio Activo y respaldos.
+- **Tablero** ([Planificación VERTEX](https://github.com/orgs/VERTEXORG1/projects/2)), reorganizado el 31/10/2026:
+  - un issue por tarea, con el título "T<n> – <nombre>"; el asignado es el responsable principal y el apoyo va por nombre en el cuerpo;
+  - milestone por sprint ("S1 – …" a "S6 – …"), etiqueta "Fase 1" a "Fase 3", iteraciones S1–S6 y campos Fase, Inicio y Fin con las fechas de plan;
+  - estados Todo / In progress / Done (no hay "Pendiente"); al 31/10, 1–20 cerradas según el plan, 21–25 en progreso y 26–30 por hacer;
+  - las notas de cierre citan solo commits o archivos reales; si no hay evidencia, "fecha real: [PENDIENTE]". Nunca se añaden coautorías sin confirmación;
+  - la etiqueta "Evolución futura" marca #3 (caja de instrumentación, cerrado) y #6 (despliegue en la Línea 6, abierto, sin milestone ni fechas);
+  - la correspondencia tarea ↔ issue, el reparto y la matriz están en `docs/EQUIPO.md`.
+
 ## Estado actual
 
 ### Frontend (`apps/frontend`) — React 19 + TypeScript + Vite 8, CSS Modules
@@ -95,7 +119,8 @@ Express y base de datos SQL Server.
   - desktop grande: ≥ 1440×860.
 - `src/shared/api.ts`: `API_URL` (`VITE_API_URL`) y `DEMO_MODE` (`VITE_DEMO_MODE`), compartidos por los servicios.
 - Variables de color para validación en `dashboard.module.css`: `--vx-ok` (#2E7D32) y `--vx-danger` (#E53935). `--vx-success` es azul, por eso no se usa para "ok".
-- Los archivos vacíos (`LoginPage.tsx`, `ReauthModal.tsx`, `modules/reporting`, `modules/admin`, `shared/`) son estructura pendiente.
+- **Identidad (ADR 0007):** "¿Olvidaste tu contraseña?" en `LoginForm.tsx` solo muestra un mensaje (en demo, "En la demostración, contacta al administrador"); `CambiarPassword.tsx` es el cambio obligatorio tras una contraseña temporal; `modules/admin/UsersRolesPage.tsx` es la pantalla "Usuarios" (listar, crear, restablecer) para ADMINISTRADOR e ING_MANTENIMIENTO, nunca en demo; `ReauthModal.tsx` pide la contraseña propia. Pruebas: `npm test` (Vitest + Testing Library).
+- Los archivos vacíos (`LoginPage.tsx`, `modules/reporting`, `shared/`) son estructura pendiente.
 - También sin usar: `DonutChart.tsx` (la dona la dibuja `DonutPanel`), `CiclosPanel.tsx` (prototipo 2), `KpiRow.tsx` y `mockData.kpis`.
 
 ### Backend (`apps/backend`) — Express 5 + TypeScript, `mssql`, `bcrypt`, `jsonwebtoken`
@@ -131,8 +156,16 @@ Express y base de datos SQL Server.
   - 200 `{ variable, unidad, fecha_referencia, desde, minutos_punto, umbral: { min, max, habilitado } | null, puntos: [{ inicio, dia, promedio, minimo, maximo, lecturas, marcas }] }`.
 - `requestTimeout` de `mssql`: 30 s (`main.ts`); "Todo" puede tardar varios segundos.
 - Errores de base (`errorDeBase` en `equipos.service.ts`), ambos 503: sin conexión → "Sin conexión a la base de datos"; consulta que agota el `requestTimeout` (`RequestError` con `ETIMEOUT`) → "La base de datos tardó demasiado en responder".
+- **Identidad (Fase B, ADR 0007, commits `9a475da` y `6ddee65`):**
+  - middlewares `authenticate`, `authorize` y `reauthenticate` (`src/shared/middleware/`), usados en las rutas de identidad;
+  - el login devuelve `{ token, debe_cambiar }`; con contraseña temporal el token solo sirve para `POST /api/identity/password/cambiar`;
+  - bloqueo de 15 minutos tras 5 fallos, por usuario y por IP (contados en `Auditoria.ip_origen`); 429 solo por IP, 401 genérico en los demás casos;
+  - `GET /usuarios` y `/roles`, `POST /usuarios` y `POST /usuarios/:id/restablecer` solo para ADMINISTRADOR e ING_MANTENIMIENTO, con reautenticación; contraseña temporal generada por el servidor y mostrada una sola vez;
+  - reglas en los procedimientos de V007 (`sp_vx_login_*`, `sp_vx_password_*`, `sp_vx_usuario_crear`); bcrypt de 12 rondas en Node, también en el `DUMMY_HASH`;
+  - pruebas: `npm test` (Vitest + Supertest, repositorio en memoria en `identity/tests/fakeRepositorio.ts`).
 - Pendiente:
-  - middlewares `authenticate` / `authorize` / `reauthenticate` (vacíos), así que todavía no hay rutas protegidas;
+  - las rutas de datos (`/api/equipos/...`) todavía no exigen el token (habría que enviarlo desde el frontend y desde `start-vertex.ps1`);
+  - V007 y sus cinco procedimientos están aplicados en `VERTEX_DEMO`, no en `VERTEX_REAL`;
   - el resto de dominios (data-acquisition, hours-calculation, mantenimiento, audit), que son archivos vacíos.
 - La autenticación final será contra el Directorio Activo corporativo; la tabla de usuarios es para la demo.
 
