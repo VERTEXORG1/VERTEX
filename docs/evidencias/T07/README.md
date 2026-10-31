@@ -8,3 +8,4 @@
   - Umbrales y reglas pendientes de validar con Mantenimiento (Taller §4.2 y §5): tolerancia de 30 minutos, regla del 30 %, corriente de 0,1 A, 65 °C y 4,5 mm/s.
 - **Falta:** actas o notas de cada reunión con fecha, asistentes, temas (variables, anomalías y ciclos) y acuerdos: **[PENDIENTE]**.
 - **Fecha real:** **[PENDIENTE]**. Fecha de plan de la tarea: 02/09–11/09/2026.
+- **Registro de las respuestas de Mantenimiento:** [`registro_mantenimiento.md`](registro_mantenimiento.md). Es el registro de las respuestas del ingeniero mecánico entregadas el **12/10/2026**; **no es un acta de reunión**. Los asistentes, nombres y cargos siguen **[PENDIENTE]**.

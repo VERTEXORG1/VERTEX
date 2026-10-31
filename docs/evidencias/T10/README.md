@@ -1,22 +1,14 @@
 # T10 · Mapa de procesos con carriles (BPMN)
 
-- **Qué es:** el mapa de procesos de Cerámica Italia relacionado con VERTEX, en una imagen y una tabla.
-- **De dónde sale:** [`docs/Proyecto_Integrador_VERTEX.docx`](../../Proyecto_Integrador_VERTEX.docx), **sección 16, "Mapa de procesos"**. La imagen [`mapa_de_procesos.png`](mapa_de_procesos.png) es el archivo `word/media/image2.png` del documento, extraído sin cambios.
-- **Diferencias con lo planificado (a revisar):**
-  - El **DERS no contiene** un mapa de procesos: sus seis figuras son los cuatro niveles C4 y las dos hojas de ruta. Por eso la evidencia sale del Proyecto Integrador.
-  - El mapa organiza los procesos en tres franjas por tipo (estratégicos, misionales / clave y de apoyo) con sus relaciones. **No usa notación BPMN** ni carriles por rol. Un mapa BPMN con carriles por rol: **[PENDIENTE]**.
-- **Fecha real:** el Proyecto Integrador está fechado el **17/10/2026** (portada); la copia del repositorio es la versión guardada el 31/10/2026. Fecha real de elaboración del mapa: **[PENDIENTE]**. Fecha de plan de la tarea: 11/09–18/09/2026.
+**Fecha de elaboración:** 31/10/2026 (elaborado después de la fecha de plan de la tarea, 11/09–18/09, que es de planificación).
+**Archivo:** `bpmn_vertex.png`.
 
-![Mapa de procesos (Proyecto Integrador, sección 16)](mapa_de_procesos.png)
+Mapa de procesos de VERTEX con 5 carriles por rol: dispositivo de captura, base de datos, API y seguridad, dashboard y personal de mantenimiento. Resume el flujo documentado en el DERS y en el Taller: medición, envío cada 5 minutos, registro y clasificación del estado (corriente > 0,1 A = encendido), cálculo de horas y ciclos con los `sp_vx_*`, inicio de sesión y verificación de rol, visualización y decisión de intervención (ciclo objetivo de 720 horas o anomalía).
 
-## Texto de la sección (copiado sin cambios)
+Notas:
+- La captura física es de la Etapa A; en el entregable, la fuente de datos es la base demo.
+- El mapa por franjas del Proyecto Integrador §16 (`mapa_de_procesos.png`, en esta carpeta) se conserva como mapa de procesos estratégicos, misionales y de apoyo; este BPMN lo complementa con carriles por rol.
+- El ciclo objetivo de 720 horas corresponde al parámetro `HORAS_CICLO_OBJETIVO` de `ConfiguracionSistema` (valor 720, descrito como provisional: 90 días × 8 h/día), definido en `database/seeds/01_reference_data.sql`.
 
-### 16. Mapa de procesos
-
-| Tipo | Procesos |
-|---|---|
-| Estratégicos | Planeación estratégica, gestión de la información y la tecnología, gestión financiera y presupuestal |
-| Misionales / clave | Planeación de producción → producción (esmaltado con CEROS) → despacho; mantenimiento de equipos |
-| De apoyo | Compras, almacén, talento humano, TI, seguridad y salud en el trabajo, costos |
-
-Relaciones principales: producción define el uso de los CEROS; mantenimiento programa y ejecuta órdenes; almacén entrega los repuestos; TI sostiene SAP y las interfaces; costos recibe consumos reales.
+![Mapa BPMN](bpmn_vertex.png)
+![Mapa por franjas, Proyecto Integrador §16](mapa_de_procesos.png)

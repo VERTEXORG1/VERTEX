@@ -8,3 +8,4 @@
   - Proyecto Integrador §25: la Fase 1 incluye "Entrevistas y reuniones con TI y Mantenimiento" (es el plan, no un registro).
 - **Falta:** actas o notas de cada reunión con fecha, asistentes, temas (red, alojamiento, stack, seguridad, roles y respaldo) y acuerdos: **[PENDIENTE]**.
 - **Fecha real:** **[PENDIENTE]**. Fecha de plan de la tarea: 31/08–09/09/2026.
+- **Registro de las respuestas de TI:** [`registro_TI.md`](registro_TI.md). Es el registro de las respuestas del área de TI entregadas el **12/10/2026**; **no es un acta de reunión**. Los asistentes, nombres y cargos siguen **[PENDIENTE]**.
