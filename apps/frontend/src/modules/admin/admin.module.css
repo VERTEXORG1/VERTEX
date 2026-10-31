@@ -1,0 +1,316 @@
+/* VERTEX user administration and the re-authentication dialog. Uses the
+ * --vx-* variables defined in dashboard.module.css and the form fields of
+ * auth.module.css. Phones: one column, the table scrolls sideways inside its
+ * card; from 768px the form takes two columns.
+ */
+
+.page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--vx-neutral);
+  color: var(--vx-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--vx-header-height);
+  padding: 0 6px 0 12px;
+  background: var(--vx-white);
+  border-bottom: 1px solid var(--vx-border);
+}
+
+.logoMark {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.logoMark img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.headerTitle {
+  flex: 1;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--vx-primary);
+}
+
+.iconButton {
+  width: var(--vx-touch-target);
+  height: var(--vx-touch-target);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--vx-primary);
+  cursor: pointer;
+}
+
+.iconButton:hover {
+  background: var(--vx-accent);
+}
+
+.main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: var(--vx-card-padding);
+  background: var(--vx-white);
+  border-radius: var(--vx-radius);
+  box-shadow: var(--vx-shadow);
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--vx-primary);
+}
+
+.texto {
+  margin: 0;
+  font-size: 14px;
+  color: var(--vx-text-muted);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px 16px;
+  align-items: end;
+}
+
+@media (min-width: 768px) {
+  .formGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.botonPrimario,
+.botonSecundario,
+.botonTabla {
+  min-height: var(--vx-touch-target);
+  padding: 0 16px;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+
+.botonPrimario {
+  border: 0;
+  background: var(--vx-secondary);
+  color: var(--vx-white);
+}
+
+.botonPrimario:hover:not(:disabled) {
+  background: var(--vx-primary);
+}
+
+.botonSecundario,
+.botonTabla {
+  border: 1px solid var(--vx-border);
+  background: var(--vx-white);
+  color: var(--vx-primary);
+}
+
+.botonSecundario:hover:not(:disabled),
+.botonTabla:hover:not(:disabled) {
+  background: var(--vx-accent);
+}
+
+.botonTabla {
+  min-height: 36px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+
+.botonPrimario:disabled,
+.botonSecundario:disabled,
+.botonTabla:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.botonPrimario:focus-visible,
+.botonSecundario:focus-visible,
+.botonTabla:focus-visible,
+.iconButton:focus-visible {
+  outline: 2px solid var(--vx-secondary);
+  outline-offset: 2px;
+}
+
+/* ── Temporary password (shown once) ──────────────────────── */
+.temporal {
+  border-left: 4px solid var(--vx-ok);
+}
+
+.temporal .botonPrimario {
+  align-self: flex-start;
+}
+
+.temporalFila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.temporalValor {
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: var(--vx-neutral);
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  user-select: all;
+}
+
+/* ── Users table ──────────────────────────────────────────── */
+.tablaWrap {
+  overflow-x: auto;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.tabla th,
+.tabla td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--vx-border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.tabla th {
+  color: var(--vx-text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.usuario {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.fecha {
+  white-space: nowrap;
+}
+
+.estadoActivo,
+.estadoPendiente,
+.estadoBloqueado,
+.estadoInactivo {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.estadoActivo {
+  background: #E8F5E9;
+  color: var(--vx-ok);
+}
+
+.estadoPendiente {
+  background: #FFF3E0;
+  color: #B45F06;
+}
+
+.estadoBloqueado {
+  background: #FDECEA;
+  color: #C62828;
+}
+
+.estadoInactivo {
+  background: var(--vx-neutral);
+  color: var(--vx-text-muted);
+}
+
+.oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ── Re-authentication dialog ─────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.modal {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  background: var(--vx-white);
+  border-radius: var(--vx-radius);
+  color: var(--vx-text);
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--vx-primary);
+  overflow-wrap: anywhere;
+}
+
+.modalText {
+  margin: 0;
+  font-size: 14px;
+  color: var(--vx-text-muted);
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

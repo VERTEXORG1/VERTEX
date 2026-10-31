@@ -68,13 +68,27 @@ function demoLogin(credential: string, password: string): { token: string } {
 }
 
 /**
+ * Answer of "¿Olvidaste tu contraseña?": there is no self-service reset, an
+ * administrator assigns a temporary password (ADR 0007). No API call.
+ */
+export const AYUDA_OLVIDO = DEMO_MODE
+  ? 'En la demostración, contacta al administrador'
+  : 'Contacta al administrador o al jefe de mantenimiento';
+
+/** Result of a sign-in: the token, and whether the password must be changed first */
+export interface Ingreso {
+  token: string;
+  debeCambiar: boolean;
+}
+
+/**
  * Signs in with an email or username and stores the token under TOKEN_KEY.
  * Demo mode checks the VITE_DEMO_* credentials locally; otherwise it calls
- * POST /api/identity/login. Rejects with the server's message on 400/401
- * and with a generic message otherwise.
+ * POST /api/identity/login. Rejects with the server's message on 400/401/429
+ * (bad credentials, too many attempts) and with a generic message otherwise.
  */
-export async function login(credential: string, password: string): Promise<{ token: string }> {
-  if (DEMO_MODE) return demoLogin(credential, password);
+export async function login(credential: string, password: string): Promise<Ingreso> {
+  if (DEMO_MODE) return { ...demoLogin(credential, password), debeCambiar: false };
 
   let res: Response;
   try {
@@ -88,17 +102,89 @@ export async function login(credential: string, password: string): Promise<{ tok
     throw new Error(GENERIC_ERROR);
   }
 
-  const body = (await res.json().catch(() => null)) as { token?: string; error?: string } | null;
+  const body = (await res.json().catch(() => null)) as { token?: string; debe_cambiar?: boolean; error?: string } | null;
 
   if (res.ok && body?.token) {
     guardarToken(body.token);
-    return { token: body.token };
+    return { token: body.token, debeCambiar: body.debe_cambiar === true };
   }
 
-  if ((res.status === 400 || res.status === 401) && body?.error) {
+  if ((res.status === 400 || res.status === 401 || res.status === 429) && body?.error) {
     throw new Error(body.error);
   }
   throw new Error(GENERIC_ERROR);
+}
+
+/** Roles that see the user administration (ADR 0007) */
+export const ROLES_ADMIN_USUARIOS = ['ADMINISTRADOR', 'ING_MANTENIMIENTO'];
+
+/** Signed-in user, read from the token of this tab (the backend verifies it) */
+export interface Sesion {
+  userId: string;
+  username: string;
+  email: string | null;
+  rol: string[];
+  debeCambiar: boolean;
+}
+
+/** Claims of the stored token, or null without a valid session (demo tokens have no user) */
+export function leerSesion(): Sesion | null {
+  const token = getStoredToken();
+  if (!token) return null;
+  try {
+    const p = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))) as {
+      userId?: string;
+      username?: string;
+      email?: string | null;
+      rol?: string[];
+      debe_cambiar?: boolean;
+    };
+    return {
+      userId: p.userId ?? '',
+      username: p.username ?? '',
+      email: p.email ?? null,
+      rol: Array.isArray(p.rol) ? p.rol : [],
+      debeCambiar: p.debe_cambiar === true,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Authenticated JSON request to the backend (Authorization: Bearer). Rejects
+ * with the server's message on 4xx and with a generic message otherwise.
+ */
+export async function apiFetch<T>(path: string, init: { method?: string; body?: object } = {}): Promise<T> {
+  let res: Response;
+  try {
+    res = await fetch(`${API_URL}${path}`, {
+      method: init.method ?? 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getStoredToken() ?? ''}`,
+      },
+      body: init.body ? JSON.stringify(init.body) : undefined,
+    });
+  } catch {
+    throw new Error(GENERIC_ERROR);
+  }
+  const body = (await res.json().catch(() => null)) as (T & { error?: string }) | null;
+  if (res.ok && body) return body;
+  if (res.status >= 400 && res.status < 500 && body?.error) throw new Error(body.error);
+  throw new Error(GENERIC_ERROR);
+}
+
+/**
+ * Changes the signed-in user's password (mandatory after a temporary one)
+ * and stores the new token, which no longer asks for the change.
+ */
+export async function cambiarPassword(actual: string, nueva: string): Promise<void> {
+  const { token } = await apiFetch<{ token: string }>('/api/identity/password/cambiar', {
+    method: 'POST',
+    body: { password_actual: actual, password_nueva: nueva },
+  });
+  guardarToken(token);
 }
 
 /**

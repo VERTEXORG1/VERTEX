@@ -17,6 +17,7 @@ npm install
 npm run dev        # http://localhost:5173
 npm run build      # tsc -b && vite build → dist/
 npm run lint
+npm test           # Vitest + Testing Library (jsdom): mensajes de LoginForm
 ```
 
 Variables (copiar [`.env.example`](.env.example) a `.env`):
@@ -24,7 +25,10 @@ Variables (copiar [`.env.example`](.env.example) a `.env`):
 - `VITE_DEMO_MODE`: `false` en local, con la API y la base; `true` para el modo demostración sin backend (el de Netlify).
 
 ## Dónde está cada cosa
-- `src/modules/auth/`: inicio de sesión (normal y demo).
+- `src/modules/auth/`: inicio de sesión (normal y demo) con "¿Olvidaste tu contraseña?", y el cambio obligatorio tras una contraseña temporal ([ADR 0007](../../docs/adr/0007-recuperacion-de-contrasena-y-alta-de-usuarios.md)).
+  - El enlace de olvido no llama a la API: muestra "Contacta al administrador o al jefe de mantenimiento" (en demo, "En la demostración, contacta al administrador").
+  - `CambiarPassword.tsx` es el cambio obligatorio; `PasswordInput.tsx`, el campo con mostrar/ocultar; `ReauthModal.tsx`, la confirmación de la contraseña propia; `passwordPolicy.ts`, la misma política que el backend.
+- `src/modules/admin/UsersRolesPage.tsx`: pantalla "Usuarios" (listar, crear y restablecer contraseña), solo para `ADMINISTRADOR` e `ING_MANTENIMIENTO` y nunca en modo demo; se abre desde el Sidebar o la cabecera móvil. La contraseña temporal se muestra una sola vez.
 - `src/modules/dashboard/`: árbol de equipos, dona (`DonutPanel.tsx`), tendencia (`TrendChart.tsx`), tabla (`EventsSummary.tsx`) y servicios que llaman a la API o simulan los datos en modo demo.
-- `src/modules/reporting/` y `src/modules/admin/`: estructura pendiente (archivos vacíos).
+- `src/modules/reporting/`: estructura pendiente (archivos vacíos).
 - `src/shared/api.ts`: `API_URL` y `DEMO_MODE`.

@@ -130,6 +130,15 @@
   margin: auto 12px 0;
 }
 
+/* "Usuarios" (admin roles only) goes right above "Cerrar sesión" */
+.sidebarUsuarios {
+  margin: auto 12px 0;
+}
+
+.sidebarUsuarios + .sidebarLogout {
+  margin-top: 0;
+}
+
 .sidebarIcon {
   font-size: 18px;
   width: 24px;

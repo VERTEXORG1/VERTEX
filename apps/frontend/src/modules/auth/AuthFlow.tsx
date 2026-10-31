@@ -1,9 +1,16 @@
+import { useState } from 'react';
 import emblema from '../../assets/vertex-emblema.jpg';
+import { CambiarPassword } from './CambiarPassword';
 import { LoginForm } from './LoginForm';
 import styles from './auth.module.css';
 
 interface AuthFlowProps {
-  onSuccess: (token: string) => void;
+  /** Signed in, with no password change pending */
+  onSuccess: () => void;
+  /** Starts at the mandatory change (a temporary-password session after F5) */
+  cambioPendiente?: boolean;
+  /** Leaves the mandatory change: ends the session */
+  onSalir: () => void;
 }
 
 const FEATURES = [
@@ -26,9 +33,12 @@ function Logo() {
 
 /**
  * Sign-in screen: brand panel (desktop only) + login card. Phones show the
- * logo inside the card instead.
+ * logo inside the card instead. A temporary password leads to the
+ * mandatory change in the same card.
  */
-export function AuthFlow({ onSuccess }: AuthFlowProps) {
+export function AuthFlow({ onSuccess, cambioPendiente = false, onSalir }: AuthFlowProps) {
+  const [paso, setPaso] = useState<'login' | 'cambiar'>(cambioPendiente ? 'cambiar' : 'login');
+
   return (
     <div className={styles.page}>
       <aside className={styles.brandPanel}>
@@ -52,7 +62,17 @@ export function AuthFlow({ onSuccess }: AuthFlowProps) {
           <div className={styles.cardLogo}>
             <Logo />
           </div>
-          <LoginForm onSuccess={onSuccess} />
+          {paso === 'login' ? (
+            <LoginForm onSuccess={({ debeCambiar }) => (debeCambiar ? setPaso('cambiar') : onSuccess())} />
+          ) : (
+            <CambiarPassword
+              onSuccess={onSuccess}
+              onCancel={() => {
+                setPaso('login');
+                onSalir();
+              }}
+            />
+          )}
         </div>
       </main>
     </div>

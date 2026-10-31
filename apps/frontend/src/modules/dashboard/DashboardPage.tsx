@@ -26,6 +26,7 @@ import { TrendChart } from './TrendChart';
 import type { TrendEstado, TrendModo, TrendSeriesPoint } from './TrendChart';
 import { TrendVariablePicker } from './TrendVariablePicker';
 import { lineaReferencia } from './referenciasTendencia';
+import { UsuariosIcon } from './UsuariosIcon';
 import styles from './dashboard.module.css';
 
 type Notice = { text: string; error?: boolean; reintentar?: () => void };
@@ -173,9 +174,11 @@ function AvisoCard({ titulo, texto }: { titulo: string; texto: string }) {
 
 interface DashboardPageProps {
   onLogout: () => void;
+  /** Opens the user administration; absent for roles without access */
+  onUsuarios?: () => void;
 }
 
-export function DashboardPage({ onLogout }: DashboardPageProps) {
+export function DashboardPage({ onLogout, onUsuarios }: DashboardPageProps) {
   // Route chosen in the equipment tree, kept across reloads
   const [ruta, setRuta] = useState<string[]>(rutaGuardada);
   // One period for the donut, the events table and the trend chart
@@ -355,7 +358,7 @@ export function DashboardPage({ onLogout }: DashboardPageProps) {
   return (
     <div className={styles.dashboard}>
       {/* Desktop sidebar */}
-      <Sidebar ruta={ruta} onRutaChange={cambiarRuta} verificacion={ceroCheck} onLogout={onLogout} />
+      <Sidebar ruta={ruta} onRutaChange={cambiarRuta} verificacion={ceroCheck} onLogout={onLogout} onUsuarios={onUsuarios} />
 
       {/* Phone portrait: header, then the tree as a folding panel */}
       <header className={styles.mobileHeader}>
@@ -363,6 +366,17 @@ export function DashboardPage({ onLogout }: DashboardPageProps) {
           <img src={emblema} alt="" />
         </div>
         <span className={styles.mobileTitle}>VERTEX</span>
+        {onUsuarios && (
+          <button
+            type="button"
+            className={styles.mobileLogout}
+            onClick={onUsuarios}
+            aria-label="Usuarios"
+            title="Usuarios"
+          >
+            <UsuariosIcon />
+          </button>
+        )}
         <button
           type="button"
           className={styles.mobileLogout}

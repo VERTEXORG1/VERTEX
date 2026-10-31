@@ -1,33 +1,15 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
-import { login } from './auth.service';
+import { AYUDA_OLVIDO, login } from './auth.service';
+import type { Ingreso } from './auth.service';
+import { PasswordInput } from './PasswordInput';
 import styles from './auth.module.css';
 
 interface LoginFormProps {
-  onSuccess: (token: string) => void;
+  onSuccess: (ingreso: Ingreso) => void;
 }
 
 type Status = 'idle' | 'loading' | 'error';
-
-function EyeIcon({ crossed }: { crossed: boolean }) {
-  return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" />
-      <circle cx="12" cy="12" r="3" />
-      {crossed && <path d="M4 4l16 16" />}
-    </svg>
-  );
-}
 
 function AlertIcon() {
   return (
@@ -53,13 +35,14 @@ function AlertIcon() {
 export function LoginForm({ onSuccess }: LoginFormProps) {
   const [credential, setCredential] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [status, setStatus] = useState<Status>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [ayudaVisible, setAyudaVisible] = useState(false);
   // Ignore a response that arrives after the form has unmounted
   const mounted = useRef(true);
   const credentialId = useId();
   const passwordId = useId();
+  const ayudaId = useId();
 
   useEffect(() => {
     mounted.current = true;
@@ -75,8 +58,8 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
     if (loading) return;
     setStatus('loading');
     try {
-      const { token } = await login(credential.trim(), password);
-      if (mounted.current) onSuccess(token);
+      const ingreso = await login(credential.trim(), password);
+      if (mounted.current) onSuccess(ingreso);
     } catch (err) {
       if (!mounted.current) return;
       setErrorMessage(err instanceof Error ? err.message : 'No se pudo iniciar sesión.');
@@ -123,30 +106,28 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         <label htmlFor={passwordId} className={styles.label}>
           Contraseña
         </label>
-        <div className={styles.passwordWrap}>
-          <input
-            id={passwordId}
-            className={`${styles.input} ${styles.passwordInput}`}
-            type={showPassword ? 'text' : 'password'}
-            name="password"
-            autoComplete="current-password"
-            required
-            disabled={loading}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button
-            type="button"
-            className={styles.eyeButton}
-            aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-            aria-pressed={showPassword}
-            aria-controls={passwordId}
-            disabled={loading}
-            onClick={() => setShowPassword((v) => !v)}
-          >
-            <EyeIcon crossed={showPassword} />
-          </button>
-        </div>
+        <PasswordInput
+          id={passwordId}
+          name="password"
+          autoComplete="current-password"
+          disabled={loading}
+          value={password}
+          onChange={setPassword}
+        />
+        <button
+          type="button"
+          className={styles.linkButton}
+          aria-expanded={ayudaVisible}
+          aria-controls={ayudaId}
+          onClick={() => setAyudaVisible((v) => !v)}
+        >
+          ¿Olvidaste tu contraseña?
+        </button>
+        {ayudaVisible && (
+          <p id={ayudaId} className={styles.infoNote} role="status">
+            {AYUDA_OLVIDO}
+          </p>
+        )}
       </div>
 
       <button type="submit" className={styles.submit} disabled={loading} aria-busy={loading}>
