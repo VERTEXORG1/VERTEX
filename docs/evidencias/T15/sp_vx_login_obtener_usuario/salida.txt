@@ -1,0 +1,35 @@
+sp_vx_login_obtener_usuario · VERTEX_DEMO · ejecutado el 2026-10-31 13:00:33.806Z (UTC)
+
+================================================================================
+Caso: usuario_existente
+Comando: EXEC dbo.sp_vx_login_obtener_usuario @credencial = 'consulta', @ip_origen = '203.0.113.200';
+Tiempo: 2 ms · Filas por resultado: 1 / 1
+Esperado: 2 resultados: ip_bloqueada = 0 y 1 usuario activo con rol CONSULTA (hash oculto en esta evidencia)
+Obtenido: 2 resultados; ip_bloqueada false; 1 usuario(s); roles CONSULTA
+Resultado: CUMPLE
+
+-- Resultado 1 --
+ip_bloqueada
+------------
+false       
+
+-- Resultado 2 --
+usuario_id                           | username | nombre                | email                | password_hash | debe_cambiar_password | bloqueado | roles   
+-------------------------------------+----------+-----------------------+----------------------+---------------+-----------------------+-----------+---------
+E0E0E0E0-E0E0-E0E0-E0E0-E0E0E0E0E006 | consulta | Usuario Consulta Demo | consulta@vertex.demo | [oculto]      | false                 | false     | CONSULTA
+
+================================================================================
+Caso: usuario_inexistente
+Comando: EXEC dbo.sp_vx_login_obtener_usuario @credencial = 'no.existe', @ip_origen = '203.0.113.200';
+Tiempo: 1 ms · Filas por resultado: 1 / 0
+Esperado: 2 resultados: ip_bloqueada = 0 y 0 usuarios
+Obtenido: 2 resultados; 0 usuario(s)
+Resultado: CUMPLE
+
+-- Resultado 1 --
+ip_bloqueada
+------------
+false       
+
+-- Resultado 2 --
+(0 filas)

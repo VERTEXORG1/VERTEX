@@ -1,0 +1,24 @@
+sp_vx_get_horas_motor · VERTEX_DEMO · ejecutado el 2026-10-31 13:00:33.806Z (UTC)
+
+================================================================================
+Caso: equipo_cero_010
+Comando: EXEC dbo.sp_vx_get_horas_motor @equipo_id = '<equipo_id de CERO-010>';
+Tiempo: 2 ms · Filas por resultado: 1
+Esperado: Se ejecuta sin error y devuelve las horas vigentes de ResultadosIndividuales del equipo
+Obtenido: 1 resultados; filas: 1
+Resultado: CUMPLE
+
+-- Resultado 1 --
+resultado_id                         | scope  | equipo_id                            | equipo_codigo | equipo_nombre                      | tipo_resultado        | period_start             | period_end               | valor | unidad | estado_confianza     | estado_actualidad | version_number | precargado_demo | creado_en               
+-------------------------------------+--------+--------------------------------------+---------------+------------------------------------+-----------------------+--------------------------+--------------------------+-------+--------+----------------------+-------------------+----------------+-----------------+-------------------------
+D0D0D0D0-D0D0-D0D0-D0D0-D0D0D0D0D005 | EQUIPO | CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCC01 | CERO-010      | Aplicador CERO Línea 1 - Esmaltado | HORAS_EQUIPO_AGREGADO | 2026-08-12 19:51:28.864Z | 2026-10-11 19:51:28.864Z | 432   | h      | PENDIENTE_VALIDACION | ACTUALIZADO       | 1              | true            | 2026-10-11 19:51:28.866Z
+
+================================================================================
+Caso: sin_parametros
+Comando: EXEC dbo.sp_vx_get_horas_motor;
+Tiempo: 0 ms · Filas por resultado: 0
+Esperado: Error "Debe especificar motor_id o equipo_id."
+Obtenido: Error: Debe especificar motor_id o equipo_id.
+Resultado: CUMPLE
+
+Mensaje de SQL Server: Debe especificar motor_id o equipo_id.

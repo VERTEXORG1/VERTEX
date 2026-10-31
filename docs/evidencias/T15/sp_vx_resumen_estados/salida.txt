@@ -1,0 +1,199 @@
+sp_vx_resumen_estados · VERTEX_DEMO · ejecutado el 2026-10-31 13:00:33.806Z (UTC)
+
+================================================================================
+Caso: dias_7
+Comando: EXEC dbo.sp_vx_resumen_estados @equipo_codigo = 'CERO-010', @dias = 7;
+Tiempo: 701 ms · Filas por resultado: 1 / 2 / 1
+Esperado: 3 resultados (horas, ciclos y mantenimientos); resultado 1 con 1 fila y la suma de minutos por estado = 7 × 1440 = 10080
+Obtenido: 3 resultados; suma de minutos = 10080
+Resultado: CUMPLE
+
+-- Resultado 1 --
+equipo_codigo | desde                | hasta                | historia_desde       | primer_registro      | ultimo_registro      | min_encendido | min_apagado | min_evento | min_mantenimiento | estado_actual | registros_sin_corriente_ni_estado
+--------------+----------------------+----------------------+----------------------+----------------------+----------------------+---------------+-------------+------------+-------------------+---------------+----------------------------------
+CERO-010      | 2026-10-07 03:59:00Z | 2026-10-14 03:59:00Z | 2026-09-29 09:00:00Z | 2026-07-13 00:00:00Z | 2026-10-14 03:59:00Z | 4959          | 4821        | 0          | 300               | APAGADO       | 0                                
+
+-- Resultado 2 --
+ciclo | inicio               | ultimo_registro      | registros_encendido | registros_encendido_con_evento | porcentaje | estado_evento | estado_evento_desde | primera_marca
+------+----------------------+----------------------+---------------------+--------------------------------+------------+---------------+---------------------+--------------
+1     | 2026-09-29 09:00:00Z | 2026-10-07 13:00:00Z | 6401                | 0                              | 0          | false         | NULL                | NULL         
+2     | 2026-10-07 18:00:00Z | 2026-10-14 03:59:00Z | 4555                | 0                              | 0          | false         | NULL                | NULL         
+
+-- Resultado 3 --
+inicio               | fin                  | duracion_min
+---------------------+----------------------+-------------
+2026-10-07 13:00:00Z | 2026-10-07 18:00:00Z | 300         
+
+================================================================================
+Caso: dias_15
+Comando: EXEC dbo.sp_vx_resumen_estados @equipo_codigo = 'CERO-010', @dias = 15;
+Tiempo: 1044 ms · Filas por resultado: 1 / 3 / 2
+Esperado: 3 resultados (horas, ciclos y mantenimientos); resultado 1 con 1 fila y la suma de minutos por estado = 15 × 1440 = 21600
+Obtenido: 3 resultados; suma de minutos = 21600
+Resultado: CUMPLE
+
+-- Resultado 1 --
+equipo_codigo | desde                | hasta                | historia_desde       | primer_registro      | ultimo_registro      | min_encendido | min_apagado | min_evento | min_mantenimiento | estado_actual | registros_sin_corriente_ni_estado
+--------------+----------------------+----------------------+----------------------+----------------------+----------------------+---------------+-------------+------------+-------------------+---------------+----------------------------------
+CERO-010      | 2026-09-29 03:59:00Z | 2026-10-14 03:59:00Z | 2026-09-11 08:00:00Z | 2026-07-13 00:00:00Z | 2026-10-14 03:59:00Z | 10955         | 10044       | 0          | 601               | APAGADO       | 0                                
+
+-- Resultado 2 --
+ciclo | inicio               | ultimo_registro      | registros_encendido | registros_encendido_con_evento | porcentaje | estado_evento | estado_evento_desde | primera_marca       
+------+----------------------+----------------------+---------------------+--------------------------------+------------+---------------+---------------------+---------------------
+1     | 2026-09-11 08:00:00Z | 2026-09-28 07:00:00Z | 11912               | 14                             | 0.1175     | false         | NULL                | 2026-09-21 06:11:00Z
+2     | 2026-09-29 09:00:00Z | 2026-10-07 13:00:00Z | 6401                | 0                              | 0          | false         | NULL                | NULL                
+3     | 2026-10-07 18:00:00Z | 2026-10-14 03:59:00Z | 4555                | 0                              | 0          | false         | NULL                | NULL                
+
+-- Resultado 3 --
+inicio               | fin                  | duracion_min
+---------------------+----------------------+-------------
+2026-09-28 07:00:00Z | 2026-09-29 09:00:00Z | 1560        
+2026-10-07 13:00:00Z | 2026-10-07 18:00:00Z | 300         
+
+================================================================================
+Caso: dias_30
+Comando: EXEC dbo.sp_vx_resumen_estados @equipo_codigo = 'CERO-010', @dias = 30;
+Tiempo: 1064 ms · Filas por resultado: 1 / 3 / 2
+Esperado: 3 resultados (horas, ciclos y mantenimientos); resultado 1 con 1 fila y la suma de minutos por estado = 30 × 1440 = 43200
+Obtenido: 3 resultados; suma de minutos = 43200
+Resultado: CUMPLE
+
+-- Resultado 1 --
+equipo_codigo | desde                | hasta                | historia_desde       | primer_registro      | ultimo_registro      | min_encendido | min_apagado | min_evento | min_mantenimiento | estado_actual | registros_sin_corriente_ni_estado
+--------------+----------------------+----------------------+----------------------+----------------------+----------------------+---------------+-------------+------------+-------------------+---------------+----------------------------------
+CERO-010      | 2026-09-14 03:59:00Z | 2026-10-14 03:59:00Z | 2026-09-11 08:00:00Z | 2026-07-13 00:00:00Z | 2026-10-14 03:59:00Z | 21549         | 14954       | 4837       | 1860              | APAGADO       | 0                                
+
+-- Resultado 2 --
+ciclo | inicio               | ultimo_registro      | registros_encendido | registros_encendido_con_evento | porcentaje | estado_evento | estado_evento_desde | primera_marca       
+------+----------------------+----------------------+---------------------+--------------------------------+------------+---------------+---------------------+---------------------
+1     | 2026-09-11 08:00:00Z | 2026-09-28 07:00:00Z | 11912               | 14                             | 0.1175     | false         | NULL                | 2026-09-21 06:11:00Z
+2     | 2026-09-29 09:00:00Z | 2026-10-07 13:00:00Z | 6401                | 0                              | 0          | false         | NULL                | NULL                
+3     | 2026-10-07 18:00:00Z | 2026-10-14 03:59:00Z | 4555                | 0                              | 0          | false         | NULL                | NULL                
+
+-- Resultado 3 --
+inicio               | fin                  | duracion_min
+---------------------+----------------------+-------------
+2026-09-28 07:00:00Z | 2026-09-29 09:00:00Z | 1560        
+2026-10-07 13:00:00Z | 2026-10-07 18:00:00Z | 300         
+
+================================================================================
+Caso: septiembre
+Comando: EXEC dbo.sp_vx_resumen_estados @equipo_codigo = 'CERO-010', @desde = '2026-09-01T00:00:00', @hasta = '2026-10-01T00:00:00';
+Tiempo: 1640 ms · Filas por resultado: 1 / 3 / 2
+Esperado: ENCENDIDO 21 412, APAGADO 8 258, EVENTO 10 920, MANTENIMIENTO 2 610 minutos (valores documentados en CLAUDE.md)
+Obtenido: ENCENDIDO 21412, APAGADO 8258, EVENTO 10920, MANTENIMIENTO 2610
+Resultado: CUMPLE
+
+-- Resultado 1 --
+equipo_codigo | desde                | hasta                | historia_desde       | primer_registro      | ultimo_registro      | min_encendido | min_apagado | min_evento | min_mantenimiento | estado_actual | registros_sin_corriente_ni_estado
+--------------+----------------------+----------------------+----------------------+----------------------+----------------------+---------------+-------------+------------+-------------------+---------------+----------------------------------
+CERO-010      | 2026-09-01 00:00:00Z | 2026-10-01 00:00:00Z | 2026-07-30 15:30:00Z | 2026-07-13 00:00:00Z | 2026-10-14 03:59:00Z | 21412         | 8258        | 10920      | 2610              | APAGADO       | 0                                
+
+-- Resultado 2 --
+ciclo | inicio               | ultimo_registro      | registros_encendido | registros_encendido_con_evento | porcentaje | estado_evento | estado_evento_desde | primera_marca       
+------+----------------------+----------------------+---------------------+--------------------------------+------------+---------------+---------------------+---------------------
+1     | 2026-07-30 15:30:00Z | 2026-09-10 14:30:00Z | 31586               | 28                             | 0.0886     | false         | NULL                | 2026-08-24 20:57:00Z
+2     | 2026-09-11 08:00:00Z | 2026-09-28 07:00:00Z | 11912               | 14                             | 0.1175     | false         | NULL                | 2026-09-21 06:11:00Z
+3     | 2026-09-29 09:00:00Z | 2026-10-01 00:00:00Z | 1754                | 0                              | 0          | false         | NULL                | NULL                
+
+-- Resultado 3 --
+inicio               | fin                  | duracion_min
+---------------------+----------------------+-------------
+2026-09-10 14:30:00Z | 2026-09-11 08:00:00Z | 1050        
+2026-09-28 07:00:00Z | 2026-09-29 09:00:00Z | 1560        
+
+================================================================================
+Caso: dias_30_detalle_ciclos
+Comando: EXEC dbo.sp_vx_resumen_estados @equipo_codigo = 'CERO-010', @dias = 30, @detalle = 1, @ciclos = 1;
+Tiempo: 1154 ms · Filas por resultado: 1 / 3 / 2 / 57 / 3 / 60
+Esperado: 6 resultados (horas, ciclos, mantenimientos, bloques, ciclos completos y sus bloques); el resultado 1 igual al de 30 días sin @ciclos
+Obtenido: 6 resultados; 57 bloques; 3 ciclos completos; resultado 1 igual: sí
+Resultado: CUMPLE
+
+-- Resultado 1 --
+equipo_codigo | desde                | hasta                | historia_desde       | primer_registro      | ultimo_registro      | min_encendido | min_apagado | min_evento | min_mantenimiento | estado_actual | registros_sin_corriente_ni_estado
+--------------+----------------------+----------------------+----------------------+----------------------+----------------------+---------------+-------------+------------+-------------------+---------------+----------------------------------
+CERO-010      | 2026-09-14 03:59:00Z | 2026-10-14 03:59:00Z | 2026-09-11 08:00:00Z | 2026-07-13 00:00:00Z | 2026-10-14 03:59:00Z | 21549         | 14954       | 4837       | 1860              | APAGADO       | 0                                
+
+-- Resultado 2 --
+ciclo | inicio               | ultimo_registro      | registros_encendido | registros_encendido_con_evento | porcentaje | estado_evento | estado_evento_desde | primera_marca       
+------+----------------------+----------------------+---------------------+--------------------------------+------------+---------------+---------------------+---------------------
+1     | 2026-09-11 08:00:00Z | 2026-09-28 07:00:00Z | 11912               | 14                             | 0.1175     | false         | NULL                | 2026-09-21 06:11:00Z
+2     | 2026-09-29 09:00:00Z | 2026-10-07 13:00:00Z | 6401                | 0                              | 0          | false         | NULL                | NULL                
+3     | 2026-10-07 18:00:00Z | 2026-10-14 03:59:00Z | 4555                | 0                              | 0          | false         | NULL                | NULL                
+
+-- Resultado 3 --
+inicio               | fin                  | duracion_min
+---------------------+----------------------+-------------
+2026-09-28 07:00:00Z | 2026-09-29 09:00:00Z | 1560        
+2026-10-07 13:00:00Z | 2026-10-07 18:00:00Z | 300         
+
+-- Resultado 4 --
+inicio               | fin                  | segmento  | regla                           | minutos | marcas | ciclo
+---------------------+----------------------+-----------+---------------------------------+---------+--------+------
+2026-09-14 03:59:00Z | 2026-09-14 06:07:00Z | APAGADO   | 4c corriente 0 sin marcas       | 128     | 0      | 1    
+2026-09-14 06:07:00Z | 2026-09-14 22:02:00Z | ENCENDIDO | 4a corriente > 0                | 955     | 0      | 1    
+2026-09-14 22:02:00Z | 2026-09-15 06:06:00Z | APAGADO   | 4c corriente 0 sin marcas       | 484     | 0      | 1    
+2026-09-15 06:06:00Z | 2026-09-15 21:40:00Z | ENCENDIDO | 4a corriente > 0                | 934     | 0      | 1    
+2026-09-15 21:40:00Z | 2026-09-16 06:13:00Z | APAGADO   | 4c corriente 0 sin marcas       | 513     | 0      | 1    
+2026-09-16 06:13:00Z | 2026-09-16 22:16:00Z | ENCENDIDO | 4a corriente > 0                | 963     | 0      | 1    
+2026-09-16 22:16:00Z | 2026-09-17 05:45:00Z | APAGADO   | 4c corriente 0 sin marcas       | 449     | 0      | 1    
+2026-09-17 05:45:00Z | 2026-09-17 21:54:00Z | ENCENDIDO | 4a corriente > 0                | 969     | 0      | 1    
+2026-09-17 21:54:00Z | 2026-09-18 05:45:00Z | APAGADO   | 4c corriente 0 sin marcas       | 471     | 0      | 1    
+2026-09-18 05:45:00Z | 2026-09-18 22:11:00Z | ENCENDIDO | 4a corriente > 0                | 986     | 0      | 1    
+2026-09-18 22:11:00Z | 2026-09-19 05:54:00Z | APAGADO   | 4c corriente 0 sin marcas       | 463     | 0      | 1    
+2026-09-19 05:54:00Z | 2026-09-19 14:02:00Z | ENCENDIDO | 4a corriente > 0                | 488     | 0      | 1    
+2026-09-19 14:02:00Z | 2026-09-21 06:04:00Z | APAGADO   | 4c corriente 0 sin marcas       | 2402    | 0      | 1    
+2026-09-21 06:04:00Z | 2026-09-21 10:40:00Z | ENCENDIDO | 4a corriente > 0                | 276     | 14     | 1    
+2026-09-21 10:40:00Z | 2026-09-21 11:00:00Z | EVENTO    | 4b corriente 0 con marca previa | 20      | 0      | 1    
+… 42 filas más (57 en total)
+
+-- Resultado 5 --
+ciclo | inicio               | fin                  | completo | min_encendido | min_apagado | min_evento | min_mantenimiento
+------+----------------------+----------------------+----------+---------------+-------------+------------+------------------
+1     | 2026-09-11 08:00:00Z | 2026-09-29 09:00:00Z | true     | 11911         | 7672        | 4837       | 1560             
+2     | 2026-09-29 09:00:00Z | 2026-10-07 18:00:00Z | true     | 6400          | 5360        | 0          | 300              
+3     | 2026-10-07 18:00:00Z | 2026-10-14 03:59:00Z | false    | 4555          | 4684        | 0          | 0                
+
+-- Resultado 6 --
+inicio               | fin                  | segmento  | ciclo | regla                     | marcas
+---------------------+----------------------+-----------+-------+---------------------------+-------
+2026-09-11 08:00:00Z | 2026-09-11 21:52:00Z | ENCENDIDO | 1     | 4a corriente > 0          | 0     
+2026-09-11 21:52:00Z | 2026-09-12 06:05:00Z | APAGADO   | 1     | 4c corriente 0 sin marcas | 0     
+2026-09-12 06:05:00Z | 2026-09-12 14:10:00Z | ENCENDIDO | 1     | 4a corriente > 0          | 0     
+2026-09-12 14:10:00Z | 2026-09-14 06:07:00Z | APAGADO   | 1     | 4c corriente 0 sin marcas | 0     
+2026-09-14 06:07:00Z | 2026-09-14 22:02:00Z | ENCENDIDO | 1     | 4a corriente > 0          | 0     
+2026-09-14 22:02:00Z | 2026-09-15 06:06:00Z | APAGADO   | 1     | 4c corriente 0 sin marcas | 0     
+2026-09-15 06:06:00Z | 2026-09-15 21:40:00Z | ENCENDIDO | 1     | 4a corriente > 0          | 0     
+2026-09-15 21:40:00Z | 2026-09-16 06:13:00Z | APAGADO   | 1     | 4c corriente 0 sin marcas | 0     
+2026-09-16 06:13:00Z | 2026-09-16 22:16:00Z | ENCENDIDO | 1     | 4a corriente > 0          | 0     
+2026-09-16 22:16:00Z | 2026-09-17 05:45:00Z | APAGADO   | 1     | 4c corriente 0 sin marcas | 0     
+2026-09-17 05:45:00Z | 2026-09-17 21:54:00Z | ENCENDIDO | 1     | 4a corriente > 0          | 0     
+2026-09-17 21:54:00Z | 2026-09-18 05:45:00Z | APAGADO   | 1     | 4c corriente 0 sin marcas | 0     
+2026-09-18 05:45:00Z | 2026-09-18 22:11:00Z | ENCENDIDO | 1     | 4a corriente > 0          | 0     
+2026-09-18 22:11:00Z | 2026-09-19 05:54:00Z | APAGADO   | 1     | 4c corriente 0 sin marcas | 0     
+2026-09-19 05:54:00Z | 2026-09-19 14:02:00Z | ENCENDIDO | 1     | 4a corriente > 0          | 0     
+… 45 filas más (60 en total)
+
+================================================================================
+Caso: cero_011_sin_mediciones
+Comando: EXEC dbo.sp_vx_resumen_estados @equipo_codigo = 'CERO-011', @dias = 30;
+Tiempo: 3 ms · Filas por resultado: 1
+Esperado: ultimo_registro NULL y minutos en cero (CERO-011 no tiene mediciones)
+Obtenido: ultimo_registro NULL; suma de minutos 0
+Resultado: CUMPLE
+
+-- Resultado 1 --
+equipo_codigo | desde | hasta | historia_desde | primer_registro | ultimo_registro | min_encendido | min_apagado | min_evento | min_mantenimiento | estado_actual | registros_sin_corriente_ni_estado
+--------------+-------+-------+----------------+-----------------+-----------------+---------------+-------------+------------+-------------------+---------------+----------------------------------
+CERO-011      | NULL  | NULL  | NULL           | NULL            | NULL            | 0             | 0           | 0          | 0                 | NULL          | 0                                
+
+================================================================================
+Caso: equipo_inexistente
+Comando: EXEC dbo.sp_vx_resumen_estados @equipo_codigo = 'CERO-999', @dias = 7;
+Tiempo: 2 ms · Filas por resultado: 0
+Esperado: Error "Equipo no encontrado"
+Obtenido: Error: Equipo no encontrado.
+Resultado: CUMPLE
+
+Mensaje de SQL Server: Equipo no encontrado.

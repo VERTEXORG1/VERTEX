@@ -1,0 +1,39 @@
+sp_vx_get_serie_variable · VERTEX_DEMO · ejecutado el 2026-10-31 13:00:33.806Z (UTC)
+
+================================================================================
+Caso: corriente_un_dia
+Comando: EXEC dbo.sp_vx_get_serie_variable @variable_codigo = 'CORRIENTE_MOTOR', @equipo_id = '<equipo_id de CERO-010>', @desde = '2026-09-15T00:00:00', @hasta = '2026-09-16T00:00:00', @max_puntos = 500;
+Tiempo: 34 ms · Filas por resultado: 480
+Esperado: Serie de CORRIENTE_MOTOR del 15/09/2026 con 500 puntos como máximo
+Obtenido: 1 resultados; 480 puntos en el primero
+Resultado: CUMPLE
+
+-- Resultado 1 --
+medicion_id                          | motor_id                             | equipo_id                            | event_time           | valor_vigente | unidad | calidad | modificada | provenance | valor_original | flag_modificacion | motivo_modificacion | total_puntos | variable_codigo
+-------------------------------------+--------------------------------------+--------------------------------------+----------------------+---------------+--------+---------+------------+------------+----------------+-------------------+---------------------+--------------+----------------
+89069B3C-D81F-4997-8319-692CC3F90BAD | DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDD02 | CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCC01 | 2026-09-15 00:02:00Z | 0.027         | A      | BUENA   | false      | SIMULADA   | NULL           | NULL              | NULL                | 1441         | CORRIENTE_MOTOR
+E39F865B-B163-41C3-BF57-F02C9547EE7E | DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDD02 | CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCC01 | 2026-09-15 00:05:00Z | 0.03          | A      | BUENA   | false      | SIMULADA   | NULL           | NULL              | NULL                | 1441         | CORRIENTE_MOTOR
+1C3D199C-2BDB-43AD-A68B-AD041C9FAF06 | DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDD02 | CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCC01 | 2026-09-15 00:08:00Z | 0.025         | A      | BUENA   | false      | SIMULADA   | NULL           | NULL              | NULL                | 1441         | CORRIENTE_MOTOR
+95C40F3C-8AB6-4134-BCC4-521C1143B2D4 | DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDD02 | CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCC01 | 2026-09-15 00:11:00Z | 0.011         | A      | BUENA   | false      | SIMULADA   | NULL           | NULL              | NULL                | 1441         | CORRIENTE_MOTOR
+9F74F638-744E-4C98-B99D-C4515DB575F7 | DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDD02 | CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCC01 | 2026-09-15 00:14:00Z | 0.036         | A      | BUENA   | false      | SIMULADA   | NULL           | NULL              | NULL                | 1441         | CORRIENTE_MOTOR
+C2FE540B-5466-4AEC-9A03-82999A433C13 | DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDD02 | CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCC01 | 2026-09-15 00:17:00Z | 0.035         | A      | BUENA   | false      | SIMULADA   | NULL           | NULL              | NULL                | 1441         | CORRIENTE_MOTOR
+EE8655C4-C582-4EDD-BC5E-DB6CCC086E06 | DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDD02 | CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCC01 | 2026-09-15 00:20:00Z | 0.011         | A      | BUENA   | false      | SIMULADA   | NULL           | NULL              | NULL                | 1441         | CORRIENTE_MOTOR
+5DA023CE-75FF-4DEE-8410-E15D429F66AC | DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDD02 | CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCC01 | 2026-09-15 00:23:00Z | 0.004         | A      | BUENA   | false      | SIMULADA   | NULL           | NULL              | NULL                | 1441         | CORRIENTE_MOTOR
+0E6CBDA9-586B-4507-8015-3970D8062C27 | DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDD02 | CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCC01 | 2026-09-15 00:26:00Z | 0.007         | A      | BUENA   | false      | SIMULADA   | NULL           | NULL              | NULL                | 1441         | CORRIENTE_MOTOR
+672AB19B-81F2-4093-998C-912384DDAB71 | DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDD02 | CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCC01 | 2026-09-15 00:29:00Z | 0.027         | A      | BUENA   | false      | SIMULADA   | NULL           | NULL              | NULL                | 1441         | CORRIENTE_MOTOR
+4EEA052E-60AF-418A-A3E0-EFDC07DF8519 | DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDD02 | CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCC01 | 2026-09-15 00:32:00Z | 0.017         | A      | BUENA   | false      | SIMULADA   | NULL           | NULL              | NULL                | 1441         | CORRIENTE_MOTOR
+D7E6C948-2E2F-43BC-9DB8-9BFC553BDFE9 | DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDD02 | CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCC01 | 2026-09-15 00:35:00Z | 0.024         | A      | BUENA   | false      | SIMULADA   | NULL           | NULL              | NULL                | 1441         | CORRIENTE_MOTOR
+A52972C3-3010-4D29-AB07-7FEEF8FEDF0F | DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDD02 | CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCC01 | 2026-09-15 00:38:00Z | 0.025         | A      | BUENA   | false      | SIMULADA   | NULL           | NULL              | NULL                | 1441         | CORRIENTE_MOTOR
+52CF23F6-2894-492A-A810-322126C702D3 | DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDD02 | CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCC01 | 2026-09-15 00:41:00Z | 0.049         | A      | BUENA   | false      | SIMULADA   | NULL           | NULL              | NULL                | 1441         | CORRIENTE_MOTOR
+6AE41D76-3607-4C04-B256-B637E88A1100 | DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDD02 | CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCC01 | 2026-09-15 00:44:00Z | 0.001         | A      | BUENA   | false      | SIMULADA   | NULL           | NULL              | NULL                | 1441         | CORRIENTE_MOTOR
+… 465 filas más (480 en total)
+
+================================================================================
+Caso: variable_inexistente
+Comando: EXEC dbo.sp_vx_get_serie_variable @variable_codigo = 'NO_EXISTE', @equipo_id = '<equipo_id de CERO-010>';
+Tiempo: 1 ms · Filas por resultado: 0
+Esperado: Error "Variable "NO_EXISTE" no encontrada."
+Obtenido: Error: Variable "NO_EXISTE" no encontrada.
+Resultado: CUMPLE
+
+Mensaje de SQL Server: Variable "NO_EXISTE" no encontrada.
