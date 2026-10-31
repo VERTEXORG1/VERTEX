@@ -70,6 +70,6 @@ Se solicita la aprobación de esta carta: el objetivo general, el alcance del en
 
 | Nombre | Cargo | Fecha | Firma |
 |---|---|---|---|
-| [PENDIENTE: nombre] | Representante de TI, Cerámica Italia S.A. | | |
+| Campo Elías Payares | Director de Informática, Cerámica Italia S.A. | | |
 | Islender Arturo Alfonso Contreras | Gerente del proyecto | | |
-| [PENDIENTE: nombre] | Docente | | |
+| Sandra Rojas | Docente | | |
