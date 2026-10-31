@@ -1,7 +1,7 @@
 # T7 · Reuniones con Mantenimiento: variables, anomalías y ciclos
 
 - **Qué es:** el registro de las reuniones con el área de Mantenimiento de Cerámica Italia.
-- **Estado: [PENDIENTE].** No hay actas ni registros de estas reuniones en el repositorio (`docs/`, ADR, README) ni en el DERS, el Taller Inception o el Proyecto Integrador.
+- **Estado: [PENDIENTE].** No hay actas de reunión con asistentes y fecha en el repositorio (`docs/`, ADR, README) ni en el DERS, el Taller Inception o el Proyecto Integrador, pero sí un registro de las respuestas entregadas el 12/10/2026 (ver el enlace en la última línea de este README).
 - **Lo que sí existe** (resultados mencionados, no actas):
   - Taller Inception §2: los usuarios se definieron también "con el área de Mantenimiento".
   - Variables acordadas en la base: `database/seeds/01_reference_data.sql` (corriente, RPM, temperatura, voltaje, vibración, frecuencia, potencia y estado del motor).
