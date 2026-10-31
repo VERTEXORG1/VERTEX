@@ -25,7 +25,7 @@ Este documento usa tres fuentes. Se presentan **tal cual, sin unificarlas**, por
 3. **Historial de git.** Todos los commits los registró Islender, que integró y subió al repositorio las partes que le entregaron los compañeros.
    - El primer commit es del 12/10/2026, así que las fechas de los commits no coinciden con las fechas de plan de las tareas anteriores.
    - Los compañeros figuran como coautores (`Co-authored-by`) en los commits donde el tablero respalda su trabajo y Islender lo confirmó.
-   - Los mensajes de los 14 primeros commits se reescribieron el 30/10/2026 para registrar esas coautorías. El contenido de los archivos, los autores y las fechas no cambiaron.
+   - Los mensajes de los 14 commits se reescribieron el 30/10/2026 para registrar esas coautorías. El contenido de los archivos, los autores y las fechas no cambiaron.
 
 El proyecto se desarrolló **con asistencia de IA** (Claude, de Anthropic) en la escritura de código y documentación. Las decisiones, la revisión y la integración son del equipo.
 
@@ -136,7 +136,7 @@ Las tareas de plan de cada integrante están en la sección 2. Lo que sigue regi
   - Diagramas C3/C4 ([`docs/diagramas/`](diagramas)): la matriz asigna la actividad "Interfaz y diagramas C3/C4" a Jhoan.
 
 ### Anyul Lisbeth Martínez Jiménez · [anyulM](https://github.com/anyulM)
-- Creó los 8 issues originales del tablero el 29/10/2026.
+- Creó los 8 issues del tablero el 29/10/2026 (los originales, #1 a #8).
 - **Repositorio:**
   - [`docs/DERS_VERTEX.docx`](DERS_VERTEX.docx), requisitos y estado del arte: desarrollado por Anyul según el tablero (#2) y la matriz; integrado y subido al repositorio por Islender. Coautora del commit que lo agregó (`a1b397b`).
 
