@@ -39,7 +39,7 @@ function isConnectionError(err: unknown): boolean {
 }
 
 /** DbUnavailableError for a database failure; null for any other error */
-function errorDeBase(err: unknown): DbUnavailableError | null {
+export function errorDeBase(err: unknown): DbUnavailableError | null {
   // A query that ran out of requestTimeout: connected, but SQL Server is slow
   if (err instanceof sql.RequestError && err.code === 'ETIMEOUT') return new DbUnavailableError(err, DB_TIMEOUT);
   if (isConnectionError(err)) return new DbUnavailableError(err);

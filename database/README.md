@@ -10,8 +10,8 @@ Esquema, procedimientos y datos de demostración de VERTEX, para las bases `VERT
 ## Contenido
 | Carpeta | Qué hay |
 |---|---|
-| `migrations/` | `V001`–`V006`: esquema de 33 tablas (identidad, equipos y motores, adquisición y mediciones, cálculo, mantenimiento, auditoría y configuración), índices y vistas |
-| `procedures/` | 7 procedimientos `R__sp_vx_*`. Los que usa el dashboard: `sp_vx_resumen_estados` (estados, ciclos y bloques) y `sp_vx_tendencia_variable` (tendencia de una variable) |
+| `migrations/` | `V001`–`V006`: esquema de 33 tablas (identidad, equipos y motores, adquisición y mediciones, cálculo, mantenimiento, auditoría y configuración), índices y vistas. `V007`: columnas de `Usuarios` para el cambio obligatorio y el bloqueo temporal |
+| `procedures/` | 12 procedimientos `R__sp_vx_*`. Los que usa el dashboard: `sp_vx_resumen_estados` (estados, ciclos y bloques) y `sp_vx_tendencia_variable` (tendencia de una variable). Los de identidad (`V007`): `sp_vx_login_obtener_usuario`, `sp_vx_login_registrar_resultado`, `sp_vx_password_cambiar`, `sp_vx_password_restablecer_admin` y `sp_vx_usuario_crear` |
 | `seeds/` | `01_reference_data` (catálogos y las 8 variables), `02_demo_pilot_data` (equipo piloto CERO-010 y usuarios demo, con hashes de marcador) y `03_demo_measurements_extended` |
 | `scripts/` | `01_install_databases` (bases y logins), `02`–`04` (preparación de datos demo y login del seed), `05_parametros_calculo_estados`, `06_configurar_memoria` y `99_verificar_integridad_variables` (solo lectura) |
 
@@ -27,6 +27,17 @@ $env:VERTEX_REAL_APP_USER_PWD = "<define-tu-contraseña>"
 ```
 
 Guía completa: [docs/INSTALL_DATABASE.md](../docs/INSTALL_DATABASE.md).
+
+## Identidad: contraseñas y bloqueo (V007)
+- [ADR 0007](../docs/adr/0007-recuperacion-de-contrasena-y-alta-de-usuarios.md).
+- `V007__identity_recuperacion.sql` agrega a `dbo.Usuarios` cuatro columnas: `debe_cambiar_password`, `intentos_fallidos`, `bloqueado_hasta` y `password_cambiada_en`. Los usuarios existentes quedan sin cambio obligatorio.
+- Reglas en los procedimientos:
+  - 5 fallos seguidos bloquean al usuario 15 minutos;
+  - 5 fallos desde una IP en 15 minutos (contados en `Auditoria.ip_origen`) bloquean esa IP;
+  - solo `ADMINISTRADOR` e `ING_MANTENIMIENTO` crean usuarios o restablecen contraseñas, y solo un `ADMINISTRADOR` toca a otro `ADMINISTRADOR`;
+  - todo queda en `dbo.Auditoria`, sin contraseñas ni hashes.
+- bcrypt se calcula en el backend; la base recibe solo el hash. `app_demo_user` escribe a través de los procedimientos, sin permisos directos sobre las tablas.
+- En una base ya instalada: aplicar `V007` y los cinco `R__` con una cuenta administradora (`sqlcmd -S localhost -E -d VERTEX_DEMO -i <archivo>`). `instalar.ps1` los incluye en una instalación nueva.
 
 ## Dataset de demostración
 Los cerca de 650.000 registros por minuto de CERO-010 (desde el 13/07/2026) **no están versionados**: los genera el script [`apps/backend/scripts/seed-mediciones.ts`](../apps/backend/scripts/seed-mediciones.ts) con semilla fija, así que se pueden reproducir.

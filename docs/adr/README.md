@@ -15,5 +15,6 @@ Cada archivo documenta una decisión de arquitectura de VERTEX: su contexto, la 
 | [0004](0004-bases-demo-y-real-separadas.md) | Bases `VERTEX_DEMO` y `VERTEX_REAL` separadas | DERS §05.7; `instalar.ps1` |
 | [0005](0005-autenticacion-jwt-bcrypt.md) | Autenticación con JWT y contraseñas con bcrypt | `apps/backend/src/domains/identity/`; `CLAUDE.md` |
 | [0006](0006-sitio-publico-en-modo-demostracion.md) | El sitio público (Netlify) funciona en modo demostración, sin backend | `CLAUDE.md` (Despliegue); `apps/frontend/src/shared/api.ts` |
+| [0007](0007-recuperacion-de-contrasena-y-alta-de-usuarios.md) | Recuperación de contraseña por un administrador y alta de usuarios sin autorregistro (redactado el 30/10/2026, junto con la implementación) | `database/migrations/V007__identity_recuperacion.sql`; `apps/backend/src/domains/identity/` |
 
 Formato de cada ADR: Estado, Contexto, Decisión, Consecuencias y Fuentes.
