@@ -41,7 +41,7 @@ Express y base de datos SQL Server.
     - `logout()` borra todas las claves `vx_` (token y `vx_ruta`) de `sessionStorage` y `localStorage`; un token vencido también llama a `logout()`. Al volver a entrar, el árbol empieza en las cinco áreas cerradas y el dashboard en su estado inicial (período, variable y Resumen / Detalle no se guardan en el navegador).
   - Dos modos:
     - **Normal:** `POST {VITE_API_URL}/api/identity/login`.
-    - **Demo** (`VITE_DEMO_MODE=true`, para Netlify): valida contra `VITE_DEMO_EMAIL` / `VITE_DEMO_PASSWORD` sin backend y genera un token local `{ demo: true, exp: +8h }` sin firma real.
+    - **Demo** (`VITE_DEMO_MODE=true`, para el sitio público en Cloudflare y en Netlify): valida contra `VITE_DEMO_EMAIL` / `VITE_DEMO_PASSWORD` sin backend y genera un token local `{ demo: true, exp: +8h }` sin firma real.
   - `App.tsx`: vista `'login' | 'dashboard'`. Si la pestaña tiene un token vigente (p. ej. tras F5), entra directo al dashboard.
 - **Dashboard** (`src/modules/dashboard/`): en modo normal, la dona, el estado del motor, la tendencia y la tabla de eventos leen la base; el resto sigue simulado (`mockData.ts`, `donutSimulation.ts`). En modo demo todo es simulado.
   - **Árbol de equipos** (`ArbolEquipos.tsx`) en lugar de las antiguas pestañas (Resumen / Motores / Mantenimiento / Producción) y del selector de CERO: Área → Sección → Grupo → Equipo → Componente.
@@ -252,18 +252,24 @@ Express y base de datos SQL Server.
   - Equipos reales en la base: solo CERO-010. Ver `docs/equipos-mapping.md`.
 - Hashes reales de los 7 usuarios demo: `scripts/create_demo_users.ts`, que lee `DEMO_PWD_*` del `.env` raíz.
 
-### Despliegue
-- GitHub: `https://github.com/VERTEXORG1/VERTEX` (rama `main`), conectado a Netlify.
-- Sitio: `https://vertexdashboar.netlify.app`.
-- Netlify solo sirve el frontend en **modo demo**; el backend corre en la red interna, porque necesita SQL Server.
-  - Allí solo entra el usuario demo (`VITE_DEMO_EMAIL` / `VITE_DEMO_PASSWORD`); los usuarios de `dbo.Usuarios` (admin, etc.) no funcionan.
-  - Si se olvida la contraseña demo, se puede leer en el panel de Netlify o en el JavaScript publicado del sitio. Al cambiar esas variables hay que lanzar un despliegue nuevo (Trigger deploy).
-- Cada push a `main` despliega en Netlify y consume minutos o créditos del plan. Para subir cambios que no afectan al sitio (p. ej. solo `CLAUDE.md`), poner `[skip netlify]` en el mensaje del commit.
-- **Regla de Netlify (saldo limitado):**
-  - Antes de cualquier push, indicar qué cambios afectan al sitio de Netlify (`apps/frontend`) y cuáles no.
-  - Los cambios del día se revisan en local (`localhost:5173`) y se suben en **un solo push al final del día**, solo cuando el usuario diga "aprobado".
-  - Si un commit no afecta al sitio (p. ej. solo `CLAUDE.md`, `database/` o `apps/backend`), usar `[skip netlify]` en el mensaje.
-- Configuración de Netlify (en su panel, fuera del repo):
+### Hosting del frontend
+- GitHub: `https://github.com/VERTEXORG1/VERTEX` (rama `main`), conectado a Cloudflare Workers (producción) y a Netlify (respaldo).
+- **Producción: `https://vertex.sinerbyte.com`** (validado el 31/10/2026), en Cloudflare Workers con archivos estáticos (sin script de Worker):
+  - Worker `vertex`: debe llamarse igual que el `name` de `apps/frontend/wrangler.jsonc`, que define `assets.directory = "./dist/"` y `not_found_handling = "single-page-application"`.
+  - Root directory `apps/frontend`; build command `npm run build`; deploy command `npx wrangler deploy`.
+  - Variables **de build** (no de runtime): `VITE_DEMO_MODE`, `VITE_DEMO_EMAIL`, `VITE_DEMO_PASSWORD`. Sus valores están solo en el panel de Cloudflare.
+  - Build watch paths `apps/frontend/*`: Cloudflare solo compila cuando un push cambia `apps/frontend`, e ignora `[skip netlify]`.
+  - Dominio personalizado `vertex.sinerbyte.com` en la zona `sinerbyte.com`; sin dirección `workers.dev` activa.
+- **Respaldo temporal: `https://vertexdashboar.netlify.app`** (sin "d" final; `vertexdashboard.netlify.app` es un sitio ajeno). Sigue compilando hasta que el usuario decida detener sus compilaciones.
+- Los dos sitios sirven el frontend en **modo demo**; el backend corre en la red interna, porque necesita SQL Server.
+  - Solo entra el usuario demo (`VITE_DEMO_EMAIL` / `VITE_DEMO_PASSWORD`); los usuarios de `dbo.Usuarios` (admin, etc.) no funcionan.
+  - Si se olvida la contraseña demo, se puede leer en el panel de Cloudflare o de Netlify, o en el JavaScript publicado. Al cambiar esas variables hay que lanzar un despliegue nuevo en cada plataforma.
+- **`[skip netlify]` mientras Netlify siga compilando:** cada push a `main` sin esa marca compila en Netlify y consume créditos de su plan (el plan gratuito pausa todos los proyectos si se agotan). Mantenerlo en todos los commits que no deban compilar en Netlify, también en los que tocan `apps/frontend` si no se quiere gastar créditos (Cloudflare compila igual). Cuando Netlify deje de compilar, la marca deja de hacer falta.
+- **Reglas de publicación:**
+  - Antes de cualquier push, indicar qué cambios afectan al sitio (`apps/frontend`, que compila Cloudflare) y si alguno compilará en Netlify (commit sin `[skip netlify]`).
+  - Todo push solo cuando el usuario diga "aprobado", después de revisar los cambios en local (`localhost:5173`).
+  - Los commits que compilarán en Netlify (sin `[skip netlify]`) se juntan en **un solo push al final del día**, para no gastar sus créditos. Los demás pueden subirse en cuanto el usuario los apruebe.
+- Configuración de Netlify (respaldo; en su panel, fuera del repo):
 
 | Ajuste | Valor |
 |---|---|
@@ -309,8 +315,8 @@ Ningún `.env` se sube a git (`.gitignore`). Cada carpeta tiene su `.env.example
 | Variable | Uso |
 |---|---|
 | `VITE_API_URL` | `http://localhost:3000` |
-| `VITE_DEMO_MODE` | `false` en local, `true` en Netlify |
-| `VITE_DEMO_EMAIL`, `VITE_DEMO_PASSWORD` | Solo en Netlify, nunca en el repo |
+| `VITE_DEMO_MODE` | `false` en local, `true` en Cloudflare y en Netlify |
+| `VITE_DEMO_EMAIL`, `VITE_DEMO_PASSWORD` | Solo en los paneles de Cloudflare (variables de build) y de Netlify, nunca en el repo |
 
 **`.env` raíz:** instalador y `scripts/create_demo_users.ts` (`VERTEX_DEMO_*`, `DEMO_PWD_*`).
 

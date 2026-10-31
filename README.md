@@ -5,11 +5,12 @@
 <h1 align="center">VERTEX</h1>
 
 <p align="center">
-  <a href="https://vertexdashboar.netlify.app"><img src="https://img.shields.io/badge/Abrir_el_dashboard-vertexdashboar.netlify.app-1F3864?style=for-the-badge" alt="Abrir el dashboard"></a>
+  <a href="https://vertex.sinerbyte.com"><img src="https://img.shields.io/badge/Abrir_el_dashboard-vertex.sinerbyte.com-1F3864?style=for-the-badge" alt="Abrir el dashboard"></a>
 </p>
 
 <p align="center">
-  <strong><a href="https://vertexdashboar.netlify.app">https://vertexdashboar.netlify.app</a></strong><br>
+  <strong><a href="https://vertex.sinerbyte.com">https://vertex.sinerbyte.com</a></strong><br>
+  Respaldo: <a href="https://vertexdashboar.netlify.app">https://vertexdashboar.netlify.app</a><br>
   Sitio en <strong>modo demostración</strong>: los datos se generan en el navegador, sin backend ni base de datos.
   Las credenciales de la demo las entrega el equipo.
 </p>
