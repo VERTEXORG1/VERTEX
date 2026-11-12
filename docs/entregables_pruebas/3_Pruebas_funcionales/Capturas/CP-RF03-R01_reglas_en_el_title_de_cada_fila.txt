@@ -1,0 +1,60 @@
+VERTEX - CP-RF03-R01 - title (regla) de cada fila de la tabla, leído del DOM
+Fecha: 11/11/2026, 8:03:02 p. m. - local, CERO-010, 30 días
+
+#1  13/10/2026 21:45 → 14/10/2026 03:59  6,2 h  Apagado  | title: 4c corriente 0 sin marcas
+#2  13/10/2026 06:17 → 13/10/2026 21:45  15,5 h  Encendido  | title: 4a corriente > 0
+#3  12/10/2026 22:20 → 13/10/2026 06:17  8,0 h  Apagado  | title: 4c corriente 0 sin marcas
+#4  12/10/2026 06:11 → 12/10/2026 22:20  16,2 h  Encendido  | title: 4a corriente > 0
+#5  10/10/2026 14:09 → 12/10/2026 06:11  40,0 h  Apagado  | title: 4c corriente 0 sin marcas
+#6  10/10/2026 05:57 → 10/10/2026 14:09  8,2 h  Encendido  | title: 4a corriente > 0
+#7  09/10/2026 22:08 → 10/10/2026 05:57  7,8 h  Apagado  | title: 4c corriente 0 sin marcas
+#8  09/10/2026 06:15 → 09/10/2026 22:08  15,9 h  Encendido  | title: 4a corriente > 0
+#9  08/10/2026 22:18 → 09/10/2026 06:15  8,0 h  Apagado  | title: 4c corriente 0 sin marcas
+#10  08/10/2026 05:58 → 08/10/2026 22:18  16,3 h  Encendido  | title: 4a corriente > 0
+#11  07/10/2026 21:53 → 08/10/2026 05:58  8,1 h  Apagado  | title: 4c corriente 0 sin marcas
+#12  07/10/2026 18:00 → 07/10/2026 21:53  3,9 h  Encendido  | title: 4a corriente > 0
+#13  07/10/2026 13:00 → 07/10/2026 18:00  5,0 h  Mantenimiento  | title: 1 hueco > tolerancia
+#14  07/10/2026 06:16 → 07/10/2026 13:00  6,7 h  Encendido  | title: 4a corriente > 0
+#15  06/10/2026 21:51 → 07/10/2026 06:16  8,4 h  Apagado  | title: 4c corriente 0 sin marcas
+#16  06/10/2026 06:17 → 06/10/2026 21:51  15,6 h  Encendido  | title: 4a corriente > 0
+#17  05/10/2026 21:46 → 06/10/2026 06:17  8,5 h  Apagado  | title: 4c corriente 0 sin marcas
+#18  05/10/2026 06:18 → 05/10/2026 21:46  15,5 h  Encendido  | title: 4a corriente > 0
+#19  03/10/2026 13:41 → 05/10/2026 06:18  40,6 h  Apagado  | title: 4c corriente 0 sin marcas
+#20  03/10/2026 05:53 → 03/10/2026 13:41  7,8 h  Encendido  | title: 4a corriente > 0
+#21  02/10/2026 22:03 → 03/10/2026 05:53  7,8 h  Apagado  | title: 4c corriente 0 sin marcas
+#22  02/10/2026 06:20 → 02/10/2026 22:03  15,7 h  Encendido  | title: 4a corriente > 0
+#23  01/10/2026 22:13 → 02/10/2026 06:20  8,1 h  Apagado  | title: 4c corriente 0 sin marcas
+#24  01/10/2026 06:04 → 01/10/2026 22:13  16,2 h  Encendido  | title: 4a corriente > 0
+#25  30/09/2026 21:54 → 01/10/2026 06:04  8,2 h  Apagado  | title: 4c corriente 0 sin marcas
+#26  30/09/2026 05:51 → 30/09/2026 21:54  16,1 h  Encendido  | title: 4a corriente > 0
+#27  29/09/2026 22:11 → 30/09/2026 05:51  7,7 h  Apagado  | title: 4c corriente 0 sin marcas
+#28  29/09/2026 09:00 → 29/09/2026 22:11  13,2 h  Encendido  | title: 4a corriente > 0
+#29  28/09/2026 07:00 → 29/09/2026 09:00  26,0 h  Mantenimiento  | title: 1 hueco > tolerancia
+#30  28/09/2026 06:15 → 28/09/2026 07:00  0,8 h  Encendido  | title: 4a corriente > 0
+#31  26/09/2026 14:09 → 28/09/2026 06:15  40,1 h  Evento  | title: 4b corriente 0 con marca previa
+#32  26/09/2026 06:17 → 26/09/2026 14:09  7,9 h  Encendido  | title: 4a corriente > 0
+#33  25/09/2026 22:08 → 26/09/2026 06:17  8,2 h  Evento  | title: 4b corriente 0 con marca previa
+#34  25/09/2026 05:54 → 25/09/2026 22:08  16,2 h  Encendido  | title: 4a corriente > 0
+#35  24/09/2026 22:06 → 25/09/2026 05:54  7,8 h  Evento  | title: 4b corriente 0 con marca previa
+#36  24/09/2026 05:48 → 24/09/2026 22:06  16,3 h  Encendido  | title: 4a corriente > 0
+#37  23/09/2026 22:00 → 24/09/2026 05:48  7,8 h  Evento  | title: 4b corriente 0 con marca previa
+#38  23/09/2026 06:17 → 23/09/2026 22:00  15,7 h  Encendido  | title: 4a corriente > 0
+#39  22/09/2026 21:43 → 23/09/2026 06:17  8,6 h  Evento  | title: 4b corriente 0 con marca previa
+#40  22/09/2026 06:09 → 22/09/2026 21:43  15,6 h  Encendido  | title: 4a corriente > 0
+#41  21/09/2026 22:17 → 22/09/2026 06:09  7,9 h  Evento  | title: 4b corriente 0 con marca previa
+#42  21/09/2026 11:00 → 21/09/2026 22:17  11,3 h  Encendido  | title: 4a corriente > 0
+#43  21/09/2026 10:40 → 21/09/2026 11:00  0,3 h  Evento  | title: 4b corriente 0 con marca previa
+#44  21/09/2026 06:04 → 21/09/2026 10:40  4,6 h  Encendido  | title: 4a corriente > 0
+#45  19/09/2026 14:02 → 21/09/2026 06:04  40,0 h  Apagado  | title: 4c corriente 0 sin marcas
+#46  19/09/2026 05:54 → 19/09/2026 14:02  8,1 h  Encendido  | title: 4a corriente > 0
+#47  18/09/2026 22:11 → 19/09/2026 05:54  7,7 h  Apagado  | title: 4c corriente 0 sin marcas
+#48  18/09/2026 05:45 → 18/09/2026 22:11  16,4 h  Encendido  | title: 4a corriente > 0
+#49  17/09/2026 21:54 → 18/09/2026 05:45  7,9 h  Apagado  | title: 4c corriente 0 sin marcas
+#50  17/09/2026 05:45 → 17/09/2026 21:54  16,2 h  Encendido  | title: 4a corriente > 0
+#51  16/09/2026 22:16 → 17/09/2026 05:45  7,5 h  Apagado  | title: 4c corriente 0 sin marcas
+#52  16/09/2026 06:13 → 16/09/2026 22:16  16,1 h  Encendido  | title: 4a corriente > 0
+#53  15/09/2026 21:40 → 16/09/2026 06:13  8,6 h  Apagado  | title: 4c corriente 0 sin marcas
+#54  15/09/2026 06:06 → 15/09/2026 21:40  15,6 h  Encendido  | title: 4a corriente > 0
+#55  14/09/2026 22:02 → 15/09/2026 06:06  8,1 h  Apagado  | title: 4c corriente 0 sin marcas
+#56  14/09/2026 06:07 → 14/09/2026 22:02  15,9 h  Encendido  | title: 4a corriente > 0
+#57  14/09/2026 03:59 → 14/09/2026 06:07  2,1 h  Apagado  | title: 4c corriente 0 sin marcas
