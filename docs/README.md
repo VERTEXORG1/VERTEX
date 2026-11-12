@@ -7,6 +7,7 @@
 | [Proyecto_Integrador_VERTEX.docx](Proyecto_Integrador_VERTEX.docx) | Proyecto Integrador: empresa, caso de negocio, objetivos, presupuesto de la Etapa A y plan de acción (§25) | Islender, con los autores que figuran en su portada |
 | [diagramas/](diagramas) | Diagramas C4 (niveles 1 a 4) extraídos del DERS | La matriz asigna "Interfaz y diagramas C3/C4" a Jhoan Sebastián Blanco Rincón; en el plan, los diagramas C3/C4 forman parte de la tarea 25 |
 | [adr/](adr) | Decisiones de arquitectura (ADR 0001 a 0007) | Islender (actividad 1), con asistencia de IA |
+| [entregables_pruebas/](entregables_pruebas/LEEME.md) | Pruebas ejecutadas el 11/11/2026, con sus capturas numeradas | Ejecutaron: Anyul Lisbeth Martínez Jiménez, Ronal Gabriel Ure Carrillo, Jhoan Sebastián Blanco Rincón e Islender Arturo Alfonso Contreras (detalle por prueba en cada documento) |
 | [EQUIPO.md](EQUIPO.md) | Plan, reparto de las 30 tareas, matriz y detalle por persona | Islender, con datos del plan y del tablero |
 | [CONTRIBUIR.md](CONTRIBUIR.md) | Flujo de trabajo con ramas, commits propios y pull requests | Actividad 4 (Git e integración) |
 | [INSTALL_DATABASE.md](INSTALL_DATABASE.md) | Instalación de las bases | Islender |

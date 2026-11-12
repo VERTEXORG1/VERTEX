@@ -159,7 +159,7 @@ Las fuentes se presentan tal cual, sin unificarlas:
 | Inicio de sesión con bcrypt y JWT (`POST /api/identity/login`) | Implementado ([ADR 0005](docs/adr/0005-autenticacion-jwt-bcrypt.md)) |
 | Middlewares `authenticate`, `authorize` y `reauthenticate` | Implementados en las rutas de identidad. **Pendiente:** las rutas de datos (`/api/equipos/...`) todavía no exigen el token |
 | Bloqueo, recuperación de contraseña y alta de usuarios | Implementado en `VERTEX_DEMO` (V007, [ADR 0007](docs/adr/0007-recuperacion-de-contrasena-y-alta-de-usuarios.md)); **pendiente** aplicar V007 en `VERTEX_REAL` y la ratificación de TI |
-| Pruebas automatizadas | `npm test` con Vitest: 21 pruebas en el backend (Supertest) y 7 en el frontend. Los otros 6 `*.spec.ts` del backend siguen vacíos. Las pruebas con capturas del plan son las tareas 26 a 28 (S6) |
+| Pruebas automatizadas | `npm test` con Vitest: 21 pruebas en el backend (Supertest) y 7 en el frontend. Los otros 6 `*.spec.ts` del backend siguen vacíos. Las pruebas con capturas del plan (tareas 26 a 28, S6) están en [docs/entregables_pruebas](docs/entregables_pruebas/LEEME.md) |
 | Separación de datos demo y reales | Implementado: bases `VERTEX_DEMO` y `VERTEX_REAL` ([ADR 0004](docs/adr/0004-bases-demo-y-real-separadas.md)) |
 | Contraseñas y secretos | Se leen de variables de entorno; ningún `.env` se versiona |
 | Autenticación corporativa (Directorio Activo) | Prevista, no implementada |
@@ -173,6 +173,7 @@ Las fuentes se presentan tal cual, sin unificarlas:
 | [docs/Proyecto_Integrador_VERTEX.docx](docs/Proyecto_Integrador_VERTEX.docx) | Proyecto Integrador: empresa, caso de negocio, objetivos, presupuesto de la Etapa A y plan de acción (§25) |
 | [docs/diagramas/](docs/diagramas) | C4: [contexto](docs/diagramas/c4-nivel-1-contexto.png), [contenedores](docs/diagramas/c4-nivel-2-contenedores.png), [componentes](docs/diagramas/c4-nivel-3-componentes.png) y [código de `sp_vx_resumen_estados`](docs/diagramas/c4-nivel-4-codigo-sp_vx_resumen_estados.png) |
 | [docs/adr/](docs/adr) | Decisiones de arquitectura (ADR 0001 a 0007) |
+| [docs/entregables_pruebas/](docs/entregables_pruebas/LEEME.md) | Pruebas ejecutadas el 11/11/2026: unitarias (caja blanca y caja negra), aceptación, fichas funcionales, Lighthouse, matriz de criterios y guía, con sus capturas numeradas |
 | [docs/EQUIPO.md](docs/EQUIPO.md) | Plan, reparto de las 30 tareas, matriz y su correspondencia con las tareas, y detalle por persona |
 | [docs/CONTRIBUIR.md](docs/CONTRIBUIR.md) | Cómo trabajar con ramas, commits propios y pull requests |
 | [docs/INSTALL_DATABASE.md](docs/INSTALL_DATABASE.md) | Instalación paso a paso de las bases |

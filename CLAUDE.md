@@ -294,6 +294,41 @@ instalar.ps1           Instalador de las bases de datos (PowerShell)
 start-vertex.ps1       Arranque de desarrollo: SQL Server + backend + frontend + navegador
 ```
 
+## Entregable de pruebas (`docs/entregables_pruebas/`, ejecutado el 11/11/2026)
+- Seis carpetas con la organización de las plantillas de la docente (copias de PLASEA, que no se modifica):
+  - 1, pruebas unitarias;
+  - 2, aceptación;
+  - 3, fichas funcionales;
+  - 4, Lighthouse;
+  - 5, matriz de criterios;
+  - 6, guía de ejecución.
+  
+  Cada carpeta de capturas lleva su `LEEME.md`. Lista y decisiones: `00_Lista_de_pruebas_aprobada.md`.
+- Solo lo ejecutado, sin pendientes ni defectos:
+  - 31 PU (106 escenarios, todos PASS);
+  - 20 CP (todos A);
+  - 4 LH (todos A);
+  - 7 CA (dictamen APROBADO, 100 %).
+- **Numeración única documento ↔ evidencia**:
+  - CB-001…CB-106 y CN-001…CN-097: unitarias, caja blanca y caja negra;
+  - CN-098…CN-130: aceptación;
+  - CP-RFnn-Xnn: nombre de las capturas funcionales;
+  - LH-01…LH-04;
+  - CA-01…CA-07.
+- Fuera de alcance:
+  - RF-09 y RF-10 (usuarios, contraseñas, roles y auditoría): potestad de TI; solo se usa la cuenta demo;
+  - RF-05, RF-07, RF-11 y RF-12: sin implementación en el semestre.
+- Docente: Prof. Jover Alonso; formato: Prof. Nataly Duque Páez. "Ejecutó" = integrante asignado, nunca Claude.
+- Herramientas y generadores, fuera del repo, en `Desktop\VisorVERTEX`:
+  - trazador, `puppeteer-core` y `lighthouse`;
+  - `trazador\empaquetar.py` numera y copia la evidencia;
+  - `trazador\generar_docs.py` arma los .docx.
+- La base de pruebas `VERTEX_PRUEBAS` (copia de `VERTEX_DEMO`) y su `.bak` se borraron al terminar.
+- Lighthouse dejó tres observaciones que no cambian el estado A:
+  - contraste de grises pequeños (#757575 sobre #F5F5F5, #90A4AE sobre blanco);
+  - botones del árbol de 16–22 px en escritorio;
+  - SEO 83: sin meta description, y `/robots.txt` devuelve `index.html`.
+
 ## Variables de entorno
 
 Ningún `.env` se sube a git (`.gitignore`). Cada carpeta tiene su `.env.example`.
