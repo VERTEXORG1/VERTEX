@@ -37,16 +37,6 @@ export const mockData: DashboardMockData = {
     totalHours: 1060,
     totalLabel: 'Horas acumuladas',
   },
-  kpis: [
-    { id: 'mediciones', value: '4 080', label: 'Mediciones' },
-    { id: 'dias', value: '30', label: 'Días del período' },
-    { id: 'confianza', value: '96 %', label: 'Confianza' },
-  ],
-  bars: [
-    { id: 'manana', label: 'Turno mañana', hours: 340, color: '#2E75B6' },
-    { id: 'tarde', label: 'Turno tarde', hours: 310, color: '#2E75B6' },
-    { id: 'noche', label: 'Turno noche', hours: 410, color: '#1F3864' },
-  ],
   // Simulated readings that fluctuate around each variable's nominal value
   trendVariables: [
     // With `codigo`, the backend's data replaces `data` (normal mode); `data`

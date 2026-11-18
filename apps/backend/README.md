@@ -22,6 +22,7 @@ npm test                 # Vitest + Supertest, sin base de datos (repositorio en
 npm run build            # compila a dist/
 npm start                # ejecuta dist/main.js
 npm run seed:mediciones  # mediciones por minuto de CERO-010 (ver database/README.md)
+npm run comparar:estados  # compara sp_vx_resumen_estados con la caché de V008 (requiere V008 aplicada)
 npm run db:export        # instantánea de solo lectura de la base en docs/db-snapshot.xlsx (no se versiona)
 ```
 
@@ -37,6 +38,7 @@ Variables: copiar [`.env.example`](.env.example) a `.env` y completar los valore
 | `POST /api/identity/usuarios` | Mismos roles y reautenticación (`password_actual`): crea un usuario con contraseña temporal, devuelta una sola vez |
 | `POST /api/identity/usuarios/:id/restablecer` | Mismos roles y reautenticación: contraseña temporal nueva con cambio obligatorio |
 | `GET /api/equipos/:codigo` | Verifica que el equipo exista |
+| `GET /api/equipos/:codigo/bateria` | Último nivel de batería del dispositivo de captura (`nivel: null` sin lecturas o sin V009) |
 | `GET /api/equipos/:codigo/bloques` | Horas por estado, bloques y ciclos completos (`sp_vx_resumen_estados`) |
 | `GET /api/equipos/:codigo/resumen` | Horas por estado con el detalle del cálculo |
 | `GET /api/equipos/:codigo/mediciones?variable=…` | Estadísticas por intervalo de una variable (`sp_vx_tendencia_variable`) |
@@ -56,5 +58,5 @@ Variables: copiar [`.env.example`](.env.example) a `.env` y completar los valore
 
 ## Pendiente
 - Las rutas de datos (`/api/equipos/...`) todavía no exigen el token: hay que añadir `authenticate` y que el frontend y `start-vertex.ps1` lo envíen.
-- Pruebas: los otros 6 `*.spec.ts` siguen vacíos; `vitest.config.mts` solo incluye los de identidad.
-- Dominios `data-acquisition`, `hours-calculation`, `electrical-maintenance`, `mechanical-maintenance` y `audit`: estructura con archivos vacíos.
+- Recepción de lotes del dispositivo de captura (Etapa A), mantenimiento y auditoría: dominios todavía sin implementar.
+- Variables `PORT` y `HOST`: ver la sección Producción del [README](../../README.md).

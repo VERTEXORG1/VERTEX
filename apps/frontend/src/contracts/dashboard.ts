@@ -9,19 +9,6 @@ export interface DonutSegment {
   color: string;
 }
 
-export interface KpiItem {
-  id: string;
-  value: string;
-  label: string;
-}
-
-export interface BarItem {
-  id: string;
-  label: string;
-  hours: number;
-  color?: string;
-}
-
 export type Producto = 'Ceranatto' | 'Esedra' | 'Gemas' | 'Ambrato' | 'Líbano';
 
 export type LineaProduccion =
@@ -70,7 +57,5 @@ export interface DashboardMockData {
     totalHours: number;
     totalLabel: string;
   };
-  kpis: KpiItem[];
-  bars: BarItem[];
   trendVariables: TrendVariable[];
 }
