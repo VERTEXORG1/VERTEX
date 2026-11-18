@@ -150,7 +150,7 @@ defecto `http://localhost:3000`).
 
 ### 2.5 El modo demo (`VITE_DEMO_MODE=true`)
 
-En Netlify no hay backend ni base de datos. Con `VITE_DEMO_MODE=true` la
+En el sitio de demostración (Worker de Cloudflare) no hay backend ni base de datos. Con `VITE_DEMO_MODE=true` la
 constante `DEMO_MODE` (`src/shared/api.ts`) es verdadera y cada servicio
 **se desvía antes de hacer la petición**. Funciones del propio navegador
 simulan datos con la misma forma que devolvería el backend, así que los

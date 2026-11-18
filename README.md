@@ -10,9 +10,8 @@
 
 <p align="center">
   <strong><a href="https://vertex.sinerbyte.com">https://vertex.sinerbyte.com</a></strong><br>
-  Respaldo: <a href="https://vertexdashboar.netlify.app">https://vertexdashboar.netlify.app</a><br>
-  Sitio en <strong>modo demostración</strong>: los datos se generan en el navegador, sin backend ni base de datos.
-  Las credenciales de la demo las entrega el equipo.
+  VERTEX completo en producción desde el 12/11/2026: inicio de sesión real, API y SQL Server con la base de demostración <code>VERTEX_DEMO</code>.
+  Las credenciales las entrega el equipo.
 </p>
 
 Plataforma industrial para monitorear las horas de operación, los estados, los eventos y el mantenimiento de los motores de los equipos aplicadores CERO de las líneas de esmaltado de Cerámica Italia S.A. (planta de Cúcuta). Prototipo con el equipo piloto CERO-010 y datos simulados.
@@ -31,6 +30,7 @@ Proyecto universitario de Ingeniería de Sistemas · Repositorio: https://github
 - [Estructura del repositorio](#estructura-del-repositorio)
 - [Equipo y responsabilidades](#equipo-y-responsabilidades)
 - [Estado de seguridad y pruebas](#estado-de-seguridad-y-pruebas)
+- [Producción](#producción)
 - [Documentación](#documentación)
 - [Asistencia de IA](#asistencia-de-ia)
 
@@ -40,6 +40,7 @@ Proyecto universitario de Ingeniería de Sistemas · Repositorio: https://github
 - **Estado del motor**, **tabla "Resumen del período"** con los bloques de estado y **tendencia** de corriente, vibración, temperatura y voltaje (vista Resumen y Detalle).
 - **Árbol de equipos** (área → sección → grupo → equipo → componente) y selector de período (7, 15, 30 días, todo o un rango de fechas).
 - El cálculo oficial de estados y horas vive en el procedimiento `sp_vx_resumen_estados` de SQL Server ([ADR 0001](docs/adr/0001-logica-en-procedimientos-almacenados.md)).
+- Panel de batería del dispositivo de captura (Etapa A): muestra "Pendiente" hasta que lleguen lecturas (`GET /api/equipos/:codigo/bateria`, variable `NIVEL_BATERIA` de la migración V009).
 - Inicio de sesión con roles, bloqueo por intentos fallidos, recuperación de contraseña por el administrador y alta de usuarios sin autorregistro ([ADR 0007](docs/adr/0007-recuperacion-de-contrasena-y-alta-de-usuarios.md)).
 
 ## Plan del proyecto
@@ -116,9 +117,8 @@ Otros comandos: `npm run typecheck`, `npm test` y `npm run build` en `apps/backe
 | [`apps/frontend/`](apps/frontend) | Dashboard web: React 19, TypeScript, Vite 8 y CSS Modules | Jhoan (actividad 2) |
 | [`apps/backend/`](apps/backend) | API REST: Node.js, Express 5, TypeScript y `mssql` | Islender (actividad 1) |
 | [`database/`](database) | SQL Server: migraciones, procedimientos `sp_vx_*`, seeds y scripts | Islender (actividad 1) |
-| [`docs/`](docs) | DERS, diagramas C4, ADR, equipo y guías | Varios (ver [docs/README.md](docs/README.md)) |
-| [`scripts/`](scripts) | `create_demo_users.ts`: contraseñas de los usuarios demo desde variables de entorno | Islender (integración) |
-| [`packages/shared/`](packages/shared) | Contratos TypeScript compartidos (vacíos por ahora) | Pendiente |
+| [`docs/`](docs) | DERS, diagramas C4, ADR, equipo, pruebas, entrega final y guías | Varios (ver [Documentación](#documentación) y [docs/EQUIPO.md](docs/EQUIPO.md)) |
+| [`scripts/`](scripts) | `create_demo_users.ts`: lee cada contraseña de una variable `DEMO_PWD_*`, la convierte en hash bcrypt y la guarda en `dbo.Usuarios` (uso: Paso 4 de [docs/INSTALL_DATABASE.md](docs/INSTALL_DATABASE.md)) | Islender (integración) |
 | [`instalar.ps1`](instalar.ps1), [`start-vertex.ps1`](start-vertex.ps1) | Instalador de las bases y arranque de desarrollo | Islender (integración) |
 
 ## Equipo y responsabilidades
@@ -150,7 +150,7 @@ Las fuentes se presentan tal cual, sin unificarlas:
 | **Jhoan Sebastián Blanco Rincón** ([Jhoansbr](https://github.com/Jhoansbr)) | 6 (20 %): 3, 10, 16, 17, 19, 22 | Dashboard inicial de [`apps/frontend/`](apps/frontend): desarrollado por Jhoan y Ronal Gabriel según el tablero (#4); integrado y subido al repositorio por Islender |
 | **Ronal Gabriel Ure Carrillo** ([Ronduke20](https://github.com/Ronduke20)) | 6 (20 %): 5, 12, 13, 20, 25, 26 | Dashboard inicial de [`apps/frontend/`](apps/frontend): desarrollado por Jhoan y Ronal Gabriel según el tablero (#4); integrado y subido al repositorio por Islender. Tablero y [docs/CONTRIBUIR.md](docs/CONTRIBUIR.md) |
 
-**Tareas abiertas:** 21 a 25 (sprint S5, en progreso) y 26 a 30 (sprint S6, del 13/11 al 30/11). Cada integrante sube su parte con su propia cuenta, en su rama y con un pull request: ver [docs/CONTRIBUIR.md](docs/CONTRIBUIR.md).
+El estado de cada tarea está en el [tablero](https://github.com/orgs/VERTEXORG1/projects/2). Cada integrante sube su parte con su propia cuenta, en su rama y con un pull request: ver [docs/CONTRIBUIR.md](docs/CONTRIBUIR.md).
 
 ## Estado de seguridad y pruebas
 
@@ -159,15 +159,23 @@ Las fuentes se presentan tal cual, sin unificarlas:
 | Inicio de sesión con bcrypt y JWT (`POST /api/identity/login`) | Implementado ([ADR 0005](docs/adr/0005-autenticacion-jwt-bcrypt.md)) |
 | Middlewares `authenticate`, `authorize` y `reauthenticate` | Implementados en las rutas de identidad. **Pendiente:** las rutas de datos (`/api/equipos/...`) todavía no exigen el token |
 | Bloqueo, recuperación de contraseña y alta de usuarios | Implementado en `VERTEX_DEMO` (V007, [ADR 0007](docs/adr/0007-recuperacion-de-contrasena-y-alta-de-usuarios.md)); **pendiente** aplicar V007 en `VERTEX_REAL` y la ratificación de TI |
-| Pruebas automatizadas | `npm test` con Vitest: 21 pruebas en el backend (Supertest) y 7 en el frontend. Los otros 6 `*.spec.ts` del backend siguen vacíos. Las pruebas con capturas del plan (tareas 26 a 28, S6) están en [docs/entregables_pruebas](docs/entregables_pruebas/LEEME.md) |
+| Pruebas automatizadas | `npm test` con Vitest: 21 pruebas en el backend (Supertest) y 7 en el frontend. Las pruebas con capturas del plan (ejecutadas el 11/11/2026: 31 unitarias con 106 escenarios, 20 funcionales, 4 Lighthouse y 7 criterios de aceptación, todas aprobadas) están en [docs/entregables_pruebas](docs/entregables_pruebas/LEEME.md), con su informe en `7_Informe_de_pruebas/` |
 | Separación de datos demo y reales | Implementado: bases `VERTEX_DEMO` y `VERTEX_REAL` ([ADR 0004](docs/adr/0004-bases-demo-y-real-separadas.md)) |
 | Contraseñas y secretos | Se leen de variables de entorno; ningún `.env` se versiona |
 | Autenticación corporativa (Directorio Activo) | Prevista, no implementada |
+
+## Producción
+
+- `https://vertex.sinerbyte.com`: servidor Linux (Ubuntu 24.04) con SQL Server 2025 Express, la API como servicio `systemd` en el puerto 3010 (solo local), nginx sirviendo el frontend compilado y reenviando `/api/` y `/health`, y un túnel de Cloudflare.
+- La API lee `PORT` (3000 por defecto) y `HOST` (`0.0.0.0` por defecto; `127.0.0.1` en el servidor) y confía en el proxy local (`trust proxy = loopback`) para que el bloqueo por IP vea la IP del visitante.
+- Tiempos medidos en el servidor el 12/11/2026: 7 días 2,0 s, 15 días 2,5 s, 30 días 3,1 s y toda la historia 6,3 s.
+- En desarrollo: caché del cálculo de estados (migración V008, `sp_vx_estados_recalcular` y `sp_vx_resumen_estados_cache`, comparada con el cálculo directo mediante `npm run comparar:estados`). Todavía no está aplicada en las bases ni la usa la API.
 
 ## Documentación
 
 | Documento | Contenido |
 |---|---|
+| [docs/entrega_final/](docs/entrega_final) | Entrega final del 30/11/2026: guía del proyecto de aula, diapositivas de sustentación, póster, DERS actualizado (IEEE 830) y matriz rúbrica → evidencias, en formato editable y PDF |
 | [docs/DERS_VERTEX.docx](docs/DERS_VERTEX.docx) | Documento de especificación: problema, estado del arte, objetivos, requisitos, arquitectura C4, plan (§06), pruebas y trazabilidad |
 | [docs/Taller_Inception_VERTEX.docx](docs/Taller_Inception_VERTEX.docx) | Taller Inception: visión, usuarios, MoSCoW, riesgos, hoja de ruta y las 30 tareas por sprint (§6.2) |
 | [docs/Proyecto_Integrador_VERTEX.docx](docs/Proyecto_Integrador_VERTEX.docx) | Proyecto Integrador: empresa, caso de negocio, objetivos, presupuesto de la Etapa A y plan de acción (§25) |

@@ -41,7 +41,7 @@ Express y base de datos SQL Server.
     - `logout()` borra todas las claves `vx_` (token y `vx_ruta`) de `sessionStorage` y `localStorage`; un token vencido también llama a `logout()`. Al volver a entrar, el árbol empieza en las cinco áreas cerradas y el dashboard en su estado inicial (período, variable y Resumen / Detalle no se guardan en el navegador).
   - Dos modos:
     - **Normal:** `POST {VITE_API_URL}/api/identity/login`.
-    - **Demo** (`VITE_DEMO_MODE=true`, para el sitio público en Cloudflare y en Netlify): valida contra `VITE_DEMO_EMAIL` / `VITE_DEMO_PASSWORD` sin backend y genera un token local `{ demo: true, exp: +8h }` sin firma real.
+    - **Demo** (`VITE_DEMO_MODE=true`, para el sitio de demostración en Cloudflare): valida contra `VITE_DEMO_EMAIL` / `VITE_DEMO_PASSWORD` sin backend y genera un token local `{ demo: true, exp: +8h }` sin firma real.
   - `App.tsx`: vista `'login' | 'dashboard'`. Si la pestaña tiene un token vigente (p. ej. tras F5), entra directo al dashboard.
 - **Dashboard** (`src/modules/dashboard/`): en modo normal, la dona, el estado del motor, la tendencia y la tabla de eventos leen la base; el resto sigue simulado (`mockData.ts`, `donutSimulation.ts`). En modo demo todo es simulado.
   - **Árbol de equipos** (`ArbolEquipos.tsx`) en lugar de las antiguas pestañas (Resumen / Motores / Mantenimiento / Producción) y del selector de CERO: Área → Sección → Grupo → Equipo → Componente.
@@ -78,7 +78,7 @@ Express y base de datos SQL Server.
     - Una sola petición `GET /api/equipos/:codigo/bloques` (`fetchBloques`) alimenta la dona (`ciclos`, `horas`), el estado del motor (`estado_actual`) y la tabla: siempre coinciden. Debajo de la leyenda solo "Cargando…", "Sin mediciones…" o el error.
     - El fin del período se muestra como el último día incluido (`ultimoDia`); "(última medición)" solo si el período llega al último registro.
     - Modo demo: `demoBloquesData` (`bloques.service.ts`) devuelve la misma forma con bloques simulados, para días o rangos de fechas, y `demoCiclos` los ciclos completos cortados al fin de cada mantenimiento del perfil. El período termina en el último registro simulado (14/10).
-    - **Prototipo 2** (`CiclosPanel.tsx`, sin mostrar): una fila por ciclo con su línea de tiempo a escala común, la consulta marcada en azul y lo de fuera atenuado. Se descartó porque obligaba a desplazarse; para enseñarlo, ponerlo en lugar de `DonutPanel` en `DashboardPage.tsx` con los mismos `ciclos`.
+    - El prototipo 2 (`CiclosPanel.tsx`, una fila por ciclo con línea de tiempo) se descartó porque obligaba a desplazarse; se borró el 18/11/2026 y queda en el historial de git.
     - Producto y línea siguen simulados.
   - **Tendencia** (`TrendChart.tsx`, SVG puro) con selector de variable (corriente, vibración, temperatura, voltaje y producción). Dibuja el **máximo** de cada intervalo con el motor encendido frente a una línea roja de referencia.
     - Título "Tendencia — Variable" y, en la misma línea a la derecha, el control **Resumen | Detalle** (por defecto Resumen; "Res." / "Det." si la tarjeta mide ≤ 300 px, por container query).
@@ -108,7 +108,7 @@ Express y base de datos SQL Server.
     - modo normal: `GET /api/equipos/:codigo/bloques`;
     - modo demo: bloques simulados minuto a minuto con los turnos del seed (CERO-010/011/012), y CERO-013 devuelve "Equipo no encontrado" para probar el error.
     - Teléfono (todo lo que no es desktop): Estado con etiqueta corta ("Encend.", "Apagado", "Evento", "Mtto."; la completa en `title`) y celdas con menos relleno; ≤ 340 px, letra 11 px. Cabe sin desplazamiento horizontal en 360 px (304/304), 320 px (264/264) y teléfono horizontal.
-    - `HorizontalBars.tsx` y `mockData.bars` quedan sin usar.
+  - **Batería del dispositivo de captura** (`BateriaPrototipo.tsx`, `bateria.service.ts`), arriba del placeholder del mapa en la columna derecha: barra con el último nivel (`GET /api/equipos/:codigo/bateria`) y la hora de la lectura; aviso "Cargar o cambiar la batería" si el nivel ≤ `BATERIA_AVISO_PCT`. Sin lecturas (hoy siempre: V009 no está aplicada) y en modo demo dice "Pendiente".
   - Placeholder del mapa.
   - Cerrar sesión en el Sidebar (desktop y teléfono horizontal) y en la cabecera móvil (teléfono vertical).
 - **Modos de layout** (los mismos en `dashboard.module.css` y `auth.module.css`):
@@ -120,8 +120,7 @@ Express y base de datos SQL Server.
 - `src/shared/api.ts`: `API_URL` (`VITE_API_URL`) y `DEMO_MODE` (`VITE_DEMO_MODE`), compartidos por los servicios.
 - Variables de color para validación en `dashboard.module.css`: `--vx-ok` (#2E7D32) y `--vx-danger` (#E53935). `--vx-success` es azul, por eso no se usa para "ok".
 - **Identidad (ADR 0007):** "¿Olvidaste tu contraseña?" en `LoginForm.tsx` solo muestra un mensaje (en demo, "En la demostración, contacta al administrador"); `CambiarPassword.tsx` es el cambio obligatorio tras una contraseña temporal; `modules/admin/UsersRolesPage.tsx` es la pantalla "Usuarios" (listar, crear, restablecer) para ADMINISTRADOR e ING_MANTENIMIENTO, nunca en demo; `ReauthModal.tsx` pide la contraseña propia. Pruebas: `npm test` (Vitest + Testing Library).
-- Los archivos vacíos (`LoginPage.tsx`, `modules/reporting`, `shared/`) son estructura pendiente.
-- También sin usar: `DonutChart.tsx` (la dona la dibuja `DonutPanel`), `CiclosPanel.tsx` (prototipo 2), `KpiRow.tsx` y `mockData.kpis`.
+- **Limpieza del 18/11/2026:** se borraron los archivos vacíos (`LoginPage.tsx`, `modules/reporting`, `shared/components`, `shared/contexts`, `shared/hooks`), los componentes sin uso (`DonutChart.tsx`, `CiclosPanel.tsx`, `KpiRow.tsx`, `HorizontalBars.tsx`), `mockData.kpis` / `mockData.bars` con sus tipos y los recursos de la plantilla de Vite (`hero.png`, `react.svg`, `vite.svg`, `public/icons.svg`). Siguen en el historial de git.
 
 ### Backend (`apps/backend`) — Express 5 + TypeScript, `mssql`, `bcrypt`, `jsonwebtoken`
 - `src/main.ts`: abre el puerto **3000** enseguida y conecta el pool global de `mssql` con `conectarConReintentos` (`src/shared/db.ts`): nunca se rinde, espera 2, 4, 8, 16, 32 s y luego 60 s entre intentos, y muestra cada intento en su ventana. Mientras no conecta, las rutas de datos responden 503.
@@ -151,6 +150,7 @@ Express y base de datos SQL Server.
   - `ciclos`: `{ inicio, ultimo_registro, registros_encendido, registros_encendido_con_evento, porcentaje, estado_evento, estado_evento_desde, primera_marca }`; `mantenimientos`: `{ inicio, fin, duracion_min }`.
   - Sin mediciones (CERO-011): `fecha_referencia: null`, horas en cero y listas vacías.
 - `GET /api/equipos/:codigo/intervalos` ya no existe (leía `IntervalosFuncionamiento`).
+- **`GET /api/equipos/:codigo/bateria`**: `{ nivel, event_time, aviso_pct }`, la última lectura de `NIVEL_BATERIA` del CERO (`equipo_id` del CERO, no del motor) y `ConfiguracionSistema.BATERIA_AVISO_PCT`; `nivel: null` sin lecturas o sin V009; 404 si el equipo no existe.
 - **`GET /api/equipos/:codigo/mediciones?variable=CODIGO`** + período: estadísticas por intervalo de una variable, solo con el motor encendido. Solo ejecuta `dbo.sp_vx_tendencia_variable`.
   - `variable`: CORRIENTE_MOTOR, TEMPERATURA_MOT, VIBRACION_MOT, VOLTAJE_MOTOR, FRECUENCIA_RED, POTENCIA_MOT o RPM_MOTOR; si no, 400.
   - 200 `{ variable, unidad, fecha_referencia, desde, minutos_punto, umbral: { min, max, habilitado } | null, puntos: [{ inicio, dia, promedio, minimo, maximo, lecturas, marcas }] }`.
@@ -166,11 +166,13 @@ Express y base de datos SQL Server.
 - Pendiente:
   - las rutas de datos (`/api/equipos/...`) todavía no exigen el token (habría que enviarlo desde el frontend y desde `start-vertex.ps1`);
   - V007 y sus cinco procedimientos están aplicados en `VERTEX_DEMO`, no en `VERTEX_REAL`;
-  - el resto de dominios (data-acquisition, hours-calculation, mantenimiento, audit), que son archivos vacíos.
+  - el resto de dominios (recepción de lotes del dispositivo, mantenimiento, auditoría): sus archivos vacíos se borraron el 18/11/2026 (también los 6 `*.spec.ts` vacíos, `packages/shared` y `docker-compose.yml`, vacíos); se crearán al implementarlos.
 - La autenticación final será contra el Directorio Activo corporativo; la tabla de usuarios es para la demo.
 
 ### Base de datos (`database/`) — SQL Server, bases `VERTEX_DEMO` y `VERTEX_REAL`
-- Migraciones `V001`–`V006`, procedimientos `R__*`, seeds `01`–`03` e instalador `database/scripts/01_install_databases.sql`.
+- Migraciones `V001`–`V009` (V007 identidad; **V008 y V009 están en el repositorio sin aplicar** en `VERTEX_DEMO` local, comprobado el 18/11/2026), procedimientos `R__*`, seeds `01`–`03` e instalador `database/scripts/01_install_databases.sql`.
+  - `V008`: caché del cálculo de estados (`EstadoCalculo`, `EstadoRegistros`, `EstadoTramos`), con `R__fn_vx_estados_parametros`, `R__sp_vx_estados_recalcular` y `R__sp_vx_resumen_estados_cache`; `npm run comparar:estados` (`apps/backend/scripts/comparar-resumen-estados.ts`) compara la caché con `sp_vx_resumen_estados` en muchos períodos y sale con código 1 si hay diferencias. La API todavía no la usa.
+  - `V009`: variable `NIVEL_BATERIA` (%, id `66666666-…-601`, también en `01_reference_data.sql`) y `BATERIA_AVISO_PCT = 30` en `ConfiguracionSistema`.
   - `V006`: índice `IX_Mediciones_Equipo_Tiempo (equipo_id, event_time) INCLUDE (variable_id, valor)` para el cálculo de estados (~45 MB).
 - Varios `.sql` están en **UTF-16**: para buscar en ellos, decodificarlos primero; `grep` no los lee.
   - Al editarlos hay que conservar la codificación (UTF-16 LE con BOM) y los finales de línea, que mezclan CRLF y LF.
@@ -252,33 +254,32 @@ Express y base de datos SQL Server.
   - Equipos reales en la base: solo CERO-010. Ver `docs/equipos-mapping.md`.
 - Hashes reales de los 7 usuarios demo: `scripts/create_demo_users.ts`, que lee `DEMO_PWD_*` del `.env` raíz.
 
-### Hosting del frontend
-- GitHub: `https://github.com/VERTEXORG1/VERTEX` (rama `main`), conectado a Cloudflare Workers (producción) y a Netlify (respaldo).
-- **Producción: `https://vertex.sinerbyte.com`** (validado el 31/10/2026), en Cloudflare Workers con archivos estáticos (sin script de Worker):
-  - Worker `vertex`: debe llamarse igual que el `name` de `apps/frontend/wrangler.jsonc`, que define `assets.directory = "./dist/"` y `not_found_handling = "single-page-application"`.
+### Servidor de producción (Hetzner, desde el 12/11/2026)
+- **`https://vertex.sinerbyte.com` es VERTEX completo** (login real, backend y SQL Server con `VERTEX_DEMO`), en el servidor Hetzner `servidor-sinerbyte` (CX23: 2 núcleos x86, 4 GB + 2 GB de swap, Helsinki, Ubuntu 24.04), compartido con Synerbot. La IP y el acceso SSH están en la memoria local de Claude (`servidor-hetzner-acceso`), no en el repositorio. Instalado en la conv. 42 del proyecto Synerbot.
+- **SQL Server 2025 Express** (17.0, gratis: 10 GB por base, ~1,4 GB de buffer): `memory.memorylimitmb` = 1800, solo escucha en `127.0.0.1:1433`. Contraseña de `sa` en `/root/.vertex-sql-sa` (solo root; no mostrarla). Herramientas en `/opt/mssql-tools18/bin/sqlcmd` (usar `-C`).
+- Bases restauradas desde copias del PC (12/11/2026): `VERTEX_DEMO` (654.470 mediciones, 13/07–14/10/2026) y `VERTEX_REAL` (vacía), nivel de compatibilidad 160, dueño `sa`. Logins `app_demo_user`, `app_real_user` y `vertex_seed_user` con el mismo SID y contraseña que en el PC.
+- Código en `/opt/vertex/apps/{backend,frontend}` (usuario de sistema `vertex`):
+  - Servicio `vertex` (systemd): `node --env-file=.env dist/main.js`, puerto **3010** (`PORT` en `.env`; el 3000 es de Synerbot), `MemoryMax=400M`.
+  - `.env` del servidor: el del PC con `DB_SERVER=127.0.0.1`, `CORS_ORIGIN=https://vertex.sinerbyte.com`, `PORT=3010` y un `JWT_SECRET` propio. Para pasar a datos reales: `DB_NAME=VERTEX_REAL` y `DB_USER=app_real_user` (+ su contraseña) y `systemctl restart vertex`.
+  - Frontend compilado con `VITE_API_URL=https://vertex.sinerbyte.com` y `VITE_DEMO_MODE=false`, servido por **nginx** en `127.0.0.1:3011` (`/etc/nginx/sites-available/vertex`), que también reenvía `/api/` y `/health` al 3010 y pasa la IP real (`CF-Connecting-IP` → `X-Forwarded-For`).
+  - Registro de tiempos por petición: `/var/log/nginx/vertex-tiempos.log` (`total=` y `backend=` en segundos).
+  - Actualizar: copiar el código (sin `node_modules`, `dist` ni `.env`), `npm ci` y `npm run build` como usuario `vertex`, y `systemctl restart vertex`.
+- **Túnel de Cloudflare propio** `vertex` (separado del de Synerbot): `/opt/vertex/tunel.yml`, servicio `vertex-tunel`, CNAME `vertex.sinerbyte.com`. Reiniciarlo no afecta al bot.
+- Código para el servidor (en GitHub desde el 18/11/2026): `apps/backend/src/main.ts` lee `PORT` (3000 por defecto) y `HOST` (`0.0.0.0` por defecto; en el servidor `HOST=127.0.0.1`, solo nginx llega a la API), y `apps/backend/src/app.ts` usa `trust proxy = loopback`, para que el bloqueo por IP vea la IP del visitante y no la de nginx.
+- **Velocidad medida el 12/11/2026** (registro de nginx, `bloques` = `sp_vx_resumen_estados`): 7 d 2,0 s, 15 d 2,5 s, 30 d 3,1 s, Todo 6,3 s; `mediciones` 0,1–0,8 s. El servidor calcula ~2× más lento que el portátil en los períodos cortos. El tablero pide equipo → mediciones → bloques en serie (~3,5–7 s percibidos). No hay calentamiento en el servidor (solo existe en `start-vertex.ps1`).
+- **Caché de estados (en desarrollo, V008):** el estado de cada registro solo depende de la historia desde el último mantenimiento, no del período: los bloques se calculan una vez y `sp_vx_resumen_estados_cache` solo recorta y suma. Falta aplicarla, comprobarla con `npm run comparar:estados` (resultados idénticos) y que la API la use; también que el tablero pida en paralelo.
+- Pendientes antes de `VERTEX_REAL`: las rutas `/api/equipos/...` no exigen token, y el módulo `data-acquisition` (recepción de lotes del Arduino) está vacío. La base ya separa `event_time` (hora de la lectura en la fuente) de `received_time`.
+
+### Sitio de demostración (Cloudflare)
+- GitHub: `https://github.com/VERTEXORG1/VERTEX` (rama `main`), conectado a Cloudflare Workers. **Netlify se desvinculó el 18/11/2026**: ya no hace falta `[skip netlify]` ni avisar de Netlify.
+- **Worker `vertex` de Cloudflare** (modo demo, archivos estáticos sin script): desde el 12/11/2026 **ya no tiene el dominio `vertex.sinerbyte.com`** (pasó al servidor); sigue en su dirección `workers.dev` (cuenta `islenderalfonso`).
+  - Debe llamarse igual que el `name` de `apps/frontend/wrangler.jsonc`, que define `assets.directory = "./dist/"` y `not_found_handling = "single-page-application"`.
   - Root directory `apps/frontend`; build command `npm run build`; deploy command `npx wrangler deploy`.
   - Variables **de build** (no de runtime): `VITE_DEMO_MODE`, `VITE_DEMO_EMAIL`, `VITE_DEMO_PASSWORD`. Sus valores están solo en el panel de Cloudflare.
-  - Build watch paths `apps/frontend/*`: Cloudflare solo compila cuando un push cambia `apps/frontend`, e ignora `[skip netlify]`.
-  - Dominio personalizado `vertex.sinerbyte.com` en la zona `sinerbyte.com`; sin dirección `workers.dev` activa.
-- **Respaldo temporal: `https://vertexdashboar.netlify.app`** (sin "d" final; `vertexdashboard.netlify.app` es un sitio ajeno). Sigue compilando hasta que el usuario decida detener sus compilaciones.
-- Los dos sitios sirven el frontend en **modo demo**; el backend corre en la red interna, porque necesita SQL Server.
-  - Solo entra el usuario demo (`VITE_DEMO_EMAIL` / `VITE_DEMO_PASSWORD`); los usuarios de `dbo.Usuarios` (admin, etc.) no funcionan.
-  - Si se olvida la contraseña demo, se puede leer en el panel de Cloudflare o de Netlify, o en el JavaScript publicado. Al cambiar esas variables hay que lanzar un despliegue nuevo en cada plataforma.
-- **`[skip netlify]` mientras Netlify siga compilando:** cada push a `main` sin esa marca compila en Netlify y consume créditos de su plan (el plan gratuito pausa todos los proyectos si se agotan). Mantenerlo en todos los commits que no deban compilar en Netlify, también en los que tocan `apps/frontend` si no se quiere gastar créditos (Cloudflare compila igual). Cuando Netlify deje de compilar, la marca deja de hacer falta.
-- **Reglas de publicación:**
-  - Antes de cualquier push, indicar qué cambios afectan al sitio (`apps/frontend`, que compila Cloudflare) y si alguno compilará en Netlify (commit sin `[skip netlify]`).
-  - Todo push solo cuando el usuario diga "aprobado", después de revisar los cambios en local (`localhost:5173`).
-  - Los commits que compilarán en Netlify (sin `[skip netlify]`) se juntan en **un solo push al final del día**, para no gastar sus créditos. Los demás pueden subirse en cuanto el usuario los apruebe.
-- Configuración de Netlify (respaldo; en su panel, fuera del repo):
-
-| Ajuste | Valor |
-|---|---|
-| Base directory | `apps/frontend` |
-| Build command | `npm run build` |
-| Publish directory | `apps/frontend/dist` |
-| Variables | `VITE_DEMO_MODE=true`, `VITE_DEMO_EMAIL`, `VITE_DEMO_PASSWORD` |
-
+  - Build watch paths `apps/frontend/*`: Cloudflare solo compila cuando un push cambia `apps/frontend`.
+- Sirve el frontend en **modo demo**, sin backend: solo entra el usuario demo (`VITE_DEMO_EMAIL` / `VITE_DEMO_PASSWORD`); los usuarios de `dbo.Usuarios` no funcionan. Si se olvida la contraseña demo, está en el panel de Cloudflare o en el JavaScript publicado; al cambiarla hay que lanzar un despliegue nuevo.
 - Vite copia las variables `VITE_*` dentro del JavaScript público. La contraseña demo debe ser desechable.
+- **Reglas de publicación:** antes de cualquier push, indicar qué cambios afectan al sitio (`apps/frontend`). Todo push solo cuando el usuario diga "aprobado", después de revisar los cambios en local (`localhost:5173`).
 
 ## Estructura
 
@@ -286,16 +287,15 @@ Express y base de datos SQL Server.
 apps/
   frontend/            React + Vite (src/modules/{auth,dashboard,...}, src/contracts)
   backend/             Express API (src/domains/<dominio>/, src/shared/middleware)
-packages/shared/       Contratos TypeScript compartidos (vacíos por ahora)
 database/              migrations/, procedures/, seeds/, scripts/
 scripts/               create_demo_users.ts
-docs/                  INSTALL_DATABASE.md, equipos-mapping.md, flujo-de-datos.md (ruta de los datos por disparador, para el informe técnico)
+docs/                  entrega_final/ (entrega del 30/11), entregables_pruebas/, INSTALL_DATABASE.md, equipos-mapping.md, flujo-de-datos.md (ruta de los datos por disparador, para el informe técnico)
 instalar.ps1           Instalador de las bases de datos (PowerShell)
 start-vertex.ps1       Arranque de desarrollo: SQL Server + backend + frontend + navegador
 ```
 
 ## Entregable de pruebas (`docs/entregables_pruebas/`, ejecutado el 11/11/2026)
-- Seis carpetas con la organización de las plantillas de la docente (copias de PLASEA, que no se modifica):
+- Siete carpetas (la 7 es el informe de pruebas, `7_Informe_de_pruebas/`, en git desde el 18/11/2026) con la organización de las plantillas de la docente (copias de PLASEA, que no se modifica):
   - 1, pruebas unitarias;
   - 2, aceptación;
   - 3, fichas funcionales;
@@ -329,6 +329,13 @@ start-vertex.ps1       Arranque de desarrollo: SQL Server + backend + frontend +
   - botones del árbol de 16–22 px en escritorio;
   - SEO 83: sin meta description, y `/robots.txt` devuelve `index.html`.
 
+## Entrega final (`docs/entrega_final/`, 30/11/2026)
+- Plantillas de la docente (zip "Material propuesto entrega final"): guía de proyecto de aula, diapositivas (10), póster A1, DERS (IEEE 830) y rúbrica. Rellenadas el 17–18/11/2026 y aprobadas por el usuario el 18/11/2026.
+- Archivos: `Guia_Proyecto_Aula_VERTEX.docx`, `Diapositivas_Sustentacion_VERTEX.pptx`, `Poster_VERTEX.pptx` y `DERS_VERTEX_actualizado.docx` (el original `docs/DERS_VERTEX.docx` no se tocó), cada uno con su PDF, y `Matriz_Rubrica_Evidencias.md`. Paquete para la docente: `docs/VERTEX_Entrega_Final.zip` (carpetas 1–5; los `.zip` no se versionan).
+- Título único: "VERTEX: monitoreo de horas y estados de los motores de los equipos CERO". Metodología: enfoque ágil iterativo e incremental (Larman y Basili, 2003), 3 fases y 6 sprints. 4 objetivos específicos.
+- Normas: impersonal, sin pendientes, trabajo futuro (Etapa A/B) en futuro, lo tomado de internet en negrilla, APA 7 al final, sin estilos "Título N" en Word. **Nada del hardware del prototipo** (componentes, batería, presupuesto) en los entregables; solo "en la Etapa A se instalará un dispositivo de captura que enviará lecturas reales a `VERTEX_REAL`".
+- Generadores y material de trabajo en `.trabajo/` (excluido en `.git/info/exclude`, no se versiona): `gen/guia.py`, `diapositivas.py`, `poster.py`, `ders.py` y `ders_diagramas.py` (python-docx / python-pptx; ejecutar con `python -P -E`), `ESTADO.md` y `datos.md`.
+
 ## Variables de entorno
 
 Ningún `.env` se sube a git (`.gitignore`). Cada carpeta tiene su `.env.example`.
@@ -350,8 +357,8 @@ Ningún `.env` se sube a git (`.gitignore`). Cada carpeta tiene su `.env.example
 | Variable | Uso |
 |---|---|
 | `VITE_API_URL` | `http://localhost:3000` |
-| `VITE_DEMO_MODE` | `false` en local, `true` en Cloudflare y en Netlify |
-| `VITE_DEMO_EMAIL`, `VITE_DEMO_PASSWORD` | Solo en los paneles de Cloudflare (variables de build) y de Netlify, nunca en el repo |
+| `VITE_DEMO_MODE` | `false` en local y en el servidor, `true` en Cloudflare |
+| `VITE_DEMO_EMAIL`, `VITE_DEMO_PASSWORD` | Solo en el panel de Cloudflare (variables de build), nunca en el repo |
 
 **`.env` raíz:** instalador y `scripts/create_demo_users.ts` (`VERTEX_DEMO_*`, `DEMO_PWD_*`).
 

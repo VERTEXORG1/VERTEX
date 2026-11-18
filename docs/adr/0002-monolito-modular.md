@@ -8,8 +8,8 @@ El prototipo tiene tres contenedores (DERS §05.4, C4 nivel 2): frontend web, AP
 
 ## Decisión
 Cada aplicación es un solo proceso desplegable, dividido internamente por dominios:
-- **API** (`apps/backend`): una aplicación Express 5 + TypeScript con un dominio por carpeta en `src/domains/` (`equipos`, `identity` y, como estructura prevista, `data-acquisition`, `hours-calculation`, `electrical-maintenance`, `mechanical-maintenance` y `audit`) y piezas comunes en `src/shared/` (conexión a la base, middlewares).
-- **Frontend** (`apps/frontend`): una aplicación React 19 + Vite con un módulo por carpeta en `src/modules/` (`auth`, `dashboard` y, como estructura prevista, `reporting` y `admin`).
+- **API** (`apps/backend`): una aplicación Express 5 + TypeScript con un dominio por carpeta en `src/domains/` (`equipos` e `identity`; los dominios futuros, como la recepción de lotes del dispositivo de captura, el mantenimiento y la auditoría, se añadirán como carpetas nuevas) y piezas comunes en `src/shared/` (conexión a la base, middlewares).
+- **Frontend** (`apps/frontend`): una aplicación React 19 + Vite con un módulo por carpeta en `src/modules/` (`auth`, `dashboard` y `admin`).
 
 No se separan microservicios.
 

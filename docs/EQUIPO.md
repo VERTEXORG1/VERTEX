@@ -128,7 +128,7 @@ Las tareas de plan de cada integrante están en la sección 2. Lo que sigue regi
   - [`apps/frontend/`](../apps/frontend), evolución del dashboard desde el 12/10/2026 (dona por ciclos, tendencia, árbol de equipos, modo demo). Desarrollado por Islender según el tablero (#5); integrado y subido al repositorio por Islender.
   - Fase B de identidad (30/10/2026, commits `9a475da` y `6ddee65`): middlewares, bloqueo, recuperación por el administrador, alta de usuarios y pruebas. Desarrollada por Islender con asistencia de IA; integrada y subida al repositorio por Islender.
   - [`docs/adr/`](adr): redactados por Islender con asistencia de IA.
-  - Integración, arranque y despliegue: [`instalar.ps1`](../instalar.ps1), [`start-vertex.ps1`](../start-vertex.ps1), Netlify.
+  - Integración, arranque y despliegue: [`instalar.ps1`](../instalar.ps1), [`start-vertex.ps1`](../start-vertex.ps1), sitio de demostración en Cloudflare (Netlify hasta el 18/11/2026).
 
 ### Jhoan Sebastián Blanco Rincón · [Jhoansbr](https://github.com/Jhoansbr)
 - **Repositorio:**

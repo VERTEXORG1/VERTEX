@@ -24,7 +24,7 @@ Cada integrante sube su propio trabajo con su propia cuenta de GitHub, para que 
 
 - **Ninguna contraseña, token ni valor de `.env` en archivos ni en commits.** Cada carpeta tiene su `.env.example` con los nombres de las variables, sin valores.
 - **No reescribas el historial de `main`** (nada de `push --force`).
-- **Netlify:** cada push a `main` despliega el sitio y consume créditos del plan. Si el cambio no afecta al frontend (por ejemplo, solo documentación, `database/` o `apps/backend/`), escribe `[skip netlify]` en el mensaje del commit.
+- **Cloudflare:** cada push a `main` que cambia `apps/frontend` vuelve a publicar el sitio de demostración.
 - **Archivos `.sql` en UTF-16:** varios scripts de `database/` están en UTF-16 LE con BOM. Al editarlos, conserva esa codificación.
 - **Antes de abrir el pull request**, ejecuta los chequeos que tenga tu parte:
   - `apps/frontend`: `npm run lint`, `npm test` y `npm run build`.
