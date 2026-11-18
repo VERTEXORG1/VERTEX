@@ -9,7 +9,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "db:export": "tsx --env-file=.env scripts/export-db-to-excel.ts",
-    "seed:mediciones": "tsx --env-file=.env scripts/seed-mediciones.ts"
+    "seed:mediciones": "tsx --env-file=.env scripts/seed-mediciones.ts",
+    "comparar:estados": "tsx --env-file=.env scripts/comparar-resumen-estados.ts"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
