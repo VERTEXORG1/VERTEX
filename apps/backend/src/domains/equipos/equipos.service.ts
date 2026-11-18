@@ -308,6 +308,54 @@ export async function findBloques(codigo: string, periodo: Periodo): Promise<Blo
   return { ...cabeceraResumen(r), bloques, ciclos };
 }
 
+/** Battery of the capture prototype mounted on the CERO (NIVEL_BATERIA, V009) */
+export interface BateriaEquipo {
+  /** Latest reading, 0–100 % (null: the prototype has not sent one yet) */
+  nivel: number | null;
+  /** event_time of that reading (null: none) */
+  event_time: Date | null;
+  /** ConfiguracionSistema.BATERIA_AVISO_PCT: warn at or below it (null: not configured) */
+  aviso_pct: number | null;
+}
+
+/**
+ * Latest battery level of the prototype of an equipment. The readings go to
+ * dbo.Mediciones with the CERO's equipo_id (the prototype belongs to the
+ * CERO, not to the motor). nivel is null while there are no readings, or
+ * when V009 is not applied (no NIVEL_BATERIA variable). Null when the
+ * equipment does not exist.
+ */
+export async function findBateria(codigo: string): Promise<BateriaEquipo | null> {
+  if (codigo.length > MAX_CODIGO_LENGTH) return null;
+
+  try {
+    const result = await new sql.Request()
+      .input('codigo', sql.VarChar(MAX_CODIGO_LENGTH), codigo)
+      .query<{ nivel: number | null; event_time: Date | null; aviso_pct: number | null }>(`
+        SELECT b.valor AS nivel, b.event_time,
+               (SELECT TRY_CAST(valor AS DECIMAL(9,4)) FROM dbo.ConfiguracionSistema
+                WHERE clave = 'BATERIA_AVISO_PCT') AS aviso_pct
+        FROM dbo.EquiposCero e
+        OUTER APPLY (
+            SELECT TOP (1) m.valor, m.event_time
+            FROM dbo.Mediciones m
+            WHERE m.equipo_id = e.equipo_id
+              AND m.variable_id = (SELECT variable_id FROM dbo.Variables WHERE codigo = 'NIVEL_BATERIA')
+            ORDER BY m.event_time DESC
+        ) b
+        WHERE e.codigo = @codigo AND e.activo = 1
+      `);
+    const fila = result.recordset[0];
+    if (!fila) return null;
+    const num = (v: unknown) => (v === null || v === undefined ? null : Number(v));
+    return { nivel: num(fila.nivel), event_time: fila.event_time ?? null, aviso_pct: num(fila.aviso_pct) };
+  } catch (err) {
+    const errorBase = errorDeBase(err);
+    if (errorBase) throw errorBase;
+    throw err;
+  }
+}
+
 /** Variables the trend chart can request (dbo.Variables.codigo) */
 export const VARIABLES_TENDENCIA = [
   'CORRIENTE_MOTOR',

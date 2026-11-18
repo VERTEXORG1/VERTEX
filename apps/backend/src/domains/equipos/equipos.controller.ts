@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 import {
   DbUnavailableError,
+  findBateria,
   findBloques,
   findEquipo,
   findMediciones,
@@ -123,6 +124,15 @@ export async function getResumen(req: Request<{ codigo: string }>, res: Response
   const periodo = leerPeriodo(req, res, true);
   if (!periodo) return;
   await responder(res, 'resumen', () => findResumen(codigo, periodo));
+}
+
+/**
+ * GET /api/equipos/:codigo/bateria → { nivel, event_time, aviso_pct }: latest
+ * battery level of the CERO's prototype (nivel null: no reading yet).
+ */
+export async function getBateria(req: Request<{ codigo: string }>, res: Response) {
+  const codigo = req.params.codigo.trim().toUpperCase();
+  await responder(res, 'bateria', () => findBateria(codigo));
 }
 
 /**

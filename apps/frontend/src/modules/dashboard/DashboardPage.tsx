@@ -9,6 +9,9 @@ import { DonutFilters } from './DonutFilters';
 import { DonutPanel } from './DonutPanel';
 import type { PeriodoFechas } from './PeriodoSelector';
 import { fetchEquipo } from './equipos.service';
+import { BATERIA_PENDIENTE, fetchBateria } from './bateria.service';
+import type { BateriaData } from './bateria.service';
+import { BateriaPrototipo } from './BateriaPrototipo';
 import type { CeroId, DonutData } from './donutSimulation';
 import { resolverRuta } from './jerarquiaDemo';
 import { demoBloquesData, fetchBloques } from './bloques.service';
@@ -210,6 +213,13 @@ export function DashboardPage({ onLogout, onUsuarios }: DashboardPageProps) {
       : verificacionBackend.status === 'error'
         ? { status: 'error', message: verificacionBackend.message }
         : { status: verificacionBackend.status };
+
+  // Battery of the CERO's capture prototype (latest reading). Demo mode has
+  // no backend and no prototype yet: pending.
+  const bateriaBackend = useBackend(DEMO_MODE || !cero ? null : `bateria|${cero}`, (signal) =>
+    fetchBateria(cero ?? '', signal),
+  );
+  const bateria: BackendState<BateriaData> = DEMO_MODE ? { status: 'data', data: BATERIA_PENDIENTE } : bateriaBackend;
 
   const clave = periodoClave(periodo);
   const variable =
@@ -454,18 +464,21 @@ export function DashboardPage({ onLogout, onUsuarios }: DashboardPageProps) {
             )}
           </div>
 
-          {/* Map placeholder */}
-          <div className={styles.col7}>
+          {/* Battery of the CERO's prototype on top, then the map placeholder */}
+          <div className={`${styles.col7} ${styles.colStack}`}>
             {seleccion.cero === null ? (
               <AvisoCard titulo="Ubicación de equipos" texto={seleccion.aviso} />
             ) : (
-              <div className={styles.card}>
-                <h3 className={styles.cardTitle}>Ubicación de equipos</h3>
-                <div className={styles.mapPlaceholder}>
-                  <span>🗺️</span>
-                  <div>Mapa de planta — Fase 2</div>
+              <>
+                <BateriaPrototipo state={bateria} />
+                <div className={styles.card}>
+                  <h3 className={styles.cardTitle}>Ubicación de equipos</h3>
+                  <div className={styles.mapPlaceholder}>
+                    <span>🗺️</span>
+                    <div>Mapa de planta — Fase 2</div>
+                  </div>
                 </div>
-              </div>
+              </>
             )}
           </div>
         </div>

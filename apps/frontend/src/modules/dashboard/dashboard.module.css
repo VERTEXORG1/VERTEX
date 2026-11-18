@@ -2331,6 +2331,111 @@ button.arbolBoton::after {
   }
 }
 
+/* ── Battery of the capture prototype (above the map card) ── */
+/* One line: title | bar | value. Not a .card, so .colStack keeps its
+   height and the map card below takes the rest of the cell */
+.bateria {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 8px var(--vx-card-padding);
+  background: var(--vx-white);
+  border-radius: var(--vx-radius);
+  box-shadow: 0 2px 12px rgba(46, 117, 182, 0.35);
+}
+
+.bateriaTitulo {
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vx-text-muted);
+}
+
+/* Battery body with its terminal at the right (::after) */
+.bateriaBarra {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 60px;
+  max-width: 220px;
+  height: 14px;
+  margin-right: 4px;
+  border: 1.5px solid var(--vx-primary);
+  border-radius: 3px;
+  padding: 1.5px;
+  background: var(--vx-white);
+}
+
+.bateriaBarra::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -5px;
+  width: 3px;
+  height: 6px;
+  transform: translateY(-50%);
+  border-radius: 0 1.5px 1.5px 0;
+  background: var(--vx-primary);
+}
+
+/* No readings yet: hatched, so it does not read as "0 %" */
+.bateriaPendiente {
+  border-style: dashed;
+  border-color: var(--vx-text-muted);
+  background: repeating-linear-gradient(-45deg, var(--vx-neutral) 0 4px, var(--vx-white) 4px 8px);
+}
+
+.bateriaPendiente::after {
+  background: var(--vx-text-muted);
+}
+
+.bateriaRelleno,
+.bateriaRellenoBajo {
+  height: 100%;
+  border-radius: 1.5px;
+  background: var(--vx-ok);
+  transition: width 0.3s ease;
+}
+
+.bateriaRellenoBajo {
+  background: var(--vx-danger);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bateriaRelleno,
+  .bateriaRellenoBajo {
+    transition: none;
+  }
+}
+
+.bateriaValor {
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--vx-primary);
+  white-space: nowrap;
+}
+
+.bateriaValorPendiente {
+  color: var(--vx-warning);
+}
+
+.bateriaValorBajo {
+  color: var(--vx-danger);
+}
+
+@media (max-width: 340px) {
+  .bateria {
+    gap: 6px;
+    padding: 8px 12px;
+  }
+
+  .bateriaTitulo,
+  .bateriaValor {
+    font-size: 12px;
+  }
+}
+
 /* Mobile-only helper */
 .mobileOnly {
   display: inline-flex;
