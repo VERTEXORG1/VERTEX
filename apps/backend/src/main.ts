@@ -1,7 +1,8 @@
 import { createApp } from './app';
 import { conectarConReintentos } from './shared/db';
 
-const PORT = 3000;
+// 3000 on the PC; the server sets PORT because Synerbot already uses 3000
+const PORT = Number(process.env.PORT ?? 3000);
 
 function requireEnv(name: string): string {
   const value = process.env[name];
@@ -34,8 +35,10 @@ async function main() {
 
   // The port opens at once: until SQL Server answers, /health reports
   // db "sin conexión" and the data routes answer 503
-  createApp().listen(PORT, () => {
-    console.log(`VERTEX backend escuchando en http://localhost:${PORT}`);
+  // HOST=127.0.0.1 on the server: only nginx (local) may reach the API
+  const HOST = process.env.HOST ?? '0.0.0.0';
+  createApp().listen(PORT, HOST, () => {
+    console.log(`VERTEX backend escuchando en http://${HOST}:${PORT}`);
   });
 
   // Global pool (services use `new sql.Request()` on it), retried until it connects

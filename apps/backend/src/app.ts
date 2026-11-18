@@ -8,6 +8,11 @@ import { estadoBase } from './shared/db';
 export function createApp() {
   const app = express();
 
+  // On the server, nginx (local) forwards the visitor's IP in X-Forwarded-For;
+  // without this, every login would come from 127.0.0.1 and the per-IP lockout
+  // would block everyone at once. Direct local requests are unaffected.
+  app.set('trust proxy', 'loopback');
+
   // Comma-separated list of allowed origins; defaults to the Vite dev server
   const origins = (process.env.CORS_ORIGIN ?? 'http://localhost:5173')
     .split(',')
