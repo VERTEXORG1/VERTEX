@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Informe de pruebas VERTEX</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 18mm 16mm; }
+  :root { --azul: #1F3A5F; --gris: #5F6B7A; --borde: #C9D1DB; --fondo: #F2F5F8; --ok: #2E7D32; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Calibri, Arial, sans-serif; font-size: 10pt; line-height: 1.42; color: #1B1F24; background: #fff; margin: 0; }
+  h1, h2, h3, h4 { color: var(--azul); line-height: 1.2; }
+  h2 { font-size: 15pt; border-bottom: 2px solid var(--azul); padding-bottom: 4px; margin: 0 0 10px; break-before: page; }
+  h3 { font-size: 12pt; margin: 16px 0 6px; }
+  h4 { font-size: 10.5pt; margin: 14px 0 6px; color: #2C4F7C; break-after: avoid; }
+  p { margin: 0 0 7px; text-align: justify; }
+  ul, ol { margin: 0 0 8px; padding-left: 20px; }
+  li { margin-bottom: 3px; }
+  code { font-family: Consolas, monospace; font-size: 8.8pt; background: var(--fondo); padding: 0 3px; border-radius: 3px; }
+  table { border-collapse: collapse; width: 100%; margin: 6px 0 10px; font-size: 8.8pt; }
+  th, td { border: 1px solid var(--borde); padding: 4px 6px; vertical-align: top; text-align: left; }
+  thead th, table.datos th { background: var(--azul); color: #fff; font-weight: 600; }
+  tr { break-inside: avoid; }
+  .est { text-align: center; font-weight: 700; width: 46px; }
+  .ok { color: var(--ok); }
+  table.caso { break-inside: avoid; margin-bottom: 9px; }
+  table.caso th { background: var(--fondo); color: var(--azul); font-weight: 700; }
+  table.caso th.est { background: #E3F2E1; }
+  table.caso .cid { width: 92px; white-space: nowrap; }
+  table.caso .lab { width: 92px; color: var(--gris); font-weight: 600; background: #FAFBFC; }
+  table.caso .rf { display: block; font-weight: 400; color: var(--gris); font-size: 8.3pt; margin-top: 1px; }
+  table.caso tr.pie td { font-size: 8.2pt; color: var(--gris); }
+  .nota { background: var(--fondo); border-left: 3px solid var(--azul); padding: 7px 10px; margin: 8px 0 10px; font-size: 9.2pt; }
+  .num { text-align: right; }
+  /* Portada */
+  .portada { height: 255mm; display: flex; flex-direction: column; text-align: center; }
+  .portada .inst { font-size: 11pt; color: var(--gris); letter-spacing: .3px; }
+  .portada .centro { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .portada .marca { font-size: 40pt; font-weight: 800; color: var(--azul); letter-spacing: 6px; margin: 0; }
+  .portada .sub { font-size: 13pt; color: #2C4F7C; margin: 6px 0 26px; }
+  .portada .titulo { font-size: 20pt; font-weight: 700; margin: 0 0 6px; }
+  .portada .tipo { font-size: 11pt; color: var(--gris); }
+  .portada table { width: 78%; margin: 26px auto 0; font-size: 10.5pt; }
+  .portada td { border: none; border-bottom: 1px solid var(--borde); padding: 6px 4px; }
+  .portada td:first-child { color: var(--gris); width: 34%; text-align: right; padding-right: 14px; }
+  .portada .pie { font-size: 9.5pt; color: var(--gris); }
+  .indice { break-before: page; }
+  .indice ol { font-size: 10.5pt; line-height: 1.8; }
+  .indice ol ol { font-size: 9.8pt; line-height: 1.6; }
+  .cifras { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0 12px; }
+  .cifra { border: 1px solid var(--borde); border-radius: 6px; padding: 8px; text-align: center; }
+  .cifra b { display: block; font-size: 17pt; color: var(--azul); }
+  .cifra span { font-size: 8.5pt; color: var(--gris); }
+  figure { margin: 0 0 12px; break-inside: avoid; text-align: center; }
+  figure img { max-width: 100%; max-height: 108mm; border: 1px solid var(--borde); }
+  figcaption { font-size: 8.3pt; color: var(--gris); margin-top: 3px; }
+  pre { font-family: Consolas, monospace; font-size: 8pt; background: var(--fondo); border: 1px solid var(--borde); padding: 8px; white-space: pre-wrap; break-inside: avoid; }
+  table.ca td { font-size: 8.2pt; }
+</style>
+</head>
+<body>
+
+<!-- ============ PORTADA ============ -->
+<section class="portada">
+  <div class="inst">Universidad Simón Bolívar · Sede Cúcuta<br>Programa de Ingeniería de Sistemas · Proyecto final de diseño (9.º semestre)</div>
+  <div class="centro">
+    <p class="marca" style="text-align:center">VERTEX</p>
+    <div class="sub">Monitoreo de condición y mantenimiento inteligente de los equipos CEROS</div>
+    <div class="titulo">Informe de pruebas del proyecto</div>
+    <div class="tipo">Verificación y validación: pruebas unitarias, de integración, de sistema y de usuario</div>
+    <table>
+      <tr><td>Estudiante</td><td><b>Islender Arturo Alfonso Contreras</b></td></tr>
+      <tr><td>Grupo</td><td>Equipo VERTEX: Islender Arturo Alfonso Contreras, Anyul Lisbeth Martínez Jiménez, Ronal Gabriel Ure Carrillo y Jhoan Sebastián Blanco Rincón</td></tr>
+      <tr><td>Proyecto</td><td>VERTEX, prototipo con la base de demostración <code>VERTEX_DEMO</code> (equipo CERO-010)</td></tr>
+      <tr><td>Docente</td><td>Prof. Jover Alonso</td></tr>
+      <tr><td>Ejecución de las pruebas</td><td>11 de noviembre de 2026</td></tr>
+      <tr><td>Fecha del informe</td><td>13 de noviembre de 2026</td></tr>
+    </table>
+  </div>
+  <div class="pie">Cúcuta, Norte de Santander · 2026</div>
+</section>
+
+<!-- ============ ÍNDICE ============ -->
+<section class="indice">
+  <h3 style="font-size:15pt">Contenido</h3>
+  <ol>
+    <li>Resumen ejecutivo</li>
+    <li>Plan de pruebas aplicado
+      <ol><li>Alcance</li><li>Criterios de aceptación</li><li>Entorno de pruebas</li><li>Herramientas</li><li>Datos de prueba</li><li>Reparto de la ejecución y aporte del estudiante</li></ol></li>
+    <li>Pruebas realizadas
+      <ol><li>Pruebas unitarias</li><li>Pruebas de integración</li><li>Pruebas de sistema (funcionales y no funcionales)</li><li>Pruebas de usuario (criterios de aceptación)</li></ol></li>
+    <li>Resultados principales
+      <ol><li>Resumen de resultados</li><li>Cobertura de los requerimientos</li><li>Defectos detectados</li></ol></li>
+    <li>Aspectos de mejora</li>
+    <li>Anexos
+      <ol><li>A. Evidencia de la prueba ejecutada por el estudiante (PU-08-01)</li><li>B. Evidencia de integración</li><li>C. Capturas de las pruebas de sistema</li><li>D. Auditorías Lighthouse</li><li>E. Salidas de texto leídas del navegador</li><li>F. Índice de evidencias y ubicación</li></ol></li>
+  </ol>
+</section>
+
+<!-- ============ 1. RESUMEN ============ -->
+<h2>1. Resumen ejecutivo</h2>
+<p>VERTEX es un sistema web que calcula, a partir de las mediciones por minuto de un motor, cuánto tiempo estuvo encendido, apagado, en evento o en mantenimiento, y lo presenta en un dashboard (dona por ciclos entre mantenimientos, tabla de bloques de estado y tendencia de las variables eléctricas y mecánicas). El prototipo trabaja con el equipo CERO-010 y la base de demostración <code>VERTEX_DEMO</code>, que contiene 654 470 mediciones simuladas entre el 13/07/2026 y el 14/10/2026.</p>
+<p><b>Objetivos de las pruebas.</b> (1) Verificar que cada función y regla de negocio del código produce el resultado esperado, incluidos los casos límite e inválidos; (2) comprobar que el frontend, la API y la base de datos se comunican correctamente y entregan los mismos números en todas las vistas; (3) validar desde la pantalla que el dashboard cumple los requerimientos funcionales RF-01, RF-02, RF-03, RF-04, RF-06 y RF-08 del DERS; y (4) medir la usabilidad, accesibilidad y desempeño de las pantallas con Lighthouse.</p>
+<p><b>Qué se ejecutó.</b> Las pruebas se ejecutaron en una sola ronda, el 11/11/2026, dentro del sprint S6. En total, 31 casos de prueba de código con 106 escenarios (16 casos unitarios y 15 de integración), 20 casos de prueba de sistema en el navegador, 4 auditorías Lighthouse y 7 criterios de aceptación.</p>
+<div class="cifras">
+  <div class="cifra"><b>31 / 31</b><span>casos de código en PASS (106 escenarios)</span></div>
+  <div class="cifra"><b>20 / 20</b><span>casos de sistema aprobados (A)</span></div>
+  <div class="cifra"><b>4 / 4</b><span>auditorías Lighthouse en A</span></div>
+  <div class="cifra"><b>7 / 7</b><span>criterios de aceptación en A</span></div>
+</div>
+<p><b>Conclusiones principales.</b></p>
+<ul>
+  <li>El cálculo de estados en la base de datos (<code>sp_vx_resumen_estados</code>) da los minutos esperados para septiembre de CERO-010 (ENCENDIDO 21 412, APAGADO 8 258, EVENTO 10 920 y MANTENIMIENTO 2 610 min) y respeta los límites de sus reglas: un hueco de 30 min no es mantenimiento y uno de 31 min sí; 0,10 A es apagado y 0,11 A es encendido; el 30 % exacto de lecturas con marca no pone el ciclo en evento.</li>
+  <li>La dona, el estado del motor, la tabla y la tendencia muestran la misma información para un período o para un ciclo elegido, porque salen de una sola consulta.</li>
+  <li>Los errores se manejan con mensajes claros: parámetros inválidos responden 400, un equipo inexistente 404, y la base o el backend sin conexión 503; el dashboard reintenta solo y ofrece «Reintentar».</li>
+  <li>Las pantallas obtienen 90 a 100 en Performance, 91 a 100 en Accessibility y 100 en Best Practices.</li>
+  <li>No se registraron defectos. El dictamen global es <b>APROBADO (100 %)</b>. Las observaciones de Lighthouse y las limitaciones del alcance se recogen como aspectos de mejora (sección 5).</li>
+</ul>
+
+<!-- ============ 2. PLAN ============ -->
+<h2>2. Plan de pruebas aplicado</h2>
+<h3>2.1 Alcance</h3>
+<p>Las pruebas cubren los requerimientos funcionales implementados en el semestre, según el DERS de VERTEX (§04):</p>
+<table class="datos">
+  <thead><tr><th style="width:62px">RF</th><th>Requerimiento</th><th>Qué se prueba</th></tr></thead>
+  <tr><td>RF-01</td><td>Selección del CERO y consulta por días o por rango de fechas</td><td>Árbol de equipos, verificación del equipo en la base, selector de período (7 / 15 / 30 días / Todo y rango Desde–Hasta), validación de parámetros en la API.</td></tr>
+  <tr><td>RF-02</td><td>Cálculo de los minutos en cada estado</td><td>Reglas del procedimiento <code>sp_vx_resumen_estados</code> y coincidencia entre la leyenda de la dona, la tabla y la base.</td></tr>
+  <tr><td>RF-03</td><td>Estado actual y bloques cronológicos</td><td>Orden de los bloques, estado del motor, ciclos, manejo de errores y reintentos, <code>/health</code>.</td></tr>
+  <tr><td>RF-04</td><td>Tendencia de las variables frente al valor de referencia</td><td>Línea de referencia, episodios, intervalos automáticos, vistas Resumen y Detalle.</td></tr>
+  <tr><td>RF-06</td><td>Reinicio del contador de ciclo tras el mantenimiento</td><td>Detección de ciclos entre mantenimientos, regla del 30 %, botones de ciclo de la dona.</td></tr>
+  <tr><td>RF-08</td><td>Identificación de las lecturas como simuladas o reales</td><td>Inicio de sesión en modo demo, integridad de variables y unidades, avisos de datos simulados.</td></tr>
+</table>
+<p><b>Fuera de alcance.</b> RF-05 (intervenciones de mantenimiento), RF-07 (energía por lote), RF-11 (captura física) y RF-12 (integración corporativa) no tienen implementación en este semestre. RF-09 y RF-10 (usuarios, contraseñas, roles y auditoría de acceso) son potestad del área de TI de la empresa; para ver el dashboard se usó una sola cuenta demo.</p>
+
+<h3>2.2 Criterios de aceptación</h3>
+<table class="datos">
+  <thead><tr><th style="width:150px">Tipo de prueba</th><th>Criterio</th></tr></thead>
+  <tr><td>Unitarias e integración</td><td><b>PASS</b> si el resultado obtenido es igual al esperado en todos los escenarios del caso (Normal, Límite e Inválido); <b>FAIL</b> en cualquier otro caso. Si un caso falla no se cambia el resultado esperado: se registra el defecto.</td></tr>
+  <tr><td>Sistema (funcionales)</td><td><b>A</b> Aprobado: cumple al 100 % el comportamiento esperado. <b>C</b> Condicionado: la lógica principal funciona, con observaciones menores de interfaz, textos o formato. <b>R</b> Rechazado: no cumple el comportamiento esperado.</td></tr>
+  <tr><td>Sistema (no funcionales)</td><td>Lighthouse: <b>A</b> si Performance, Accessibility y Best Practices son ≥ 90; <b>C</b> si alguno está entre 50 y 89; <b>R</b> si alguno es menor que 50. SEO se registra aparte porque no mide usabilidad.</td></tr>
+  <tr><td>Dictamen global</td><td>Porcentaje de cumplimiento = casos aprobados / casos evaluados × 100. <b>Aprobado</b> ≥ 90 %; <b>Condicionado</b> 75–89 %; <b>Rechazado</b> &lt; 75 %.</td></tr>
+  <tr><td>Severidad de defectos</td><td><b>Crítica:</b> impide usar la función o muestra datos incorrectos del equipo. <b>Alta:</b> un cálculo, estado o regla da un resultado incorrecto. <b>Media:</b> hay un error, pero existe una alternativa. <b>Baja:</b> error de texto, formato o presentación.</td></tr>
+</table>
+
+<h3>2.3 Entorno de pruebas</h3>
+<table class="datos">
+  <thead><tr><th style="width:150px">Elemento</th><th>Configuración</th></tr></thead>
+  <tr><td>Equipo</td><td>Portátil de desarrollo con Windows 11, sobre el código de la rama <code>main</code> sin modificar.</td></tr>
+  <tr><td>Frontend</td><td>React 19 + TypeScript + Vite 8 en <code>http://localhost:5173</code>.</td></tr>
+  <tr><td>Backend</td><td>Express 5 + TypeScript en <code>http://localhost:3000</code>.</td></tr>
+  <tr><td>Base de datos</td><td>SQL Server con <code>VERTEX_PRUEBAS</code>, copia de <code>VERTEX_DEMO</code> creada para la ejecución (la base demo no se tocó). Los datos sintéticos se crean dentro de una transacción que termina en ROLLBACK.</td></tr>
+  <tr><td>Navegador</td><td>Google Chrome 157 a 1366 × 768, con un perfil temporal sin extensiones ni contraseñas guardadas.</td></tr>
+  <tr><td>Sitio público</td><td><code>https://vertex.sinerbyte.com</code>, solo para la auditoría LH-04.</td></tr>
+  <tr><td>Horas</td><td>La tabla del dashboard muestra las horas en UTC, tal como están guardadas.</td></tr>
+</table>
+
+<h3>2.4 Herramientas</h3>
+<table class="datos">
+  <thead><tr><th style="width:150px">Herramienta</th><th>Uso</th></tr></thead>
+  <tr><td>Trazador de VERTEX</td><td>Ejecuta cada función de TypeScript o T-SQL con las entradas del escenario, muestra el código paso a paso con sus variables (caja blanca) y compara entradas y salidas con lo esperado (caja negra).</td></tr>
+  <tr><td>Vitest + Testing Library</td><td>Pruebas automáticas del hook <code>useBackend</code> (reintentos) en PU-03-03.</td></tr>
+  <tr><td>puppeteer-core</td><td>Maneja Chrome para tomar las capturas de los casos de sistema sin editarlas y leer del DOM lo que una captura no muestra (atributos <code>title</code>).</td></tr>
+  <tr><td>Lighthouse 12.8.2</td><td>Auditorías de Performance, Accessibility, Best Practices y SEO desde la línea de comandos.</td></tr>
+  <tr><td>sqlcmd / SQL Server</td><td>Ejecución de los procedimientos y del script de integridad <code>99_verificar_integridad_variables.sql</code>.</td></tr>
+  <tr><td>Complejidad V(G)</td><td>Complejidad ciclomática de McCabe: 1 + número de puntos de decisión de la función (if, for, while, case, catch, &amp;&amp;, ||, ??, ternario; en T-SQL IF, WHILE y WHEN).</td></tr>
+</table>
+
+<h3>2.5 Datos de prueba</h3>
+<table class="datos">
+  <thead><tr><th style="width:90px">Dato</th><th>Valor</th><th style="width:170px">Se usa en</th></tr></thead>
+  <tr><td>CERO-010</td><td>Equipo con 654 470 mediciones por minuto del 13/07/2026 al 14/10/2026, 5 ciclos y 4 mantenimientos (6 h, 17,5 h, 26 h y 5 h).</td><td>Casi todos los casos</td></tr>
+  <tr><td>CERO-011</td><td>Equipo de prueba sin mediciones.</td><td>PU-02-06, PU-03-01, PU-04-05</td></tr>
+  <tr><td>CERO-012</td><td>Existe en el árbol demo pero no en la base.</td><td>PU-01-05, CP-RF01-E02</td></tr>
+  <tr><td>CERO-099</td><td>Código inexistente.</td><td>PU-02-06, PU-03-01</td></tr>
+  <tr><td>CERO-PRB</td><td>Equipo sintético creado y deshecho dentro de una transacción (ROLLBACK).</td><td>PU-02-02, PU-02-03, PU-06-02</td></tr>
+  <tr><td>admin.demo</td><td>Cuenta demo para ver el dashboard en local. La contraseña la escribe el integrante; no se guarda en ningún archivo.</td><td>Casos de sistema y LH-02, LH-03</td></tr>
+</table>
+
+<h3>2.6 Reparto de la ejecución y aporte del estudiante</h3>
+<p>Cada integrante ejecutó los casos de sus requerimientos; quien ejecutó los casos de código de un requerimiento ejecutó también sus casos de sistema. El nombre de quien ejecutó cada caso figura en su ficha (sección 3).</p>
+<table class="datos">
+  <thead><tr><th>Integrante</th><th>Qué ejecutó</th><th class="num">Código</th><th class="num">Sistema</th><th class="num">Lighthouse</th></tr></thead>
+  <tr><td><b>Islender Arturo Alfonso Contreras</b></td><td>Inicio de sesión en modo demo (PU-08-01) y guía de ejecución de pruebas</td><td class="num">1</td><td class="num">0</td><td class="num">0</td></tr>
+  <tr><td>Anyul Lisbeth Martínez Jiménez</td><td>Período, árbol, cálculo de estados, ciclos, tendencia e integridad</td><td class="num">24</td><td class="num">16</td><td class="num">0</td></tr>
+  <tr><td>Ronal Gabriel Ure Carrillo</td><td>Consulta de equipos, bloques, errores de base, reintentos y /health</td><td class="num">6</td><td class="num">4</td><td class="num">0</td></tr>
+  <tr><td>Jhoan Sebastián Blanco Rincón</td><td>Auditorías Lighthouse</td><td class="num">0</td><td class="num">0</td><td class="num">4</td></tr>
+</table>
+<div class="nota"><b>Aporte individual.</b> Ejecuté y verifiqué el caso PU-08-01 (inicio de sesión en modo demo, 4 escenarios en PASS; evidencia en el Anexo A), redacté la guía de ejecución de pruebas del equipo (organización de documentos, numeración de evidencias, entorno, procedimiento, severidades y dictamen) y consolidé en este informe los resultados de los cuatro integrantes, citando para cada caso quién lo ejecutó.</div>
+
+<!-- ============ 3. PRUEBAS ============ -->
+<h2>3. Pruebas realizadas</h2>
+<p>Cada caso se presenta como ficha con sus datos, pasos, resultado esperado frente a obtenido, estado, evidencia y responsable. Los identificadores de evidencia remiten a las capturas: <b>CB</b> = caja blanca (trazado paso a paso), <b>CN</b> = caja negra (entradas, resultado esperado y obtenido, o captura de pantalla del dashboard). La ubicación de cada carpeta está en el Anexo F.</p>
+<p>Los 31 casos de código (PU) se agrupan aquí por su alcance: son <b>unitarios</b> los que prueban una función aislada del frontend o del backend, y de <b>integración</b> los que atraviesan la API y la base de datos o ejecutan los procedimientos almacenados sobre <code>VERTEX_PRUEBAS</code>.</p>
+
+<h3>3.1 Pruebas unitarias (16 casos, 73 escenarios)</h3>
+<p>Prueban de forma aislada funciones del frontend (período, árbol, servicios de bloques y mediciones en modo demo, dona, tendencia, inicio de sesión) y del backend (validación de parámetros y conversión de errores de SQL Server), con escenarios Normal, Límite e Inválido.</p>
+<h4>RF-01 · Selección del CERO y consulta por días o por rango de fechas</h4>
+
+<table class="caso">
+  <tr><th class="cid">PU-01-01</th><th colspan="3">periodoQuery: consulta del período<span class="rf">RF-01 · Frontend · dashboard/periodo.ts · V(G) = 3 · 3 escenarios</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">Rango 01/09/2026 – 30/09/2026; 30 días; «Todo» (dias = null).</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Arma «desde=2026-09-01&amp;hasta=2026-09-30», «dias=30» y, con «Todo», la cadena vacía.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 3 de 3 escenarios (Normal, Normal (días), Límite (Todo)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-001 a CB-003; caja negra CN-001 a CN-003</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">PU-01-02</th><th colspan="3">periodoClave y esDias: clase y clave del período<span class="rf">RF-01 · Frontend · dashboard/periodo.ts · V(G) = 2 / 2 · 3 escenarios</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">Rango de septiembre; «Todo»; un rango comparado con 30 días.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">La clave es «2026-09-01..2026-09-30»; «Todo» cuenta como días (true); un rango no es días (false).</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 3 de 3 escenarios (Normal, Límite (Todo), Inválido).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-004 a CB-006; caja negra CN-004 a CN-006</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">PU-01-03</th><th colspan="3">leerPeriodo con ?dias<span class="rf">RF-01 · Backend · equipos.controller.ts · V(G) = 10 · 6 escenarios</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">dias = 30, 1, 3650, 0, 3651 y «abc».</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">30, 1 y 3650 se aceptan; 0, 3651 y «abc» responden 400 «El parámetro dias debe ser un entero entre 1 y 3650».</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 6 de 6 escenarios (Normal, Límite (1), Límite (3650), Inválido (0), Inválido (3651), Inválido (abc)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-007 a CB-012; caja negra CN-007 a CN-012</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">PU-01-04</th><th colspan="3">leerPeriodo con ?desde y ?hasta<span class="rf">RF-01 · Backend · equipos.controller.ts · V(G) = 10 · 4 escenarios</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">01/09 – 30/09; 15/09 – 15/09; 30/09 – 01/09; 30/02 – 05/03.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Septiembre va del 01/09 00:00 al 01/10 00:00 UTC (los dos extremos incluidos); un solo día va del 15/09 al 16/09; el rango invertido y la fecha inexistente responden 400.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 4 de 4 escenarios (Normal, Límite (un día), Inválido (hasta &lt; desde), Inválido (30/02)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-013 a CB-016; caja negra CN-013 a CN-016</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">PU-01-06</th><th colspan="3">resolverRuta: camino del árbol de equipos<span class="rf">RF-01 · Frontend · dashboard/jerarquiaDemo.ts · V(G) = 5 · 3 escenarios</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">Ruta de CERO-010; ruta con un nivel que no existe; ruta vacía.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Devuelve Línea de esmaltado, Línea 1, CEROS, CERO-010; null; lista vacía.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 3 de 3 escenarios (Normal, Inválido, Límite).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-021 a CB-023; caja negra CN-021 a CN-023</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">PU-01-07</th><th colspan="3">textoRuta: texto de la ruta elegida<span class="rf">RF-01 · Frontend · dashboard/jerarquiaDemo.ts · V(G) = 3 · 2 escenarios</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">Ruta de CERO-010; ruta que no existe.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">«Línea de esmaltado › Línea 1 › CEROS › CERO-010»; cadena vacía.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 2 de 2 escenarios (Normal, Inválido).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-024 a CB-025; caja negra CN-024 a CN-025</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+<h4>RF-02 · Cálculo de los minutos en cada estado</h4>
+
+<table class="caso">
+  <tr><th class="cid">PU-02-07</th><th colspan="3">demoBloquesData: bloques del modo demo<span class="rf">RF-02 · Frontend · dashboard/bloques.service.ts · V(G) = 7 · 4 escenarios</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">CERO-010 con 30 días, septiembre y «Todo»; CERO-013.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">La suma de los bloques es igual a las horas, los bloques cubren el período sin huecos ni solapes; CERO-013 no devuelve datos (equipo no encontrado).</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 4 de 4 escenarios (Normal (30 días), Normal (septiembre), Límite (Todo), Inválido (CERO-013)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-034 a CB-037; caja negra CN-034 a CN-037</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+<h4>RF-03 · Estado actual y bloques cronológicos</h4>
+
+<table class="caso">
+  <tr><th class="cid">PU-03-02</th><th colspan="3">errorDeBase: errores de SQL Server<span class="rf">RF-03 · Backend · equipos.service.ts · V(G) = 4 · 4 escenarios</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">ConnectionError ESOCKET; RequestError ETIMEOUT; error con código ECONNRESET; RequestError EREQUEST.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">503 «Sin conexión a la base de datos»; 503 «La base de datos tardó demasiado en responder»; 503 «Sin conexión a la base de datos»; el error de consulta no se convierte (null).</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 4 de 4 escenarios (Normal (sin conexión), Normal (ETIMEOUT), Límite (solo código), Inválido (error de consulta)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-042 a CB-045; caja negra CN-042 a CN-045</td><td colspan="2">Ejecutó: Ronal Gabriel Ure Carrillo, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">PU-03-03</th><th colspan="3">errorDeRespuesta y reintentos de useBackend<span class="rf">RF-03 · Frontend · shared/api.ts y dashboard/useBackend.ts · V(G) = 3 / 14 · 15 escenarios</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">Respuestas 502, 503, 504, 400, 404 y 500 y una falla de red.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX, con Vitest; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">502, 503, 504 y la falla de red son ErrorTemporal y se reintentan 2 veces (a los 2 y a los 5 s); 400, 404 y 500 no se reintentan; si sigue fallando aparece «Reintentar».</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 15 de 15 escenarios: 6 trazados de errorDeRespuesta (502, 503, 504, 400, 404 y 500) y 9 pruebas Vitest de useBackend (reintento con 502, 503, 504 y sin red, recuperación, sin reintento con 400, 404 y 500, botón «Reintentar»).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-046 a CB-060 (CB-052 a CB-060 son las pruebas Vitest); caja negra CN-046 a CN-051</td><td colspan="2">Ejecutó: Ronal Gabriel Ure Carrillo, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">PU-03-04</th><th colspan="3">romano y radioNumero: número de cada ciclo en la dona<span class="rf">RF-03 · Frontend · dashboard/DonutPanel.tsx · V(G) = 3 / 1 · 6 escenarios</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">romano(4), romano(1), romano(0); radioNumero con pasos de 180°, 120° y 90°.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">«IV», «I» y cadena vacía; radio 32, 42 y 46 unidades para 2, 3 y 4 ciclos.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 6 de 6 escenarios (Normal, Límite (1), Inválido (0), Normal (2 ciclos), Normal (3 ciclos), Límite (4 ciclos)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-061 a CB-066; caja negra CN-052 a CN-057</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">PU-03-05</th><th colspan="3">bloquesDelCiclo: vista de un ciclo<span class="rf">RF-03 · Frontend · dashboard/DashboardPage.tsx · V(G) = 1 · 3 escenarios</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">Respuesta de /bloques con el ciclo II, el ciclo en curso y los 4 ciclos del período.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">El período es el del ciclo, la referencia es su fin (el último registro si sigue en curso) y las horas son las del ciclo; «Todo» es la suma I + II + … .</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 3 de 3 escenarios (Normal (ciclo II), Límite (ciclo en curso), Normal (Todo = I + II + …)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-067 a CB-069; caja negra CN-058 a CN-060</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+<h4>RF-04 · Tendencia de las variables frente al valor de referencia</h4>
+
+<table class="caso">
+  <tr><th class="cid">PU-04-01</th><th colspan="3">lineaReferencia: línea roja de la tendencia<span class="rf">RF-04 · Frontend · dashboard/referenciasTendencia.ts · V(G) = 5 · 5 escenarios</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">Corriente, vibración, temperatura, voltaje y producción con las referencias demo.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Corriente 6,3 A, vibración 3,4 mm/s, temperatura 64 °C y voltaje 225 V con marcado de episodios; producción 100 sin marcar episodios.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 5 de 5 escenarios (Normal, Normal (vibración), Normal (temperatura), Normal (voltaje), Límite (producción)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-072 a CB-076; caja negra CN-063 a CN-067</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">PU-04-02</th><th colspan="3">minutosDetalle: intervalo de la vista Detalle<span class="rf">RF-04 · Frontend · dashboard/operacion.service.ts · V(G) = 2 · 3 escenarios</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">Períodos de 2 días, 16 días y 16 días + 1 ms.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">15, 15 y 60 minutos.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 3 de 3 escenarios (Normal, Límite (16 días), Límite (16 días + 1 ms)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-077 a CB-079; caja negra CN-068 a CN-070</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">PU-04-05</th><th colspan="3">demoMarca: marca de evento simulada<span class="rf">RF-04 · Frontend · operacion.service.ts y bloques.service.ts · V(G) = 3 · 4 escenarios</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">CERO-010, CERO-012 y CERO-011.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Vibración del 21/09 06:11 al 06:21; temperatura del 09/10 09:30 al 09:40; CERO-011 sin marca; la marca sale igual en la tendencia y en los bloques.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 4 de 4 escenarios (Normal (CERO-010), Normal (CERO-012), Límite (sin marca), Normal (tendencia = bloques)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-091 a CB-094; caja negra CN-082 a CN-085</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">PU-04-06</th><th colspan="3">episodios: puntos sobre la línea de referencia<span class="rf">RF-04 · Frontend · dashboard/TrendChart.tsx · V(G) = 7 · 4 escenarios</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">Series de 8, 5, 3 y 0 puntos frente a la línea.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Dos episodios con su pico; una parada corta el episodio; un punto igual a la línea cuenta; sin puntos no hay episodios.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 4 de 4 escenarios (Normal, Normal (parada), Límite (= línea), Inválido (sin puntos)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-095 a CB-098; caja negra CN-086 a CN-089</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+<h4>RF-08 · Identificación de las lecturas como simuladas o reales</h4>
+
+<table class="caso">
+  <tr><th class="cid">PU-08-01</th><th colspan="3">login en modo demo<span class="rf">RF-08 · Frontend · auth/auth.service.ts · V(G) = 10 · 4 escenarios</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">Correo y contraseña demo; el correo en mayúsculas; contraseña errónea; sin variables demo.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Token local demo: true de 8 h guardado en la pestaña, sin ninguna llamada a la API; el correo no distingue mayúsculas; los dos casos inválidos se rechazan sin token.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 4 de 4 escenarios (Normal, Límite (mayúsculas), Inválido (contraseña), Inválido (sin credenciales demo)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-102 a CB-105; caja negra CN-093 a CN-096</td><td colspan="2">Ejecutó: Islender Arturo Alfonso Contreras, 11/11/2026</td></tr>
+</table>
+
+<h3>3.2 Pruebas de integración (15 casos, 33 escenarios)</h3>
+<p>Verifican la cooperación entre capas: los endpoints de la API contra SQL Server (<code>GET /api/equipos/:codigo</code>, <code>/bloques</code>, <code>/mediciones</code>, <code>/health</code>), los procedimientos <code>sp_vx_resumen_estados</code> y <code>sp_vx_tendencia_variable</code> sobre los datos reales de la base de pruebas, y el script de integridad del catálogo de variables. Los casos con datos sintéticos (CERO-PRB) se ejecutan dentro de una transacción con ROLLBACK, de modo que la base queda como estaba.</p>
+<h4>RF-01 · Selección del CERO y consulta por días o por rango de fechas</h4>
+
+<table class="caso">
+  <tr><th class="cid">PU-01-05</th><th colspan="3">GET /api/equipos/:codigo (getEquipo)<span class="rf">RF-01 · Backend · dominio equipos · V(G) = 5 · 4 escenarios</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">CERO-010; « cero-010 »; CERO-012; CERO-010 con la base sin conexión.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX sobre VERTEX_PRUEBAS; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">200 con encontrado: true; el código se normaliza a CERO-010; 404 «Equipo no encontrado»; 503 «Sin conexión a la base de datos».</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 4 de 4 escenarios (Normal (200), Límite (minúsculas y espacios), Inválido (404), Inválido (503)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-017 a CB-020; caja negra CN-017 a CN-020</td><td colspan="2">Ejecutó: Ronal Gabriel Ure Carrillo, 11/11/2026</td></tr>
+</table>
+<h4>RF-02 · Cálculo de los minutos en cada estado</h4>
+
+<table class="caso">
+  <tr><th class="cid">PU-02-01</th><th colspan="3">Minutos por segmento<span class="rf">RF-02 · Base de datos · sp_vx_resumen_estados · V(G) = 58 · 1 escenario</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">CERO-010, @desde 2026-09-01, @hasta 2026-10-01.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX sobre VERTEX_PRUEBAS; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">ENCENDIDO 21 412, APAGADO 8 258, EVENTO 10 920 y MANTENIMIENTO 2 610 min.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 1 de 1 escenarios (Normal (septiembre de CERO-010)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-026; caja negra CN-026</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">PU-02-02</th><th colspan="3">Regla 1: hueco entre registros<span class="rf">RF-02 · Base de datos · sp_vx_resumen_estados · V(G) = 58 · 1 escenario</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">Equipo sintético CERO-PRB con un hueco de 30 min y otro de 31 min, dentro de una transacción con ROLLBACK.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX sobre VERTEX_PRUEBAS; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">El hueco de 30 min no es mantenimiento; el de 31 min sí (06:40 – 07:11, 31 min) y abre un ciclo nuevo.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 1 de 1 escenarios (Límite (hueco de 30 y de 31 min)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-027; caja negra CN-027</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">PU-02-03</th><th colspan="3">Regla 4: corriente cero<span class="rf">RF-02 · Base de datos · sp_vx_resumen_estados · V(G) = 58 · 1 escenario</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">CERO-PRB con lecturas de 0,10 A y 0,11 A y registros sin corriente con ESTADO_MOTOR (ROLLBACK).</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX sobre VERTEX_PRUEBAS; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">0,10 A es APAGADO (regla 4c); 0,11 A es ENCENDIDO; sin lectura de corriente decide ESTADO_MOTOR.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 1 de 1 escenarios (Límite (0,10 A / 0,11 A / ESTADO_MOTOR)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-028; caja negra CN-028</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">PU-02-04</th><th colspan="3">Regla 4b: evento tras una marca<span class="rf">RF-02 · Base de datos · sp_vx_resumen_estados · V(G) = 58 · 1 escenario</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">CERO-010, del 21/09 al 01/10, @detalle = 1.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX sobre VERTEX_PRUEBAS; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Desde la marca de vibración del 21/09 06:11, lo que no está encendido es EVENTO hasta el mantenimiento del 28/09 07:00.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 1 de 1 escenarios (Normal (marca del 21/09 06:11)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-029; caja negra CN-029</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">PU-02-05</th><th colspan="3">@ciclos = 1 no cambia los resultados 1 a 4<span class="rf">RF-02 · Base de datos · sp_vx_resumen_estados · V(G) = 58 · 2 escenarios</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">CERO-010 con 30 días y con septiembre, con y sin @ciclos.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX sobre VERTEX_PRUEBAS; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Los resultados 1 a 4 son idénticos; con @ciclos se agregan los conjuntos 5 y 6 (4 frente a 6 conjuntos).</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 2 de 2 escenarios (Normal (30 días), Normal (septiembre)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-030 a CB-031; caja negra CN-030 a CN-031</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">PU-02-06</th><th colspan="3">Equipo sin datos<span class="rf">RF-02 · Base de datos · sp_vx_resumen_estados · V(G) = 58 · 2 escenarios</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">CERO-011 (sin mediciones); CERO-099 (no existe).</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX sobre VERTEX_PRUEBAS; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">CERO-011 devuelve fecha de referencia nula, horas en cero y listas vacías; CERO-099 no devuelve resultados.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 2 de 2 escenarios (Sin datos (CERO-011), Inválido (equipo inexistente)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-032 a CB-033; caja negra CN-032 a CN-033</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+<h4>RF-03 · Estado actual y bloques cronológicos</h4>
+
+<table class="caso">
+  <tr><th class="cid">PU-03-01</th><th colspan="3">findBloques: bloques y ciclos de /bloques<span class="rf">RF-03 · Backend · equipos.service.ts · V(G) = 13 · 4 escenarios</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">CERO-010 con 30 días y con septiembre; CERO-011; CERO-099.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX sobre VERTEX_PRUEBAS; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Bloques del más reciente al más antiguo (57 en 30 días) y ciclos del más antiguo al más reciente, el último con completo: false; CERO-011 sin bloques ni ciclos; CERO-099 devuelve null.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 4 de 4 escenarios (Normal (30 días), Normal (septiembre), Límite (sin mediciones), Inválido (no existe)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-038 a CB-041; caja negra CN-038 a CN-041</td><td colspan="2">Ejecutó: Ronal Gabriel Ure Carrillo, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">PU-03-06</th><th colspan="3">GET /health (estadoBase)<span class="rf">RF-03 · Backend · app.ts · V(G) = 2 · 2 escenarios</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">Base conectada; base detenida, con el límite de 3 000 ms.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX sobre VERTEX_PRUEBAS; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">db «conectada»; db «sin conexión».</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 2 de 2 escenarios (Normal, Inválido (sin base)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-070 a CB-071; caja negra CN-061 a CN-062</td><td colspan="2">Ejecutó: Ronal Gabriel Ure Carrillo, 11/11/2026</td></tr>
+</table>
+<h4>RF-04 · Tendencia de las variables frente al valor de referencia</h4>
+
+<table class="caso">
+  <tr><th class="cid">PU-04-03</th><th colspan="3">Intervalo automático por duración<span class="rf">RF-04 · Base de datos · sp_vx_tendencia_variable · V(G) = 16 · 6 escenarios</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">CERO-010, CORRIENTE_MOTOR, @dias = 2, 3, 16, 17, 60 y 61.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX sobre VERTEX_PRUEBAS; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">15, 60, 60, 240, 240 y 1 440 minutos por punto.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 6 de 6 escenarios (Límite (2 días), Límite (3 días), Límite (16 días), Límite (17 días), Límite (60 días), Límite (61 días: más)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-080 a CB-085; caja negra CN-071 a CN-076</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">PU-04-04</th><th colspan="3">GET /mediciones (getMediciones)<span class="rf">RF-04 · Backend · dominio equipos · V(G) = 4 · 5 escenarios</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">Las 7 variables válidas; « temperatura_mot »; PRESION; variable vacía; sin variable.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX sobre VERTEX_PRUEBAS; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">200 con puntos para las 7 variables; el código se normaliza; PRESION, vacía y sin variable responden 400.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 5 de 5 escenarios (Normal (7 variables), Límite (minúsculas), Inválido (PRESION), Inválido (vacía), Inválido (sin variable)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-086 a CB-090; caja negra CN-077 a CN-081</td><td colspan="2">Ejecutó: Ronal Gabriel Ure Carrillo, 11/11/2026</td></tr>
+</table>
+<h4>RF-06 · Reinicio del contador de ciclo tras el mantenimiento</h4>
+
+<table class="caso">
+  <tr><th class="cid">PU-06-01</th><th colspan="3">Ciclos entre mantenimientos<span class="rf">RF-06 · Base de datos · sp_vx_resumen_estados · V(G) = 58 · 1 escenario</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">CERO-010, toda la historia.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX sobre VERTEX_PRUEBAS; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">5 ciclos separados por 4 mantenimientos de 6 h, 17,5 h, 26 h y 5 h.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 1 de 1 escenarios (Normal (toda la historia)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-099; caja negra CN-090</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">PU-06-02</th><th colspan="3">Regla 2: porcentaje de evento del ciclo<span class="rf">RF-06 · Base de datos · sp_vx_resumen_estados · V(G) = 58 · 1 escenario</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">CERO-PRB con 10 registros encendidos por ciclo, 3 de ellos con marca (30 %) y más de 3 en otro (ROLLBACK).</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX sobre VERTEX_PRUEBAS; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">El 30 % exacto no pone el ciclo en estado de evento; más del 30 % sí.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 1 de 1 escenarios (Límite (30 % y más de 30 %)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-100; caja negra CN-091</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">PU-06-03</th><th colspan="3">Cierre del ciclo que contiene @hasta<span class="rf">RF-06 · Base de datos · sp_vx_resumen_estados · V(G) = 58 · 1 escenario</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">CERO-010, @desde 15/09, @hasta 20/09, @ciclos = 1.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX sobre VERTEX_PRUEBAS; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">El ciclo se lee completo: del 11/09 08:00 a su cierre del 29/09 09:00.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 1 de 1 escenarios (Normal (@hasta a mitad de un ciclo)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-101; caja negra CN-092</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+<h4>RF-08 · Identificación de las lecturas como simuladas o reales</h4>
+
+<table class="caso">
+  <tr><th class="cid">PU-08-02</th><th colspan="3">Integridad de variables, unidades y sensores<span class="rf">RF-08 · Base de datos · 99_verificar_integridad_variables.sql · V(G) = 5 · 1 escenario</span></th><th class="est ok">PASS</th></tr>
+  <tr><td class="lab">Datos</td><td colspan="4">Script de solo lectura sobre VERTEX_PRUEBAS.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">Ejecutar la función con cada escenario (Normal, Límite, Inválido) en el trazador de VERTEX sobre VERTEX_PRUEBAS; guardar la captura de caja blanca (trazado) y la de caja negra (entradas y salidas) y comparar con lo esperado.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Catálogo, unidades, sensores y medición–sensor sin diferencias (0), 8 variables contadas y resumen final «OK».</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Se cumplió lo esperado en 1 de 1 escenarios (Normal (VERTEX_PRUEBAS)).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">caja blanca CB-106; caja negra CN-097</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<h3>3.3 Pruebas de sistema</h3>
+<h4 style="font-size:11pt">3.3.1 Funcionales (20 casos de extremo a extremo)</h4>
+<p>Se ejecutan en Chrome sobre el sistema completo (frontend → API → base de datos), con la cuenta demo y sin mirar el código. Operación <b>E</b> = ejecutar una acción; <b>R</b> = leer y comprobar lo que muestra la pantalla. CP-RF03-E01 se ejecutó al final porque detiene el backend.</p>
+<h4>RF-01 · Selección del CERO y consulta por días o por rango de fechas</h4>
+
+<table class="caso">
+  <tr><th class="cid">CP-RF01-E01</th><th colspan="3">RF-01 Selección y período<span class="rf">Operación: Ejecutar · Prioridad: Alta</span></th><th class="est ok">A</th></tr>
+  <tr><td class="lab">Datos y precondiciones</td><td colspan="4">Entorno local de la guía (5.2), sesión con la cuenta demo.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">1. Abrir el árbol Línea de esmaltado › Línea 1 › CEROS.<br>2. Elegir CERO-010.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">CERO-010 con ✓ verde «Equipo verificado» y el dashboard cargado (dona, tabla y tendencia).</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">CERO-010 muestra el ✓ verde de equipo verificado y el dashboard carga la dona, la tabla y la tendencia en 2,9 s.</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">CN-098</td><td colspan="2">Ejecutó: Ronal Gabriel Ure Carrillo, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">CP-RF01-E02</th><th colspan="3">RF-01 Selección y período<span class="rf">Operación: Ejecutar · Prioridad: Alta</span></th><th class="est ok">A</th></tr>
+  <tr><td class="lab">Datos y precondiciones</td><td colspan="4">Entorno local de la guía (5.2), sesión con la cuenta demo. CERO-012 existe en el árbol demo pero no en la base.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">1. Elegir CERO-012 en el árbol.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">CERO-012 (no está en la base): «!» rojo y «Equipo no encontrado».</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Bajo CERO-012 aparece el «!» rojo con «Equipo no encontrado», y las tarjetas del dashboard muestran el mismo mensaje.</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">CN-099</td><td colspan="2">Ejecutó: Ronal Gabriel Ure Carrillo, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">CP-RF01-E03</th><th colspan="3">RF-01 Selección y período<span class="rf">Operación: Ejecutar · Prioridad: Media</span></th><th class="est ok">A</th></tr>
+  <tr><td class="lab">Datos y precondiciones</td><td colspan="4">Entorno local de la guía (5.2), sesión con la cuenta demo.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">1. Abrir CERO-010 en el árbol.<br>2. Elegir el componente Poleas.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Componente sin sensores (Poleas de CERO-010): «Sin mediciones para este componente».</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Con Poleas de CERO-010 las cuatro tarjetas muestran «Sin mediciones para este componente».</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">CN-100</td><td colspan="2">Ejecutó: Ronal Gabriel Ure Carrillo, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">CP-RF01-E04</th><th colspan="3">RF-01 Selección y período<span class="rf">Operación: Ejecutar · Prioridad: Alta</span></th><th class="est ok">A</th></tr>
+  <tr><td class="lab">Datos y precondiciones</td><td colspan="4">Entorno local de la guía (5.2), sesión con la cuenta demo. CERO-010 elegido, período de 30 días.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">1. En Desde escribir 01/09/2026.<br>2. En Hasta escribir 30/09/2026.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Desde 01/09/2026 → Hasta 30/09/2026 se aplica al momento, sin botón: dona, tabla y tendencia del rango.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">El rango se aplica al momento, sin botón: la tabla pasa de «Resumen del período (57)» a «Resumen del período (55)» y la dona y la tendencia muestran septiembre. El title de la caja dice «Datos del 13/07/2026 al 14/10/2026 (UTC)».</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">CN-101</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">CP-RF01-E05</th><th colspan="3">RF-01 Selección y período<span class="rf">Operación: Ejecutar · Prioridad: Media</span></th><th class="est ok">A</th></tr>
+  <tr><td class="lab">Datos y precondiciones</td><td colspan="4">Entorno local de la guía (5.2), sesión con la cuenta demo. CERO-010 con el rango 01/09/2026 – 30/09/2026.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">1. Poner en Desde una fecha posterior a Hasta.<br>2. Volver al rango válido, borrar Desde y salir del campo.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Desde &gt; Hasta: caja en rojo y mensaje, sin aplicar; campo vacío: al salir vuelve la fecha anterior.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Con Desde posterior a Hasta la caja queda en rojo con «La fecha de inicio no puede ser posterior a la de fin» y la tabla no cambia. Al borrar Desde y salir del campo vuelve el 01/09/2026.</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">CN-102, CN-103</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">CP-RF01-E06</th><th colspan="3">RF-01 Selección y período<span class="rf">Operación: Ejecutar · Prioridad: Alta</span></th><th class="est ok">A</th></tr>
+  <tr><td class="lab">Datos y precondiciones</td><td colspan="4">Entorno local de la guía (5.2), sesión con la cuenta demo. CERO-010 elegido.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">1. Clic en 7 días.<br>2. Clic en 15 días.<br>3. Clic en 30 días.<br>4. Clic en Todo.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Los botones 7 / 15 / 30 días / Todo cambian a la vez la dona, la tabla y la tendencia (mismo período en los campos de fecha).</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">7 días: «Resumen del período (15)», 07/10 – 14/10, ciclos I y II. 15 días: (29), 29/09 – 14/10, ciclos I a III. 30 días: (57), 14/09 – 14/10, ciclos I a III. Todo: (171), 13/07 – 14/10, ciclos I a V. Con cada botón cambian a la vez los campos de fecha, la dona, la tabla y la tendencia.</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">CN-104, CN-105</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">CP-RF01-R01</th><th colspan="3">RF-01 Selección y período<span class="rf">Operación: Leer · Prioridad: Media</span></th><th class="est ok">A</th></tr>
+  <tr><td class="lab">Datos y precondiciones</td><td colspan="4">Entorno local de la guía (5.2), sesión con la cuenta demo. CERO-010 elegido.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">1. Pulsar F5.<br>2. Abrir VERTEX en una pestaña nueva.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">F5 conserva la sesión y la ruta (CERO-010); una pestaña nueva pide login.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Tras F5 sigue la sesión y CERO-010 elegido en el árbol, con su camino abierto. La pestaña nueva abre la pantalla de inicio de sesión.</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">CN-106, CN-107</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+<h4>RF-02 · Cálculo de los minutos en cada estado</h4>
+
+<table class="caso">
+  <tr><th class="cid">CP-RF02-E01</th><th colspan="3">RF-02 Minutos por estado<span class="rf">Operación: Ejecutar · Prioridad: Alta</span></th><th class="est ok">A</th></tr>
+  <tr><td class="lab">Datos y precondiciones</td><td colspan="4">Entorno local de la guía (5.2), sesión con la cuenta demo. CERO-010, 30 días, unidad h.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">1. Elegir el ciclo I en la fila Período de la dona.<br>2. Sumar la duración de la tabla por estado y comparar con la leyenda.<br>3. Repetir con los ciclos II y III.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">30 días, con un ciclo elegido (I, II y III): la leyenda de la dona (h) coincide con la suma de la tabla por estado (la leyenda redondea a horas enteras: diferencia ≤ 0,5 h).</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Encendido / Apagado / Evento / Mantenimiento. Ciclo I: leyenda 199 / 128 / 81 / 26 h y tabla 198,7 / 128 / 80,7 / 26 h. Ciclo II: 107 / 89 / 0 / 5 h y 106,8 / 89,3 / 0 / 5 h. Ciclo III: 76 / 78 / 0 / 0 h y 76 / 78,1 / 0 / 0 h. Las diferencias son de 0,3 h o menos, por el redondeo de la leyenda a horas enteras.</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">CN-108 a CN-110</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">CP-RF02-E02</th><th colspan="3">RF-02 Minutos por estado<span class="rf">Operación: Ejecutar · Prioridad: Alta</span></th><th class="est ok">A</th></tr>
+  <tr><td class="lab">Datos y precondiciones</td><td colspan="4">Entorno local de la guía (5.2), sesión con la cuenta demo. CERO-010, 30 días (ciclos I, II y III).</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">1. Elegir «Todo» en la dona y anotar la leyenda.<br>2. Elegir cada ciclo y anotar su leyenda.<br>3. Repetir en días, semanas y meses.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Con «Todo» en la dona, la leyenda es I + II + … en horas, días, semanas y meses.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Encendido / Apagado / Evento / Mantenimiento con «Todo» y suma de los ciclos: 382 / 295 / 81 / 31 h en los dos; en días 15,9 / 12,3 / 3,4 / 1,3; en semanas 2,3 / 1,8 / 0,5 / 0,2; en meses 0,5 / 0,4 / 0,1 / 0. Iguales en las cuatro unidades.</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">CN-111, CN-112</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">CP-RF02-E03</th><th colspan="3">RF-02 Minutos por estado<span class="rf">Operación: Ejecutar · Prioridad: Alta</span></th><th class="est ok">A</th></tr>
+  <tr><td class="lab">Datos y precondiciones</td><td colspan="4">Entorno local de la guía (5.2), sesión con la cuenta demo. CERO-010.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">1. Poner el rango 01/09/2026 – 30/09/2026.<br>2. Sumar la tabla por estado y comparar con sp_vx_resumen_estados.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Septiembre (01/09–30/09): la tabla suma lo mismo que sp_vx_resumen_estados (ENCENDIDO 21 412, APAGADO 8 258, EVENTO 10 920, MANTENIMIENTO 2 610 min).</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">La tabla tiene 55 filas y suma Encendido 21 438, Apagado 8 268, Evento 10 932 y Mantenimiento 2 610 min, frente a 21 412, 8 258, 10 920 y 2 610 min del procedimiento. La diferencia (26, 10 y 12 min) sale de que la tabla muestra las horas con un decimal, dentro de la tolerancia de 1 min por fila.</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">CN-113</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+<h4>RF-03 · Estado actual y bloques cronológicos</h4>
+
+<table class="caso">
+  <tr><th class="cid">CP-RF03-E01</th><th colspan="3">RF-03 Estado y bloques<span class="rf">Operación: Ejecutar · Prioridad: Alta</span></th><th class="est ok">A</th></tr>
+  <tr><td class="lab">Datos y precondiciones</td><td colspan="4">Entorno local de la guía (5.2), sesión con la cuenta demo. CERO-010, 15 días.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">1. Detener el backend.<br>2. Cambiar de período y esperar los reintentos.<br>3. Arrancar el backend y pulsar «Reintentar».</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Backend detenido: tras 2 reintentos aparece «Reintentar»; con el backend de nuevo en marcha, «Reintentar» carga los datos.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Con el backend detenido /health no responde y, tras los 2 reintentos, las tarjetas muestran «Sin conexión con el servidor» con el botón «Reintentar». Con el backend de nuevo en marcha (/health «conectada»), «Reintentar» carga «Resumen del período (29)» y no queda ningún botón «Reintentar».</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">CN-114, CN-115</td><td colspan="2">Ejecutó: Ronal Gabriel Ure Carrillo, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">CP-RF03-R01</th><th colspan="3">RF-03 Estado y bloques<span class="rf">Operación: Leer · Prioridad: Alta</span></th><th class="est ok">A</th></tr>
+  <tr><td class="lab">Datos y precondiciones</td><td colspan="4">Entorno local de la guía (5.2), sesión con la cuenta demo. CERO-010, 30 días.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">1. Leer el orden de las filas de la tabla.<br>2. Pasar el puntero sobre cada fila y leer su title.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Tabla: # 1 es el bloque más reciente (inicios en orden descendente); cada fila lleva la regla en su title.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">57 filas con los inicios en orden descendente: la # 1 empieza el 13/10/2026 21:45 y la última el 14/09/2026 03:59. Las 57 filas llevan su regla en el title.</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">CN-116 y CP-RF03-R01_reglas_en_el_title_de_cada_fila.txt (carpeta 3_Pruebas_funcionales\Capturas)</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">CP-RF03-R02</th><th colspan="3">RF-03 Estado y bloques<span class="rf">Operación: Leer · Prioridad: Alta</span></th><th class="est ok">A</th></tr>
+  <tr><td class="lab">Datos y precondiciones</td><td colspan="4">Entorno local de la guía (5.2), sesión con la cuenta demo. CERO-010, 30 días.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">1. Con «Todo», comparar el Estado con el bloque 1.<br>2. Elegir el ciclo II y comparar.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Estado del motor = último bloque del período; con un ciclo elegido, el último segmento del ciclo (Mantenimiento si lo cerró uno).</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Con «Todo» el Estado es «Apagado», igual al bloque 1. Con el ciclo II el Estado es «Mantenimiento», igual a su bloque 1, el mantenimiento que lo cerró.</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">CN-117, CN-118</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">CP-RF03-R03</th><th colspan="3">RF-03 Estado y bloques<span class="rf">Operación: Leer · Prioridad: Media</span></th><th class="est ok">A</th></tr>
+  <tr><td class="lab">Datos y precondiciones</td><td colspan="4">Entorno local de la guía (5.2), sesión con la cuenta demo. CERO-010, 15 días.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">1. Elegir el ciclo II en la dona.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Ciclo II elegido: la tabla trae sus bloques completos, del inicio del ciclo al mantenimiento que lo cierra (fila 1).</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Ciclo II (29/09/2026 – 07/10/2026): «Resumen del período (16)»; fila 1: 07/10/2026 13:00 – 18:00, 5,0 h, Mantenimiento; fila 16: 29/09/2026 09:00 – 22:11, 13,2 h, Encendido.</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">CN-119</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+<h4>RF-04 · Tendencia de las variables frente al valor de referencia</h4>
+
+<table class="caso">
+  <tr><th class="cid">CP-RF04-R01</th><th colspan="3">RF-04 Tendencia<span class="rf">Operación: Leer · Prioridad: Alta</span></th><th class="est ok">A</th></tr>
+  <tr><td class="lab">Datos y precondiciones</td><td colspan="4">Entorno local de la guía (5.2), sesión con la cuenta demo. CERO-010, período Todo.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">1. Elegir la variable Corriente en la tendencia, vista Resumen.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Resumen de corriente, período Todo: línea roja en 6,3 A y episodios marcados con un punto rojo.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">«Tendencia — Corriente» con la línea roja en 6,3 A y 2 episodios marcados con su punto rojo.</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">CN-120</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">CP-RF04-R02</th><th colspan="3">RF-04 Tendencia<span class="rf">Operación: Leer · Prioridad: Media</span></th><th class="est ok">A</th></tr>
+  <tr><td class="lab">Datos y precondiciones</td><td colspan="4">Entorno local de la guía (5.2), sesión con la cuenta demo. CERO-010, período Todo.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">1. Elegir Vibración.<br>2. Elegir Temperatura.<br>3. Elegir Voltaje.<br>4. Elegir Producción.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Período Todo: vibración (3,4 mm/s), temperatura (64 °C) y voltaje (225 V, 0 episodios) con su línea; producción simulada y lo indica.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Vibración: línea en 3,4 mm/s y 1 episodio. Temperatura: 64 °C y 2 episodios. Voltaje: 225 V y 0 episodios. Producción: línea y el aviso «Datos simulados: no hay una variable de producción en la base de datos».</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">CN-121 a CN-124</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">CP-RF04-R03</th><th colspan="3">RF-04 Tendencia<span class="rf">Operación: Leer · Prioridad: Media</span></th><th class="est ok">A</th></tr>
+  <tr><td class="lab">Datos y precondiciones</td><td colspan="4">Entorno local de la guía (5.2), sesión con la cuenta demo. CERO-010, 15 días.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">1. Pasar la tendencia a Detalle.<br>2. Desplazar el área de trazado hasta un mantenimiento.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Detalle: scroll horizontal (abre al final), bandas Evento / MTTO y «Mantenimiento» en vertical sobre el eje X.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">El trazado mide 2 907 px en una ventana de 609 px y abre al final (posición 2 298). El mantenimiento va sobre el eje X con «Mantenimiento» en vertical, con las bandas Evento y MTTO; leyenda «Máximo · Nominal · Evento · MTTO».</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">CN-125, CN-126</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">CP-RF04-R04</th><th colspan="3">RF-04 Tendencia<span class="rf">Operación: Leer · Prioridad: Media</span></th><th class="est ok">A</th></tr>
+  <tr><td class="lab">Datos y precondiciones</td><td colspan="4">Entorno local de la guía (5.2), sesión con la cuenta demo. CERO-010, 15 días.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">1. Elegir el ciclo II en la dona.<br>2. Ver la tendencia en Resumen y en Detalle.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Con el ciclo II elegido, el eje de la tendencia es el ciclo, en Resumen y en Detalle.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Ciclo II (29/09/2026 – 07/10/2026). En Resumen las fechas del eje van del 30/09 al 07/10 (el 29/09 empieza a las 09:00 y su etiqueta de día no se dibuja). En Detalle el eje va del 29/09 09:00 al 07/10 06:15.</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">CN-127, CN-128</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+<h4>RF-06 · Reinicio del contador de ciclo tras el mantenimiento</h4>
+
+<table class="caso">
+  <tr><th class="cid">CP-RF06-R01</th><th colspan="3">RF-06 Ciclos<span class="rf">Operación: Leer · Prioridad: Alta</span></th><th class="est ok">A</th></tr>
+  <tr><td class="lab">Datos y precondiciones</td><td colspan="4">Entorno local de la guía (5.2), sesión con la cuenta demo. CERO-010, Desde 01/09/2026 → Hasta 14/10/2026.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">1. Leer los botones de la fila Período de la dona.<br>2. Pasar el puntero sobre el botón II.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Botones I, II, III… con sus fechas en el title (ciclo II: 11/09/2026 – 28/09/2026). Período Desde 01/09/2026 → Hasta 14/10/2026: el ciclo I es el que contiene el 01/09.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">Botones I, II, III, IV y Todo. El title del II dice «Ciclo II: 11/09/2026 – 28/09/2026»: el ciclo se reinicia al terminar cada mantenimiento.</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">CN-129 y CP-RF06-R01_title_de_los_botones_de_ciclo.txt (carpeta 3_Pruebas_funcionales\Capturas)</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<table class="caso">
+  <tr><th class="cid">CP-RF06-R02</th><th colspan="3">RF-06 Ciclos<span class="rf">Operación: Leer · Prioridad: Media</span></th><th class="est ok">A</th></tr>
+  <tr><td class="lab">Datos y precondiciones</td><td colspan="4">Entorno local de la guía (5.2), sesión con la cuenta demo. CERO-010, período Todo.</td></tr>
+  <tr><td class="lab">Pasos</td><td colspan="4">1. Elegir el ciclo II en la dona.</td></tr>
+  <tr><td class="lab">Esperado</td><td colspan="4">Un ciclo elegido: dona entera sin número romano y sus dos fechas dd/mm/aaaa a lo largo del eje.</td></tr>
+  <tr><td class="lab">Obtenido</td><td colspan="4">La dona queda entera, sin número romano, con sus dos fechas a lo largo del eje: 10/09/2026 (inicio del mantenimiento que cerró el ciclo) y 30/07/2026 (inicio del ciclo).</td></tr>
+  <tr class="pie"><td class="lab">Evidencia</td><td colspan="2">CN-130</td><td colspan="2">Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026</td></tr>
+</table>
+
+<h4 style="font-size:11pt">3.3.2 No funcionales: usabilidad y desempeño con Lighthouse (4 auditorías)</h4>
+<p><b>Pasos:</b> abrir la pantalla en Chrome con perfil temporal; iniciar sesión con la cuenta demo cuando la pantalla lo requiere y elegir CERO-010 (30 días); ejecutar Lighthouse en modo Escritorio (Móvil en LH-03) sin borrar el almacenamiento, con las categorías Performance, Accessibility, Best Practices y SEO; guardar el informe HTML y la captura del resumen. <b>Esperado:</b> ≥ 90 en las tres primeras categorías. Ejecutó: Jhoan Sebastián Blanco Rincón, 11/11/2026.</p>
+<table class="datos">
+  <thead><tr><th>Pantalla</th><th class="num">Perf.</th><th class="num">Acces.</th><th class="num">B. P.</th><th class="num">SEO</th><th>FCP · LCP</th><th>CLS · TBT</th><th class="est">Est.</th></tr></thead>
+  <tr><td>LH-01 Inicio de sesión · local · escritorio</td><td class="num">100</td><td class="num">100</td><td class="num">100</td><td class="num">83</td><td>0,4 s · 0,6 s</td><td>0 · 0 ms</td><td class="est ok">A</td></tr>
+  <tr><td>LH-02 Dashboard CERO-010 · local · escritorio</td><td class="num">99</td><td class="num">91</td><td class="num">100</td><td class="num">83</td><td>0,4 s · 0,9 s</td><td>0,003 · 30 ms</td><td class="est ok">A</td></tr>
+  <tr><td>LH-03 Dashboard CERO-010 · local · móvil</td><td class="num">90</td><td class="num">96</td><td class="num">100</td><td class="num">83</td><td>1,5 s · 2,7 s</td><td>0,009 · 270 ms</td><td class="est ok">A</td></tr>
+  <tr><td>LH-04 Inicio de sesión · sitio público · escritorio</td><td class="num">96</td><td class="num">100</td><td class="num">100</td><td class="num">83</td><td>0,7 s · 0,9 s</td><td>0 · 0 ms</td><td class="est ok">A</td></tr>
+</table>
+<p>Lighthouse 12 ya no incluye la categoría PWA (se retiró en la versión 12.0), por eso se auditaron las cuatro categorías disponibles. Evidencia: Anexo D y los informes HTML de cada auditoría.</p>
+
+<h3>3.4 Pruebas de usuario: criterios de aceptación (7 criterios)</h3>
+<p>La validación de usuario se hizo con la matriz de criterios de aceptación de la asignatura: cada criterio describe, en términos del usuario, un comportamiento que el sistema debe cumplir, y se califica A / C / R a partir de los casos ejecutados que lo prueban. La evaluación la hizo el equipo frente a los criterios; no participaron usuarios de la planta (ver sección 5).</p>
+<table class="ca">
+  <thead><tr><th style="width:42px">ID</th><th style="width:80px">Módulo / RF</th><th>Criterio esperado</th><th style="width:105px">Escenario / entradas</th><th style="width:190px">Evidencia observada</th><th class="est">Est.</th></tr></thead>
+  <tr><td><b>CA-01</b></td><td>Formularios / (RF-01)</td><td>El formulario de período aplica un rango válido sin botón y rechaza uno inválido sin aplicarlo.</td><td>Desde 01/09/2026 → Hasta 30/09/2026; Desde posterior a Hasta; Desde vacío.</td><td>Se cumple en todos los casos citados, sin defectos.<br>Evidencia: CP-RF01-E04 (CN-101); CP-RF01-E05 (CN-102, CN-103); PU-01-04 (caja blanca CB-013 a CB-016; caja negra CN-013 a CN-016).<br>Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026.</td><td class='est ok'>A</td></tr>
+<tr><td><b>CA-02</b></td><td>Lógica de negocio / (RF-02, RF-06)</td><td>Los minutos por estado y los ciclos salen de las reglas 1 a 4 del cálculo de estados y coinciden en la dona, la tabla y la base.</td><td>CERO-010 en septiembre, 30 días y toda la historia; datos sintéticos CERO-PRB con ROLLBACK.</td><td>Se cumple en todos los casos citados, sin defectos.<br>Evidencia: CP-RF02-E01 (CN-108 a CN-110); CP-RF02-E03 (CN-113); PU-02-01 (caja blanca CB-026; caja negra CN-026); PU-02-02 (caja blanca CB-027; caja negra CN-027); PU-02-03 (caja blanca CB-028; caja negra CN-028); PU-02-04 (caja blanca CB-029; caja negra CN-029); PU-06-01 (caja blanca CB-099; caja negra CN-090); PU-06-02 (caja blanca CB-100; caja negra CN-091).<br>Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026.</td><td class='est ok'>A</td></tr>
+<tr><td><b>CA-03</b></td><td>Consultas y filtros / (RF-01, RF-03)</td><td>Elegir un CERO y un período carga sus datos; la tabla ordena los bloques del más reciente al más antiguo.</td><td>CERO-010; botones 7 / 15 / 30 días / Todo; ciclo II elegido.</td><td>Se cumple en todos los casos citados, sin defectos.<br>Evidencia: CP-RF01-E01 (CN-098); CP-RF01-E06 (CN-104, CN-105); CP-RF03-R01 (CN-116); CP-RF03-R03 (CN-119); PU-03-01 (caja blanca CB-038 a CB-041; caja negra CN-038 a CN-041).<br>Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026.</td><td class='est ok'>A</td></tr>
+<tr><td><b>CA-04</b></td><td>Salidas / (RF-02, RF-03, RF-04, RF-06)</td><td>La dona, el estado, la tabla y la tendencia muestran la misma información del período o del ciclo elegido.</td><td>CERO-010, «Todo» y ciclo II; las cinco variables de la tendencia en Resumen y Detalle.</td><td>Se cumple en todos los casos citados, sin defectos.<br>Evidencia: CP-RF02-E02 (CN-111, CN-112); CP-RF03-R02 (CN-117, CN-118); CP-RF04-R01 (CN-120); CP-RF04-R02 (CN-121 a CN-124); CP-RF04-R03 (CN-125, CN-126); CP-RF04-R04 (CN-127, CN-128); CP-RF06-R01 (CN-129); CP-RF06-R02 (CN-130).<br>Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026.</td><td class='est ok'>A</td></tr>
+<tr><td><b>CA-05</b></td><td>Interfaz / (RNF-08, RNF-12)</td><td>Las pantallas obtienen 90 o más en Performance, Accessibility y Best Practices de Lighthouse.</td><td>Inicio de sesión y dashboard de CERO-010 en local (escritorio y móvil) e inicio de sesión del sitio público.</td><td>LH-01 100 / 100 / 100; LH-02 99 / 91 / 100; LH-03 90 / 96 / 100; LH-04 96 / 100 / 100 (Performance / Accessibility / Best Practices).<br>Evidencia: LH-01 a LH-04 (4_Pruebas_no_funcionales).<br>Ejecutó: Jhoan Sebastián Blanco Rincón, 11/11/2026.</td><td class='est ok'>A</td></tr>
+<tr><td><b>CA-06</b></td><td>Manejo de errores</td><td>Los parámetros inválidos, el equipo inexistente y la base o el backend sin conexión dan un mensaje claro y el dashboard se recupera solo.</td><td>dias = 0, 3651 y «abc»; rango invertido; CERO-012; SQL Server sin conexión y ETIMEOUT; backend detenido.</td><td>Se cumple en todos los casos citados, sin defectos.<br>Evidencia: CP-RF01-E02 (CN-099); CP-RF03-E01 (CN-114, CN-115); PU-01-03 (caja blanca CB-007 a CB-012; caja negra CN-007 a CN-012); PU-01-04 (caja blanca CB-013 a CB-016; caja negra CN-013 a CN-016); PU-01-05 (caja blanca CB-017 a CB-020; caja negra CN-017 a CN-020); PU-03-02 (caja blanca CB-042 a CB-045; caja negra CN-042 a CN-045).<br>Ejecutó: Ronal Gabriel Ure Carrillo, 11/11/2026.</td><td class='est ok'>A</td></tr>
+<tr><td><b>CA-07</b></td><td>Integridad / (RF-08, RNF-05)</td><td>Cada medición tiene la unidad de su variable y su sensor; las lecturas simuladas se identifican como tales.</td><td>Script 99_verificar_integridad_variables.sql sobre VERTEX_PRUEBAS; marca demo; producción simulada.</td><td>Se cumple en todos los casos citados, sin defectos.<br>Evidencia: CP-RF04-R02 (CN-121 a CN-124); PU-08-02 (caja blanca CB-106; caja negra CN-097); PU-04-05 (caja blanca CB-091 a CB-094; caja negra CN-082 a CN-085).<br>Ejecutó: Anyul Lisbeth Martínez Jiménez, 11/11/2026.</td><td class='est ok'>A</td></tr>
+</table>
+<div class="nota"><b>Dictamen:</b> 20 de 20 casos de sistema aprobados (100 %), 7 de 7 criterios en A, 31 de 31 casos de código en PASS y 4 de 4 auditorías Lighthouse en A. Dictamen global: <b>APROBADO</b> (cumplimiento ≥ 90 %), sin casos condicionados ni rechazados.</div>
+
+<!-- ============ 4. RESULTADOS ============ -->
+<h2>4. Resultados principales</h2>
+<h3>4.1 Resumen de resultados</h3>
+<table class="datos">
+  <thead><tr><th>Nivel de prueba</th><th class="num">Casos</th><th class="num">Escenarios</th><th class="num">Aprobados</th><th class="num">Con observaciones</th><th class="num">Fallidos</th><th class="num">Cumplimiento</th></tr></thead>
+  <tr><td>Unitarias</td><td class="num">16</td><td class="num">73</td><td class="num">16 PASS</td><td class="num">—</td><td class="num">0</td><td class="num">100 %</td></tr>
+  <tr><td>Integración</td><td class="num">15</td><td class="num">33</td><td class="num">15 PASS</td><td class="num">—</td><td class="num">0</td><td class="num">100 %</td></tr>
+  <tr><td>Sistema · funcionales</td><td class="num">20</td><td class="num">—</td><td class="num">20 A</td><td class="num">0 C</td><td class="num">0 R</td><td class="num">100 %</td></tr>
+  <tr><td>Sistema · no funcionales</td><td class="num">4</td><td class="num">—</td><td class="num">4 A</td><td class="num">0 C</td><td class="num">0 R</td><td class="num">100 %</td></tr>
+  <tr><td>Usuario · criterios de aceptación</td><td class="num">7</td><td class="num">—</td><td class="num">7 A</td><td class="num">0 C</td><td class="num">0 R</td><td class="num">100 %</td></tr>
+</table>
+<p><b>Hallazgos relevantes de la ejecución:</b></p>
+<ul>
+  <li><b>Consistencia entre vistas.</b> Con un ciclo elegido, la leyenda de la dona coincide con la suma de la tabla por estado con una diferencia de 0,3 h o menos, debida al redondeo de la leyenda a horas enteras (CP-RF02-E01). Con «Todo», la leyenda es exactamente la suma de los ciclos en horas, días, semanas y meses (CP-RF02-E02).</li>
+  <li><b>Tabla frente a la base.</b> En septiembre la tabla suma 21 438 / 8 268 / 10 932 / 2 610 min frente a 21 412 / 8 258 / 10 920 / 2 610 min del procedimiento: la diferencia sale de mostrar las horas con un decimal y está dentro de la tolerancia de 1 min por fila (CP-RF02-E03).</li>
+  <li><b>Límites de las reglas de negocio.</b> Se comprobaron con datos sintéticos los bordes exactos: hueco de 30 / 31 min, corriente de 0,10 / 0,11 A y 30 % exacto frente a más de 30 % (PU-02-02, PU-02-03, PU-06-02).</li>
+  <li><b>Recuperación ante fallas.</b> Con el backend detenido el dashboard reintenta dos veces (a los 2 y 5 s), muestra «Sin conexión con el servidor» con «Reintentar» y, al volver el backend, carga los datos sin cerrar sesión (PU-03-03, CP-RF03-E01).</li>
+  <li><b>Desempeño.</b> El dashboard carga en 2,9 s en local (CP-RF01-E01); en Lighthouse, LCP de 0,6–0,9 s en escritorio y 2,7 s en la simulación de teléfono con red lenta.</li>
+</ul>
+
+<h3>4.2 Cobertura de los requerimientos</h3>
+<table class="datos">
+  <thead><tr><th>RF</th><th class="num">Casos de código</th><th class="num">Escenarios</th><th class="num">Casos de sistema</th><th>Lighthouse</th><th>Criterios CA</th></tr></thead>
+  <tr><td>RF-01</td><td class="num">7</td><td class="num">25</td><td class="num">7</td><td>LH-01, LH-02, LH-03</td><td>CA-01, CA-03, CA-06</td></tr>
+  <tr><td>RF-02</td><td class="num">7</td><td class="num">12</td><td class="num">3</td><td>—</td><td>CA-02, CA-04</td></tr>
+  <tr><td>RF-03</td><td class="num">6</td><td class="num">34</td><td class="num">4</td><td>—</td><td>CA-03, CA-04, CA-06</td></tr>
+  <tr><td>RF-04</td><td class="num">6</td><td class="num">27</td><td class="num">4</td><td>—</td><td>CA-04, CA-07</td></tr>
+  <tr><td>RF-06</td><td class="num">3</td><td class="num">3</td><td class="num">2</td><td>—</td><td>CA-02, CA-04</td></tr>
+  <tr><td>RF-08</td><td class="num">2</td><td class="num">5</td><td class="num">0</td><td>LH-04</td><td>CA-07</td></tr>
+  <tr><td><b>Total</b></td><td class="num"><b>31</b></td><td class="num"><b>106</b></td><td class="num"><b>20</b></td><td>4</td><td>7</td></tr>
+</table>
+<p>RF-08 no tiene un caso de sistema propio: en pantalla lo muestran CP-RF04-R02 (producción marcada como datos simulados) y LH-04 (sitio público en modo demo).</p>
+
+<h3>4.3 Defectos detectados</h3>
+<table class="datos">
+  <thead><tr><th style="width:60px">ID</th><th style="width:120px">Módulo</th><th>Descripción</th><th style="width:70px">Severidad</th><th style="width:70px">Estado</th></tr></thead>
+  <tr><td>—</td><td>Todos los módulos probados</td><td>Sin defectos en la ejecución del 11/11/2026: los 31 casos de código (106 escenarios) dan PASS y los 20 casos de sistema y las 4 auditorías Lighthouse dan A.</td><td>—</td><td>—</td></tr>
+</table>
+
+<!-- ============ 5. MEJORAS ============ -->
+<h2>5. Aspectos de mejora</h2>
+<h3>5.1 Recomendaciones técnicas (producto)</h3>
+<ol>
+  <li><b>Contraste de textos pequeños.</b> Lighthouse señaló grises por debajo de 4,5:1 (WCAG 2.1 AA): #757575 sobre #F5F5F5 (4,22:1) en etiquetas como «Período» y el estado de la tabla, y #90A4AE sobre blanco (2,59:1) en una fecha de la leyenda. Oscurecer esos grises.</li>
+  <li><b>Tamaño de los controles del árbol en escritorio.</b> La flecha mide 16 × 16 px y la fila 22 px de alto, por debajo de los 24 px recomendados; en el teléfono ya miden 36 px. Ampliar el área táctil sin cambiar el aspecto, y corregir el salto de nivel de encabezado en un título de tarjeta.</li>
+  <li><b>SEO 83.</b> Añadir <code>meta description</code> y un <code>/robots.txt</code> real (hoy el servidor devuelve la página de la aplicación). VERTEX es interna, pero un <code>robots.txt</code> que impida la indexación también protege el sitio público.</li>
+  <li><b>Proteger las rutas de datos.</b> Los endpoints <code>/api/equipos/…</code> todavía no exigen el token de sesión; antes de usar datos reales (<code>VERTEX_REAL</code>) deben exigirlo, y conviene probarlo con casos de seguridad (acceso sin token, inyección SQL y XSS en los parámetros).</li>
+  <li><b>Tiempo de respuesta.</b> Fijar un umbral medible (RNF-07) y añadir pruebas de rendimiento por período (7, 15, 30 días y Todo), en local y en el servidor, dado que el cálculo de estados se ejecuta en cada consulta.</li>
+  <li><b>Validar con datos reales.</b> Las mediciones de <code>VERTEX_DEMO</code> y las líneas de referencia de la tendencia son simuladas. Cuando exista captura física del CERO-010, repetir las pruebas de RF-02, RF-04 y RF-06 con lecturas reales y con los umbrales de <code>ConfiguracionVariables</code>.</li>
+</ol>
+<h3>5.2 Recomendaciones de proceso (plan de pruebas)</h3>
+<ol>
+  <li><b>Automatizar y versionar las pruebas.</b> Solo PU-03-03 corre con Vitest dentro del repositorio; el trazador y los generadores de evidencia están fuera. Llevar los casos unitarios y de integración a Vitest/Supertest y a scripts T-SQL dentro del repositorio, y ejecutarlos en integración continua en cada push.</li>
+  <li><b>Pruebas de regresión.</b> La ejecución fue una sola ronda. Repetir el conjunto antes de la entrega del 30/11 y tras cada cambio del cálculo de estados (por ejemplo, la caché de estados en desarrollo debe comparar resultados antiguos y nuevos en muchos períodos).</li>
+  <li><b>Usuarios reales en la aceptación.</b> Los criterios los evaluó el equipo. Para la etapa piloto, hacer sesiones de aceptación con personal de Mantenimiento y Producción de la planta, con tareas guiadas y un cuestionario de usabilidad.</li>
+  <li><b>Reparto equilibrado de la ejecución.</b> La mayor parte de los casos la ejecutó una integrante. Asignar en la próxima ronda los casos por requerimiento de forma más pareja y con revisión cruzada (quien diseña un caso no es quien lo califica).</li>
+  <li><b>Pruebas de fallas de infraestructura.</b> Incluir en el plan escenarios con SQL Server detenido o sin memoria y con red lenta, ejecutados en un entorno controlado, ya que el portátil de desarrollo mostró problemas de memoria de SQL Server en octubre.</li>
+  <li><b>Probar los dispositivos del público objetivo.</b> Añadir pruebas en teléfonos y tabletas reales de la planta, no solo la emulación de Lighthouse.</li>
+</ol>
+
+<!-- ============ 6. ANEXOS ============ -->
+<h2>6. Anexos</h2>
+<h3>Anexo A. Evidencia de la prueba ejecutada por el estudiante (PU-08-01)</h3>
+<p>Función <code>login()</code> de <code>src/modules/auth/auth.service.ts</code> en modo demo: valida la cuenta demo sin backend y genera un token local de 8 horas. Cuatro escenarios, todos en PASS. Capturas a 1366 × 768, sin editar.</p>
+<figure><img src="../1_Pruebas_unitarias/Capturas/Caja_Blanca/CB-102_PU-08-01_RF-08_login_demo_token_local_8h_paso_a_paso.png"><figcaption>Caja blanca, escenario Normal: trazado de login() en modo demo — CB-102_PU-08-01_RF-08_login_demo_token_local_8h_paso_a_paso.png</figcaption></figure>
+<figure><img src="../1_Pruebas_unitarias/Capturas/Caja_Negra/CN-093_PU-08-01_RF-08_login_demo_token_local_8h_entradas_y_resultado.png"><figcaption>Caja negra, escenario Normal: token local demo de 8 h sin llamar a la API — CN-093_PU-08-01_RF-08_login_demo_token_local_8h_entradas_y_resultado.png</figcaption></figure>
+<figure><img src="../1_Pruebas_unitarias/Capturas/Caja_Negra/CN-094_PU-08-01_RF-08_login_demo_correo_sin_distinguir_mayusculas_entradas_y_resultado.png"><figcaption>Caja negra, escenario Límite: el correo no distingue mayúsculas — CN-094_PU-08-01_RF-08_login_demo_correo_sin_distinguir_mayusculas_entradas_y_resultado.png</figcaption></figure>
+<figure><img src="../1_Pruebas_unitarias/Capturas/Caja_Negra/CN-095_PU-08-01_RF-08_login_demo_contrasena_erronea_entradas_y_resultado.png"><figcaption>Caja negra, escenario Inválido: contraseña errónea, sin token — CN-095_PU-08-01_RF-08_login_demo_contrasena_erronea_entradas_y_resultado.png</figcaption></figure>
+<figure><img src="../1_Pruebas_unitarias/Capturas/Caja_Negra/CN-096_PU-08-01_RF-08_login_demo_sin_variables_vacio_entradas_y_resultado.png"><figcaption>Caja negra, escenario Inválido: sin variables demo, sin token — CN-096_PU-08-01_RF-08_login_demo_sin_variables_vacio_entradas_y_resultado.png</figcaption></figure>
+
+<h3>Anexo B. Evidencia de integración</h3>
+<figure><img src="../1_Pruebas_unitarias/Capturas/Caja_Blanca/CB-026_PU-02-01_RF-02_minutos_por_segmento_septiembre_paso_a_paso.png"><figcaption>PU-02-01: sp_vx_resumen_estados, septiembre de CERO-010 — CB-026_PU-02-01_RF-02_minutos_por_segmento_septiembre_paso_a_paso.png</figcaption></figure>
+<figure><img src="../1_Pruebas_unitarias/Capturas/Caja_Negra/CN-020_PU-01-05_RF-01_get_equipo_sin_base_503_entradas_y_resultado.png"><figcaption>PU-01-05: GET /api/equipos/CERO-010 con la base sin conexión → 503 — CN-020_PU-01-05_RF-01_get_equipo_sin_base_503_entradas_y_resultado.png</figcaption></figure>
+
+<h3>Anexo C. Capturas de las pruebas de sistema</h3>
+<figure><img src="../2_Pruebas_de_aceptacion/Capturas/CN-098_CP-RF01-E01_RF-01_cero_010_verificado_dashboard_cargado.png"><figcaption>CP-RF01-E01: CERO-010 verificado y dashboard cargado — CN-098_CP-RF01-E01_RF-01_cero_010_verificado_dashboard_cargado.png</figcaption></figure>
+<figure><img src="../2_Pruebas_de_aceptacion/Capturas/CN-099_CP-RF01-E02_RF-01_cero_012_no_encontrado.png"><figcaption>CP-RF01-E02: CERO-012 «Equipo no encontrado» — CN-099_CP-RF01-E02_RF-01_cero_012_no_encontrado.png</figcaption></figure>
+<figure><img src="../2_Pruebas_de_aceptacion/Capturas/CN-102_CP-RF01-E05_RF-01_1_desde_posterior_a_hasta_caja_en_rojo.png"><figcaption>CP-RF01-E05: rango inválido, caja en rojo sin aplicar — CN-102_CP-RF01-E05_RF-01_1_desde_posterior_a_hasta_caja_en_rojo.png</figcaption></figure>
+<figure><img src="../2_Pruebas_de_aceptacion/Capturas/CN-108_CP-RF02-E01_RF-02_1_30_dias_ciclo_i_leyenda_igual_a_la_tabla.png"><figcaption>CP-RF02-E01: ciclo I, la leyenda coincide con la tabla — CN-108_CP-RF02-E01_RF-02_1_30_dias_ciclo_i_leyenda_igual_a_la_tabla.png</figcaption></figure>
+<figure><img src="../2_Pruebas_de_aceptacion/Capturas/CN-114_CP-RF03-E01_RF-03_1_backend_detenido_boton_reintentar.png"><figcaption>CP-RF03-E01: backend detenido, botón «Reintentar» — CN-114_CP-RF03-E01_RF-03_1_backend_detenido_boton_reintentar.png</figcaption></figure>
+<figure><img src="../2_Pruebas_de_aceptacion/Capturas/CN-115_CP-RF03-E01_RF-03_2_backend_de_nuevo_reintentar_carga.png"><figcaption>CP-RF03-E01: backend de nuevo en marcha, «Reintentar» carga — CN-115_CP-RF03-E01_RF-03_2_backend_de_nuevo_reintentar_carga.png</figcaption></figure>
+<figure><img src="../2_Pruebas_de_aceptacion/Capturas/CN-120_CP-RF04-R01_RF-04_corriente_todo_linea_6_3_a_y_episodios.png"><figcaption>CP-RF04-R01: corriente, línea de 6,3 A y episodios — CN-120_CP-RF04-R01_RF-04_corriente_todo_linea_6_3_a_y_episodios.png</figcaption></figure>
+<figure><img src="../2_Pruebas_de_aceptacion/Capturas/CN-126_CP-RF04-R03_RF-04_2_detalle_mantenimiento_en_vertical_y_bandas.png"><figcaption>CP-RF04-R03: Detalle, mantenimiento en vertical y bandas — CN-126_CP-RF04-R03_RF-04_2_detalle_mantenimiento_en_vertical_y_bandas.png</figcaption></figure>
+<figure><img src="../2_Pruebas_de_aceptacion/Capturas/CN-130_CP-RF06-R02_RF-06_ciclo_ii_dona_entera_y_fechas_en_el_eje.png"><figcaption>CP-RF06-R02: ciclo II, dona entera y fechas en el eje — CN-130_CP-RF06-R02_RF-06_ciclo_ii_dona_entera_y_fechas_en_el_eje.png</figcaption></figure>
+
+<h3>Anexo D. Auditorías Lighthouse</h3>
+<figure><img src="../4_Pruebas_no_funcionales/Capturas/LH-01_RF-01_inicio_de_sesion.png"><figcaption>LH-01 Inicio de sesión (escritorio) — LH-01_RF-01_inicio_de_sesion.png</figcaption></figure>
+<figure><img src="../4_Pruebas_no_funcionales/Capturas/LH-02_RF-01_dashboard_cero_010_escritorio.png"><figcaption>LH-02 Dashboard de CERO-010 (escritorio) — LH-02_RF-01_dashboard_cero_010_escritorio.png</figcaption></figure>
+<figure><img src="../4_Pruebas_no_funcionales/Capturas/LH-03_RF-01_dashboard_cero_010_movil.png"><figcaption>LH-03 Dashboard de CERO-010 (móvil) — LH-03_RF-01_dashboard_cero_010_movil.png</figcaption></figure>
+<figure><img src="../4_Pruebas_no_funcionales/Capturas/LH-04_RF-08_inicio_de_sesion_sitio_publico.png"><figcaption>LH-04 Inicio de sesión del sitio público — LH-04_RF-08_inicio_de_sesion_sitio_publico.png</figcaption></figure>
+
+<h3>Anexo E. Salidas de texto leídas del navegador</h3>
+<p>Lo que una captura no muestra (el atributo <code>title</code> de los elementos) se leyó del DOM con puppeteer-core y se guardó como texto.</p>
+<p><b>CP-RF06-R01</b> · <code>CP-RF06-R01_title_de_los_botones_de_ciclo.txt</code></p>
+<pre>VERTEX - CP-RF06-R01 - title de los botones «Período:» de la dona, leído del DOM
+Fecha: 11/11/2026, 8:11:50 p. m. - local, CERO-010, período 01/09/2026 - 14/10/2026
+
+I     | Ciclo I: 30/07/2026 – 10/09/2026
+II    | Ciclo II: 11/09/2026 – 28/09/2026
+III   | Ciclo III: 29/09/2026 – 07/10/2026
+IV    | Ciclo IV: 07/10/2026 – 14/10/2026 (en curso)
+Todo  | Todos los ciclos: 30/07/2026 – 14/10/2026 · Período consultado del 01/09/2026 al 14/10/2026 (última medición)</pre>
+<p><b>CP-RF03-R01</b> · <code>CP-RF03-R01_reglas_en_el_title_de_cada_fila.txt</code> (primeras líneas)</p>
+<pre>VERTEX - CP-RF03-R01 - title (regla) de cada fila de la tabla, leído del DOM
+Fecha: 11/11/2026, 8:03:02 p. m. - local, CERO-010, 30 días
+
+#1  13/10/2026 21:45 → 14/10/2026 03:59  6,2 h  Apagado  | title: 4c corriente 0 sin marcas
+#2  13/10/2026 06:17 → 13/10/2026 21:45  15,5 h  Encendido  | title: 4a corriente &gt; 0
+#3  12/10/2026 22:20 → 13/10/2026 06:17  8,0 h  Apagado  | title: 4c corriente 0 sin marcas
+#4  12/10/2026 06:11 → 12/10/2026 22:20  16,2 h  Encendido  | title: 4a corriente &gt; 0
+#5  10/10/2026 14:09 → 12/10/2026 06:11  40,0 h  Apagado  | title: 4c corriente 0 sin marcas
+#6  10/10/2026 05:57 → 10/10/2026 14:09  8,2 h  Encendido  | title: 4a corriente &gt; 0
+#7  09/10/2026 22:08 → 10/10/2026 05:57  7,8 h  Apagado  | title: 4c corriente 0 sin marcas
+#8  09/10/2026 06:15 → 09/10/2026 22:08  15,9 h  Encendido  | title: 4a corriente &gt; 0
+#9  08/10/2026 22:18 → 09/10/2026 06:15  8,0 h  Apagado  | title: 4c corriente 0 sin marcas
+#10  08/10/2026 05:58 → 08/10/2026 22:18  16,3 h  Encendido  | title: 4a corriente &gt; 0
+#11  07/10/2026 21:53 → 08/10/2026 05:58  8,1 h  Apagado  | title: 4c corriente 0 sin marcas
+… (46 líneas más en el archivo completo)</pre>
+
+<h3>Anexo F. Índice de evidencias y ubicación</h3>
+<p>Toda la evidencia está en el repositorio del proyecto, <code>https://github.com/VERTEXORG1/VERTEX</code>, carpeta <code>docs/entregables_pruebas</code>. Cada carpeta de capturas tiene un <code>LEEME.md</code> con la tabla Captura | Caso | RF | Qué muestra.</p>
+<table class="datos">
+  <thead><tr><th style="width:150px">Evidencia</th><th>Qué contiene</th><th>Carpeta</th></tr></thead>
+  <tr><td>CB-001 a CB-106</td><td>Caja blanca de cada escenario de código: trazado paso a paso o prueba Vitest</td><td><code>1_Pruebas_unitarias/Capturas/Caja_Blanca</code></td></tr>
+  <tr><td>CN-001 a CN-097</td><td>Caja negra de cada escenario de código: entradas, esperado y obtenido</td><td><code>1_Pruebas_unitarias/Capturas/Caja_Negra</code></td></tr>
+  <tr><td>CN-098 a CN-130</td><td>Capturas de los 20 casos de sistema</td><td><code>2_Pruebas_de_aceptacion/Capturas</code></td></tr>
+  <tr><td>CP-RFnn-Xnn_…</td><td>Las mismas capturas con el nombre del caso y los <code>.txt</code> del Anexo E</td><td><code>3_Pruebas_funcionales/Capturas</code></td></tr>
+  <tr><td>LH-01 a LH-04</td><td>Resumen de Lighthouse e informes HTML completos</td><td><code>4_Pruebas_no_funcionales/Capturas</code></td></tr>
+  <tr><td>CA-01 a CA-07</td><td>Matriz de criterios de aceptación y dictamen</td><td><code>5_Matriz_de_criterios_de_aceptacion</code></td></tr>
+  <tr><td>Guía</td><td>Guía de ejecución: entorno, procedimiento, numeración, severidades, cobertura</td><td><code>6_Guia_de_ejecucion_de_pruebas</code></td></tr>
+  <tr><td>Script de integridad</td><td>Verificación de catálogo, unidades y sensores (PU-08-02)</td><td><code>database/scripts/99_verificar_integridad_variables.sql</code></td></tr>
+  <tr><td>Pruebas Vitest</td><td>Reintentos de <code>useBackend</code> (PU-03-03)</td><td><code>apps/frontend</code> (<code>npm test</code>)</td></tr>
+</table>
+
+</body>
+</html>
