@@ -10,3 +10,6 @@ dist/
 
 # Snapshot de auditoría de la BD (npm run db:export), contiene datos reales
 docs/db-snapshot.xlsx
+
+# Credenciales Wi-Fi del ESP32
+firmware/**/secrets.h

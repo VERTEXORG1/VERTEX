@@ -163,14 +163,27 @@ Express y base de datos SQL Server.
   - `GET /usuarios` y `/roles`, `POST /usuarios` y `POST /usuarios/:id/restablecer` solo para ADMINISTRADOR e ING_MANTENIMIENTO, con reautenticación; contraseña temporal generada por el servidor y mostrada una sola vez;
   - reglas en los procedimientos de V007 (`sp_vx_login_*`, `sp_vx_password_*`, `sp_vx_usuario_crear`); bcrypt de 12 rondas en Node, también en el `DUMMY_HASH`;
   - pruebas: `npm test` (Vitest + Supertest, repositorio en memoria en `identity/tests/fakeRepositorio.ts`).
+- **`POST /api/captura/lotes`** (`src/domains/captura/`, 24/11/2026): recibe los lotes del dispositivo de captura (ESP32).
+  - Autenticación del dispositivo, no de usuario: `X-Dispositivo: <codigo>` y `Authorization: Bearer <clave>`; Node compara el SHA-256 de la clave con `Dispositivos.clave_hash` (`sp_vx_dispositivo_credencial`, `timingSafeEqual`). Dispositivo inexistente o clave errónea: el mismo 401.
+  - Body: lista de 1 a 120 lecturas `{ equipo, seq, event_time: "…Z", lecturas: { CODIGO: número | null } }`, todas del CERO del dispositivo (si no, 400).
+  - Lecturas imposibles de guardar (hora < 2026, > 10 min en el futuro o inválida, variable fuera del catálogo, valor no numérico) cuentan como `rechazadas` pero se responde 200: el dispositivo solo borra su memoria con un 2xx y, si no, reenviaría para siempre.
+  - 200 `{ recibidas, nuevas, duplicadas, rechazadas, mediciones }`; 503 sin base (el dispositivo reintenta).
+  - Guarda con `sp_vx_captura_lote_recibir`; Node no tiene lógica de duplicados. Pruebas en `captura/tests/captura.spec.ts`.
 - Pendiente:
   - las rutas de datos (`/api/equipos/...`) todavía no exigen el token (habría que enviarlo desde el frontend y desde `start-vertex.ps1`);
   - V007 y sus cinco procedimientos están aplicados en `VERTEX_DEMO`, no en `VERTEX_REAL`;
-  - el resto de dominios (recepción de lotes del dispositivo, mantenimiento, auditoría): sus archivos vacíos se borraron el 18/11/2026 (también los 6 `*.spec.ts` vacíos, `packages/shared` y `docker-compose.yml`, vacíos); se crearán al implementarlos.
+  - el resto de dominios (mantenimiento, auditoría): sus archivos vacíos se borraron el 18/11/2026 (también los 6 `*.spec.ts` vacíos, `packages/shared` y `docker-compose.yml`, vacíos); se crearán al implementarlos.
 - La autenticación final será contra el Directorio Activo corporativo; la tabla de usuarios es para la demo.
 
 ### Base de datos (`database/`) — SQL Server, bases `VERTEX_DEMO` y `VERTEX_REAL`
-- Migraciones `V001`–`V009` (V007 identidad; **V008 y V009 están en el repositorio sin aplicar** en `VERTEX_DEMO` local, comprobado el 18/11/2026), procedimientos `R__*`, seeds `01`–`03` e instalador `database/scripts/01_install_databases.sql`.
+- Migraciones `V001`–`V010` (V007 identidad; **V008 y V009 están en el repositorio sin aplicar** en `VERTEX_DEMO` local, comprobado el 18/11/2026), procedimientos `R__*`, seeds `01`–`03` e instalador `database/scripts/01_install_databases.sql`.
+  - `V010` (24/11/2026, aplicada en `VERTEX_DEMO` local y del servidor, no en `VERTEX_REAL`): captura del dispositivo. `Dispositivos` + `equipo_id` (el dispositivo es del CERO), `clave_hash` (SHA-256 de la clave) y `ultimo_contacto`. Procedimientos `R__sp_vx_dispositivo_credencial` y `R__sp_vx_captura_lote_recibir`.
+    - Cada lote crea una fila en `PaquetesAdquisicion`; cada lectura nueva, una en `RegistrosOriginales` (JSON tal como llegó, `record_id` = `event_time` del RTC) y una fila de `Mediciones` por variable con valor (`equipo_id` del CERO, `motor_id` del `EquipoMotorHistorial` en ese instante o NULL, `provenance = 'REAL'`).
+    - Duplicados: `UQ_RegOrig_externo` (dispositivo + `record_id`) y además ninguna medición repetida del mismo CERO, variable y `event_time`. Un lote reenviado no inserta nada.
+    - `app_demo_user` puede ejecutarlo pese al `DENY INSERT`: encadenamiento de propiedad (procedimiento y tablas de `dbo`).
+    - `#r.record_id` y la comparación con `l.[key]` llevan `COLLATE DATABASE_DEFAULT`: tempdb y OPENJSON tienen otra intercalación (error "collation conflict").
+  - Registrar un dispositivo: `database/scripts/07_registrar_dispositivo.sql` con `-E` y `-v DISPOSITIVO=… EQUIPO=… CLAVE_HASH=0x…` (el comando de Node que genera clave y hash está en su cabecera). Volver a registrarlo cambia la clave. Registrado: `ESP32-CERO011-01` → CERO-011 (local y servidor; la clave solo está en el `secrets.h` del firmware).
+  - Al borrar en `Mediciones` con `sqlcmd` hace falta `-I` (QUOTED_IDENTIFIER): la tabla tiene índices que lo exigen.
   - `V008`: caché del cálculo de estados (`EstadoCalculo`, `EstadoRegistros`, `EstadoTramos`), con `R__fn_vx_estados_parametros`, `R__sp_vx_estados_recalcular` y `R__sp_vx_resumen_estados_cache`; `npm run comparar:estados` (`apps/backend/scripts/comparar-resumen-estados.ts`) compara la caché con `sp_vx_resumen_estados` en muchos períodos y sale con código 1 si hay diferencias. La API todavía no la usa.
   - `V009`: variable `NIVEL_BATERIA` (%, id `66666666-…-601`, también en `01_reference_data.sql`) y `BATERIA_AVISO_PCT = 30` en `ConfiguracionSistema`.
   - `V006`: índice `IX_Mediciones_Equipo_Tiempo (equipo_id, event_time) INCLUDE (variable_id, valor)` para el cálculo de estados (~45 MB).
@@ -268,7 +281,8 @@ Express y base de datos SQL Server.
 - Código para el servidor (en GitHub desde el 18/11/2026): `apps/backend/src/main.ts` lee `PORT` (3000 por defecto) y `HOST` (`0.0.0.0` por defecto; en el servidor `HOST=127.0.0.1`, solo nginx llega a la API), y `apps/backend/src/app.ts` usa `trust proxy = loopback`, para que el bloqueo por IP vea la IP del visitante y no la de nginx.
 - **Velocidad medida el 12/11/2026** (registro de nginx, `bloques` = `sp_vx_resumen_estados`): 7 d 2,0 s, 15 d 2,5 s, 30 d 3,1 s, Todo 6,3 s; `mediciones` 0,1–0,8 s. El servidor calcula ~2× más lento que el portátil en los períodos cortos. El tablero pide equipo → mediciones → bloques en serie (~3,5–7 s percibidos). No hay calentamiento en el servidor (solo existe en `start-vertex.ps1`).
 - **Caché de estados (en desarrollo, V008):** el estado de cada registro solo depende de la historia desde el último mantenimiento, no del período: los bloques se calculan una vez y `sp_vx_resumen_estados_cache` solo recorta y suma. Falta aplicarla, comprobarla con `npm run comparar:estados` (resultados idénticos) y que la API la use; también que el tablero pida en paralelo.
-- Pendientes antes de `VERTEX_REAL`: las rutas `/api/equipos/...` no exigen token, y el módulo `data-acquisition` (recepción de lotes del Arduino) está vacío. La base ya separa `event_time` (hora de la lectura en la fuente) de `received_time`.
+- **24/11/2026:** desplegados V010, sus procedimientos y el backend del repositorio (con `/api/captura/lotes` y `/bateria`; antes el servidor tenía el backend anterior a la batería). Respaldos previos: `/opt/vertex/respaldo-backend-20261124-0957.tgz` y `/var/opt/mssql/backup/VERTEX_DEMO-antes-V010-20261124-0957.bak`. El ESP32 envía a `https://vertex.sinerbyte.com` y sus lecturas del CERO-011 quedan en `VERTEX_DEMO`.
+- Pendientes antes de `VERTEX_REAL`: las rutas `/api/equipos/...` no exigen token; V010 y el registro del dispositivo en `VERTEX_REAL`. La base ya separa `event_time` (hora de la lectura en la fuente) de `received_time`.
 
 ### Sitio de demostración (Cloudflare)
 - GitHub: `https://github.com/VERTEXORG1/VERTEX` (rama `main`), conectado a Cloudflare Workers. **Netlify se desvinculó el 18/11/2026**: ya no hace falta `[skip netlify]` ni avisar de Netlify.
@@ -281,6 +295,19 @@ Express y base de datos SQL Server.
 - Vite copia las variables `VITE_*` dentro del JavaScript público. La contraseña demo debe ser desechable.
 - **Reglas de publicación:** antes de cualquier push, indicar qué cambios afectan al sitio (`apps/frontend`). Todo push solo cuando el usuario diga "aprobado", después de revisar los cambios en local (`localhost:5173`).
 
+### Firmware del dispositivo (`firmware/`, 23–24/11/2026)
+- Montaje provisional en protoboard: ESP32 DevKit de 30 pines (USB CP2102, **COM5** en el portátil), RTC DS3231 (SDA → D21, SCL → D22) y sonda DS18B20 (datos → D4, resistencia de 4,7 kΩ a 3V3). Todo a 3V3, nunca VIN. Diagrama: `firmware/conexiones.svg`; guía paso a paso: `firmware/README.md`.
+- `vertex_prueba_envio/vertex_prueba_envio.ino`, por etapas (`#define ETAPA`): 1 hora del RTC; 2 Wi-Fi + NTP (ajusta el RTC en UTC si difiere > 2 s); 3 una lectura por minuto del RTC y lote cada 5 min en el monitor; **4 (la actual)** envío real a `VX_URL/api/captura/lotes`.
+  - `event_time` = minuto exacto del DS3231. Cola circular de 1 440 lecturas (24 h; si se llena, se descarta la más antigua) y lotes de hasta 60; solo se borra un lote con 2xx (un 400 lo descarta para no bloquear la cola).
+  - Equipo `CERO-011` (prueba, para no mezclar con la demo del CERO-010). `CORRIENTE_MOTOR` va en 0: todavía no hay sensor de corriente.
+  - Dos redes con `WiFiMulti` (`WIFI_SSID` y opcional `WIFI_SSID_2`, la zona Wi-Fi del celular): usa la de mejor señal y reintenta cada 30 s. Solo 2,4 GHz y los nombres distinguen mayúsculas.
+  - HTTPS con `useBuiltinCACertBundle()` (certificados raíz de Mozilla); `http://` solo para pruebas con el backend del PC en la misma red. Ocupa el 93 % de la memoria de programa.
+- `vertex_prueba_envio/secrets.h` (fuera de git, `.gitignore`): `WIFI_*`, `VX_URL`, `VX_DISPOSITIVO` y `VX_CLAVE`. Plantilla: `secrets.h.example`. Hoy `VX_URL = https://vertex.sinerbyte.com`.
+- `firmware/wokwi/`: el mismo programa en ETAPA 3 para el simulador Wokwi (RTC DS1307, red `Wokwi-GUEST`); no tiene los cambios de la ETAPA 4.
+- Compilar y subir: Arduino IDE 2.3.11 (placa **ESP32 Dev Module**, paquete esp32 4.0.0; bibliotecas RTClib, OneWire y DallasTemperature en `Documents\Arduino\libraries`) o su `arduino-cli` (`resources\app\lib\backend\resources\arduino-cli.exe`, `compile --fqbn esp32:esp32:esp32 --upload -p COM5`). Con el monitor serie abierto el COM5 está ocupado.
+  - Claude ve su `AppData` redirigido (carpeta del paquete de Claude): lo que instale con `arduino-cli` no lo ve el IDE del usuario. Los paquetes se instalan desde el IDE.
+- Pendiente: cortar el diodo de carga del DS3231 antes de usarlo con batería; mostrar las lecturas del CERO-011 en el tablero (hoy el árbol solo tiene datos demo).
+
 ## Estructura
 
 ```
@@ -288,6 +315,7 @@ apps/
   frontend/            React + Vite (src/modules/{auth,dashboard,...}, src/contracts)
   backend/             Express API (src/domains/<dominio>/, src/shared/middleware)
 database/              migrations/, procedures/, seeds/, scripts/
+firmware/              ESP32 del dispositivo de captura (ver "Firmware del dispositivo")
 scripts/               create_demo_users.ts
 docs/                  entrega_final/ (entrega del 30/11), entregables_pruebas/, INSTALL_DATABASE.md, equipos-mapping.md, flujo-de-datos.md (ruta de los datos por disparador, para el informe técnico)
 instalar.ps1           Instalador de las bases de datos (PowerShell)

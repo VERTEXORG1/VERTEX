@@ -1,5 +1,6 @@
 import cors from 'cors';
 import express from 'express';
+import { capturaRouter } from './domains/captura/captura.routes';
 import { equiposRouter } from './domains/equipos/equipos.routes';
 import { identityRouter } from './domains/identity/identity.routes';
 import { estadoBase } from './shared/db';
@@ -28,6 +29,7 @@ export function createApp() {
 
   app.use('/api/identity', identityRouter);
   app.use('/api/equipos', equiposRouter);
+  app.use('/api/captura', capturaRouter);
 
   return app;
 }

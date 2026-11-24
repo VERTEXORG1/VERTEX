@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 640" font-family="Segoe UI, Arial, sans-serif">
+  <rect width="900" height="640" fill="#ffffff"/>
+  <text x="30" y="34" font-size="20" font-weight="700" fill="#212121">VERTEX · Conexiones de prueba: ESP32 (30 pines) ↔ DS3231 y DS18B20</text>
+
+  <!-- ESP32 -->
+  <rect x="60" y="60" width="240" height="540" rx="10" fill="#1b1b1b"/>
+  <rect x="130" y="72" width="100" height="120" rx="4" fill="#b0b0b0"/>
+  <text x="180" y="138" font-size="16" font-weight="700" fill="#333" text-anchor="middle">ESP-32</text>
+  <text x="180" y="230" font-size="13" fill="#bbb" text-anchor="middle">ESP32 DevKit</text>
+  <text x="180" y="248" font-size="13" fill="#bbb" text-anchor="middle">(chip USB CP2102)</text>
+  <rect x="150" y="580" width="60" height="28" rx="3" fill="#9e9e9e"/>
+  <text x="180" y="628" font-size="12" fill="#555" text-anchor="middle">Micro USB → PC (COM5)</text>
+  <g font-size="12" fill="#9e9e9e">
+    <g fill="#777"><circle cx="75" cy="90" r="5"/><circle cx="75" cy="120" r="5"/><circle cx="75" cy="150" r="5"/><circle cx="75" cy="180" r="5"/><circle cx="75" cy="210" r="5"/><circle cx="75" cy="240" r="5"/><circle cx="75" cy="270" r="5"/><circle cx="75" cy="300" r="5"/><circle cx="75" cy="330" r="5"/><circle cx="75" cy="360" r="5"/><circle cx="75" cy="390" r="5"/><circle cx="75" cy="420" r="5"/><circle cx="75" cy="450" r="5"/><circle cx="75" cy="480" r="5"/><circle cx="75" cy="510" r="5"/></g>
+    <text x="88" y="94">EN</text><text x="88" y="124">VP</text><text x="88" y="154">VN</text><text x="88" y="184">D34</text><text x="88" y="214">D35</text><text x="88" y="244">D32</text><text x="88" y="274">D33</text><text x="88" y="304">D25</text><text x="88" y="334">D26</text><text x="88" y="364">D27</text><text x="88" y="394">D14</text><text x="88" y="424">D12</text><text x="88" y="454">D13</text><text x="88" y="484">GND</text>
+    <text x="88" y="514" fill="#e57373">VIN ✗ no usar</text>
+  </g>
+  <g font-size="12" fill="#9e9e9e" text-anchor="end">
+    <g fill="#777"><circle cx="285" cy="90" r="5"/><circle cx="285" cy="150" r="5"/><circle cx="285" cy="180" r="5"/><circle cx="285" cy="240" r="5"/><circle cx="285" cy="270" r="5"/><circle cx="285" cy="300" r="5"/><circle cx="285" cy="330" r="5"/><circle cx="285" cy="360" r="5"/><circle cx="285" cy="420" r="5"/><circle cx="285" cy="450" r="5"/></g>
+    <text x="272" y="94">D23</text><text x="272" y="154">TX0</text><text x="272" y="184">RX0</text><text x="272" y="244">D19</text><text x="272" y="274">D18</text><text x="272" y="304">D5</text><text x="272" y="334">TX2</text><text x="272" y="364">RX2</text><text x="272" y="424">D2</text><text x="272" y="454">D15</text>
+    <g font-weight="700" fill="#ffffff"><text x="272" y="124">D22 (SCL)</text><text x="272" y="214">D21 (SDA)</text><text x="272" y="394">D4 (datos)</text><text x="272" y="484">GND</text><text x="272" y="514">3V3</text></g>
+  </g>
+  <g stroke="#fff" stroke-width="2">
+    <circle cx="285" cy="120" r="7" fill="#2e7d32"/><circle cx="285" cy="210" r="7" fill="#1e88e5"/><circle cx="285" cy="390" r="7" fill="#f9a825"/><circle cx="285" cy="480" r="7" fill="#212121"/><circle cx="285" cy="510" r="7" fill="#e53935"/>
+  </g>
+
+  <!-- Cables de señal -->
+  <g fill="none" stroke-width="3.5" stroke-linejoin="round">
+    <path d="M292,120 H560 V155 H626" stroke="#2e7d32"/>
+    <path d="M292,210 H540 V180 H626" stroke="#1e88e5"/>
+    <path d="M292,390 H545 V430 H626" stroke="#f9a825"/>
+  </g>
+  <text x="420" y="113" font-size="12" fill="#2e7d32" text-anchor="middle">SCL (verde)</text>
+  <text x="420" y="203" font-size="12" fill="#1e88e5" text-anchor="middle">SDA (azul)</text>
+  <text x="420" y="383" font-size="12" fill="#b28704" text-anchor="middle">DATOS (amarillo)</text>
+
+  <!-- Alimentación del ESP32 -->
+  <line x1="292" y1="510" x2="330" y2="510" stroke="#e53935" stroke-width="3.5"/>
+  <rect x="330" y="500" width="46" height="20" rx="3" fill="#e53935"/><text x="353" y="514" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">3V3</text>
+  <line x1="292" y1="480" x2="330" y2="480" stroke="#212121" stroke-width="3.5"/>
+  <rect x="330" y="470" width="46" height="20" rx="3" fill="#212121"/><text x="353" y="484" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">GND</text>
+
+  <!-- Resistencia 4,7 kΩ entre DATOS y 3V3 -->
+  <circle cx="500" cy="390" r="5" fill="#f9a825"/>
+  <line x1="500" y1="390" x2="500" y2="370" stroke="#f9a825" stroke-width="3"/>
+  <rect x="492" y="310" width="16" height="60" rx="5" fill="#e0c9a6" stroke="#8d6e63"/>
+  <rect x="492" y="320" width="16" height="5" fill="#fbc02d"/><rect x="492" y="330" width="16" height="5" fill="#7b1fa2"/><rect x="492" y="340" width="16" height="5" fill="#e53935"/><rect x="492" y="356" width="16" height="4" fill="#c9a227"/>
+  <line x1="500" y1="310" x2="500" y2="290" stroke="#e53935" stroke-width="3"/>
+  <rect x="477" y="270" width="46" height="20" rx="3" fill="#e53935"/><text x="500" y="284" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">3V3</text>
+  <text x="516" y="338" font-size="12" fill="#5d4037">4,7 kΩ</text>
+  <text x="516" y="353" font-size="10" fill="#8d6e63">amarillo-violeta-rojo</text>
+
+  <!-- DS3231 -->
+  <rect x="620" y="80" width="230" height="175" rx="8" fill="#1565c0"/>
+  <text x="785" y="120" font-size="16" font-weight="700" fill="#fff" text-anchor="middle">DS3231 (RTC)</text>
+  <text x="785" y="140" font-size="11" fill="#bbdefb" text-anchor="middle">reloj maestro · hora UTC</text>
+  <text x="785" y="156" font-size="11" fill="#bbdefb" text-anchor="middle">pila CR2032 por detrás</text>
+  <g font-size="12" fill="#fff">
+    <circle cx="632" cy="105" r="5" fill="#90caf9"/><text x="645" y="109" fill="#90caf9">32K</text>
+    <circle cx="632" cy="130" r="5" fill="#90caf9"/><text x="645" y="134" fill="#90caf9">SQW</text>
+    <circle cx="632" cy="155" r="6" fill="#2e7d32" stroke="#fff"/><text x="645" y="159" font-weight="700">SCL</text>
+    <circle cx="632" cy="180" r="6" fill="#1e88e5" stroke="#fff"/><text x="645" y="184" font-weight="700">SDA</text>
+    <circle cx="632" cy="205" r="6" fill="#e53935" stroke="#fff"/><text x="645" y="209" font-weight="700">VCC</text>
+    <circle cx="632" cy="230" r="6" fill="#212121" stroke="#fff"/><text x="645" y="234" font-weight="700">GND</text>
+  </g>
+  <line x1="626" y1="205" x2="600" y2="205" stroke="#e53935" stroke-width="3.5"/>
+  <rect x="554" y="195" width="46" height="20" rx="3" fill="#e53935"/><text x="577" y="209" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">3V3</text>
+  <line x1="626" y1="230" x2="600" y2="230" stroke="#212121" stroke-width="3.5"/>
+  <rect x="554" y="220" width="46" height="20" rx="3" fill="#212121"/><text x="577" y="234" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">GND</text>
+  <text x="850" y="274" font-size="11" fill="#c62828" text-anchor="end">⚠ Cortar el diodo de carga antes de usar batería</text>
+
+  <!-- DS18B20 -->
+  <rect x="620" y="360" width="230" height="130" rx="8" fill="#616161"/>
+  <text x="785" y="400" font-size="15" font-weight="700" fill="#fff" text-anchor="middle">DS18B20</text>
+  <text x="785" y="418" font-size="11" fill="#e0e0e0" text-anchor="middle">sonda de 2 m (temperatura</text>
+  <text x="785" y="432" font-size="11" fill="#e0e0e0" text-anchor="middle">de la carcasa del motor)</text>
+  <g font-size="12" font-weight="700" fill="#fff">
+    <circle cx="632" cy="390" r="6" fill="#e53935" stroke="#fff"/><text x="645" y="394">rojo</text>
+    <circle cx="632" cy="430" r="6" fill="#f9a825" stroke="#fff"/><text x="645" y="434">amarillo</text>
+    <circle cx="632" cy="470" r="6" fill="#212121" stroke="#fff"/><text x="645" y="482">negro</text>
+  </g>
+  <line x1="626" y1="390" x2="606" y2="390" stroke="#e53935" stroke-width="3.5"/>
+  <rect x="560" y="380" width="46" height="20" rx="3" fill="#e53935"/><text x="583" y="394" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">3V3</text>
+  <line x1="626" y1="470" x2="606" y2="470" stroke="#212121" stroke-width="3.5"/>
+  <rect x="560" y="460" width="46" height="20" rx="3" fill="#212121"/><text x="583" y="474" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">GND</text>
+
+  <!-- Notas -->
+  <rect x="400" y="510" width="470" height="115" rx="8" fill="#fff8e1" stroke="#ffb300"/>
+  <g font-size="12.5" fill="#3e2723">
+    <text x="414" y="532">• Todas las marcas <tspan font-weight="700" fill="#c62828">3V3</tspan> son el mismo punto: el pin 3V3 del ESP32.</text>
+    <text x="414" y="550">  En la protoboard, 3V3 → riel <tspan font-weight="700">+</tspan> y de ahí a cada módulo.</text>
+    <text x="414" y="570">• Todas las marcas <tspan font-weight="700">GND</tspan> van al riel <tspan font-weight="700">−</tspan> (GND del ESP32).</text>
+    <text x="414" y="590">• Nunca VIN ni 5 V: con 5 V el DS3231 cargaría la pila.</text>
+    <text x="414" y="610">• Conecta todo con el USB desconectado; revisa y luego conecta.</text>
+  </g>
+</svg>
