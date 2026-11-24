@@ -109,6 +109,7 @@ Express y base de datos SQL Server.
     - modo demo: bloques simulados minuto a minuto con los turnos del seed (CERO-010/011/012), y CERO-013 devuelve "Equipo no encontrado" para probar el error.
     - Teléfono (todo lo que no es desktop): Estado con etiqueta corta ("Encend.", "Apagado", "Evento", "Mtto."; la completa en `title`) y celdas con menos relleno; ≤ 340 px, letra 11 px. Cabe sin desplazamiento horizontal en 360 px (304/304), 320 px (264/264) y teléfono horizontal.
   - **Batería del dispositivo de captura** (`BateriaPrototipo.tsx`, `bateria.service.ts`), arriba del placeholder del mapa en la columna derecha: barra con el último nivel (`GET /api/equipos/:codigo/bateria`) y la hora de la lectura; aviso "Cargar o cambiar la batería" si el nivel ≤ `BATERIA_AVISO_PCT`. Sin lecturas (hoy siempre: V009 no está aplicada) y en modo demo dice "Pendiente".
+  - **⚠ PRUEBA-CERO011** (24/11/2026, complemento provisional): para los equipos de `EQUIPOS_PRUEBA` (`apps/backend/src/domains/equipos/lecturasPrueba.ts`, hoy solo CERO-011) la tendencia muestra **todas** las lecturas del período, con el motor encendido o apagado (la sonda envía temperatura y la corriente va en 0, así que el SP no devolvía nada), y encima un aviso verde "Datos reales del dispositivo de prueba · <dispositivo> · último contacto …" (`.pruebaAviso`). Solo lectura, sin cambios en la base. Para retirarlo: borrar `lecturasPrueba.ts` y las líneas marcadas `PRUEBA-CERO011` (`equipos.controller.ts`, `DashboardPage.tsx`, `operacion.service.ts`, `dashboard.module.css`).
   - Placeholder del mapa.
   - Cerrar sesión en el Sidebar (desktop y teléfono horizontal) y en la cabecera móvil (teléfono vertical).
 - **Modos de layout** (los mismos en `dashboard.module.css` y `auth.module.css`):
@@ -152,6 +153,7 @@ Express y base de datos SQL Server.
 - `GET /api/equipos/:codigo/intervalos` ya no existe (leía `IntervalosFuncionamiento`).
 - **`GET /api/equipos/:codigo/bateria`**: `{ nivel, event_time, aviso_pct }`, la última lectura de `NIVEL_BATERIA` del CERO (`equipo_id` del CERO, no del motor) y `ConfiguracionSistema.BATERIA_AVISO_PCT`; `nivel: null` sin lecturas o sin V009; 404 si el equipo no existe.
 - **`GET /api/equipos/:codigo/mediciones?variable=CODIGO`** + período: estadísticas por intervalo de una variable, solo con el motor encendido. Solo ejecuta `dbo.sp_vx_tendencia_variable`.
+  - Equipos de prueba (`PRUEBA-CERO011`): tras el SP, `conLecturasPrueba` sustituye `puntos` por una consulta directa a `Mediciones` sin filtro de encendido (mismo intervalo y umbral) y añade `dispositivo: { codigo, ultimo_contacto }` (`Dispositivos`).
   - `variable`: CORRIENTE_MOTOR, TEMPERATURA_MOT, VIBRACION_MOT, VOLTAJE_MOTOR, FRECUENCIA_RED, POTENCIA_MOT o RPM_MOTOR; si no, 400.
   - 200 `{ variable, unidad, fecha_referencia, desde, minutos_punto, umbral: { min, max, habilitado } | null, puntos: [{ inicio, dia, promedio, minimo, maximo, lecturas, marcas }] }`.
 - `requestTimeout` de `mssql`: 30 s (`main.ts`); "Todo" puede tardar varios segundos.
@@ -282,6 +284,7 @@ Express y base de datos SQL Server.
 - **Velocidad medida el 12/11/2026** (registro de nginx, `bloques` = `sp_vx_resumen_estados`): 7 d 2,0 s, 15 d 2,5 s, 30 d 3,1 s, Todo 6,3 s; `mediciones` 0,1–0,8 s. El servidor calcula ~2× más lento que el portátil en los períodos cortos. El tablero pide equipo → mediciones → bloques en serie (~3,5–7 s percibidos). No hay calentamiento en el servidor (solo existe en `start-vertex.ps1`).
 - **Caché de estados (en desarrollo, V008):** el estado de cada registro solo depende de la historia desde el último mantenimiento, no del período: los bloques se calculan una vez y `sp_vx_resumen_estados_cache` solo recorta y suma. Falta aplicarla, comprobarla con `npm run comparar:estados` (resultados idénticos) y que la API la use; también que el tablero pida en paralelo.
 - **24/11/2026:** desplegados V010, sus procedimientos y el backend del repositorio (con `/api/captura/lotes` y `/bateria`; antes el servidor tenía el backend anterior a la batería). Respaldos previos: `/opt/vertex/respaldo-backend-20261124-0957.tgz` y `/var/opt/mssql/backup/VERTEX_DEMO-antes-V010-20261124-0957.bak`. El ESP32 envía a `https://vertex.sinerbyte.com` y sus lecturas del CERO-011 quedan en `VERTEX_DEMO`.
+- **24/11/2026 (commit `3835322`):** desplegado el complemento PRUEBA-CERO011 (backend y frontend). Respaldo previo: `/opt/vertex/respaldo-app-20261124-1039.tgz`. **El frontend del servidor es anterior al del repositorio** (sin panel de batería): se le aplicó solo este cambio; al desplegar el frontend completo aparecerá la batería.
 - Pendientes antes de `VERTEX_REAL`: las rutas `/api/equipos/...` no exigen token; V010 y el registro del dispositivo en `VERTEX_REAL`. La base ya separa `event_time` (hora de la lectura en la fuente) de `received_time`.
 
 ### Sitio de demostración (Cloudflare)
@@ -306,7 +309,7 @@ Express y base de datos SQL Server.
 - `firmware/wokwi/`: el mismo programa en ETAPA 3 para el simulador Wokwi (RTC DS1307, red `Wokwi-GUEST`); no tiene los cambios de la ETAPA 4.
 - Compilar y subir: Arduino IDE 2.3.11 (placa **ESP32 Dev Module**, paquete esp32 4.0.0; bibliotecas RTClib, OneWire y DallasTemperature en `Documents\Arduino\libraries`) o su `arduino-cli` (`resources\app\lib\backend\resources\arduino-cli.exe`, `compile --fqbn esp32:esp32:esp32 --upload -p COM5`). Con el monitor serie abierto el COM5 está ocupado.
   - Claude ve su `AppData` redirigido (carpeta del paquete de Claude): lo que instale con `arduino-cli` no lo ve el IDE del usuario. Los paquetes se instalan desde el IDE.
-- Pendiente: cortar el diodo de carga del DS3231 antes de usarlo con batería; mostrar las lecturas del CERO-011 en el tablero (hoy el árbol solo tiene datos demo).
+- Pendiente: cortar el diodo de carga del DS3231 antes de usarlo con batería. Las lecturas del CERO-011 ya se ven en la tendencia (Temperatura), con el complemento PRUEBA-CERO011.
 
 ## Estructura
 
