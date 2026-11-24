@@ -2596,3 +2596,15 @@ button.arbolBoton::after {
     border-radius: 8px;
   }
 }
+
+/* PRUEBA-CERO011: aviso del dispositivo de prueba (retirar con lecturasPrueba.ts) */
+.pruebaAviso {
+  margin: 0;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #e8f5e9;
+  color: var(--vx-ok);
+  font-size: 12px;
+  line-height: 1.35;
+  flex-shrink: 0;
+}

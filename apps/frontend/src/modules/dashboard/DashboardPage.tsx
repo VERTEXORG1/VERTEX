@@ -163,6 +163,13 @@ function seleccionDe(ruta: string[]): { cero: CeroId } | { cero: null; aviso: st
   return { cero: equipo.cero };
 }
 
+/** PRUEBA-CERO011: dd/mm/aaaa hh:mm UTC */
+function fechaHoraUtc(iso: string) {
+  const f = new Date(iso);
+  const dos = (n: number) => String(n).padStart(2, '0');
+  return `${dos(f.getUTCDate())}/${dos(f.getUTCMonth() + 1)}/${f.getUTCFullYear()} ${dos(f.getUTCHours())}:${dos(f.getUTCMinutes())} UTC`;
+}
+
 /** Card with a title and a message in place of its content */
 function AvisoCard({ titulo, texto }: { titulo: string; texto: string }) {
   return (
@@ -364,6 +371,8 @@ export function DashboardPage({ onLogout, onUsuarios }: DashboardPageProps) {
   }
   // Red line: DEMO value, or UMBRAL_MAX of ConfiguracionVariables with real data
   const referencia = lineaReferencia(variable.id, mediciones.status === 'data' ? mediciones.data.umbral : null);
+  // PRUEBA-CERO011: dispositivo del equipo de prueba (solo lo envía el backend para esos equipos)
+  const dispositivoPrueba = medicionesBackend.status === 'data' ? medicionesBackend.data.dispositivo : null;
 
   return (
     <div className={styles.dashboard}>
@@ -436,6 +445,14 @@ export function DashboardPage({ onLogout, onUsuarios }: DashboardPageProps) {
                   value={variableId}
                   onChange={setVariableId}
                 />
+                {/* PRUEBA-CERO011: aviso del dispositivo de prueba (ver lecturasPrueba.ts en el backend) */}
+                {dispositivoPrueba && (
+                  <p className={styles.pruebaAviso} role="status">
+                    Datos reales del dispositivo de prueba · {dispositivoPrueba.codigo} · último contacto:{' '}
+                    {dispositivoPrueba.ultimo_contacto ? fechaHoraUtc(dispositivoPrueba.ultimo_contacto) : 'sin contacto'} · todas
+                    las lecturas, con el motor encendido o apagado
+                  </p>
+                )}
                 <TrendChart
                   title={`Tendencia — ${variable.label}`}
                   unidad={variable.unit}

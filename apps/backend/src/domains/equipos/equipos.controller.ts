@@ -9,6 +9,7 @@ import {
   VARIABLES_TENDENCIA,
 } from './equipos.service';
 import type { Periodo, VariableTendencia } from './equipos.service';
+import { conLecturasPrueba, esEquipoPrueba } from './lecturasPrueba'; // PRUEBA-CERO011
 
 // Upper bound for ?dias (10 years); larger windows are the same as "todo"
 const MAX_DIAS = 3650;
@@ -151,5 +152,10 @@ export async function getMediciones(req: Request<{ codigo: string }>, res: Respo
   }
   const periodo = leerPeriodo(req, res);
   if (!periodo) return;
-  await responder(res, 'mediciones', () => findMediciones(codigo, variable as VariableTendencia, periodo));
+  await responder(res, 'mediciones', async () => {
+    const data = await findMediciones(codigo, variable as VariableTendencia, periodo);
+    // PRUEBA-CERO011: equipos de prueba, todas las lecturas (ver lecturasPrueba.ts)
+    if (data && esEquipoPrueba(codigo)) return conLecturasPrueba(codigo, data);
+    return data;
+  });
 }

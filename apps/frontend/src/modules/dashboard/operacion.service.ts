@@ -38,6 +38,8 @@ export interface MedicionesData {
   /** null: the variable has no threshold configured */
   umbral: Umbral | null;
   puntos: PuntoTendencia[];
+  /** PRUEBA-CERO011: solo en equipos de prueba (todas las lecturas, sin filtro de encendido) */
+  dispositivo?: { codigo: string; ultimo_contacto: string | null } | null;
 }
 
 const NETWORK_ERROR = 'Sin conexión con el servidor';
