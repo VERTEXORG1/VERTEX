@@ -285,6 +285,13 @@ Express y base de datos SQL Server.
 - **Caché de estados (en desarrollo, V008):** el estado de cada registro solo depende de la historia desde el último mantenimiento, no del período: los bloques se calculan una vez y `sp_vx_resumen_estados_cache` solo recorta y suma. Falta aplicarla, comprobarla con `npm run comparar:estados` (resultados idénticos) y que la API la use; también que el tablero pida en paralelo.
 - **24/11/2026:** desplegados V010, sus procedimientos y el backend del repositorio (con `/api/captura/lotes` y `/bateria`; antes el servidor tenía el backend anterior a la batería). Respaldos previos: `/opt/vertex/respaldo-backend-20261124-0957.tgz` y `/var/opt/mssql/backup/VERTEX_DEMO-antes-V010-20261124-0957.bak`. El ESP32 envía a `https://vertex.sinerbyte.com` y sus lecturas del CERO-011 quedan en `VERTEX_DEMO`.
 - **24/11/2026 (commit `3835322`):** desplegado el complemento PRUEBA-CERO011 (backend y frontend). Respaldo previo: `/opt/vertex/respaldo-app-20261124-1039.tgz`. **El frontend del servidor es anterior al del repositorio** (sin panel de batería): se le aplicó solo este cambio; al desplegar el frontend completo aparecerá la batería.
+- **25/11/2026: el servidor es la única copia viva de las bases.** Su `VERTEX_DEMO` tenía 654.712 mediciones (las 654.470 originales, CERO-011 y las lecturas del ESP32).
+
+### Base local del PC (retirada el 25/11/2026)
+- Se borraron del SQL Server del PC `VERTEX_DEMO` y `VERTEX_REAL` y sus `.bak` viejos de la carpeta `Backup`, para liberar disco y memoria. El servicio `MSSQLSERVER` sigue instalado (lo usa otra base).
+- Lo dicho más arriba sobre migraciones aplicadas "en `VERTEX_DEMO` local" es historial: hoy no hay base local.
+- Respaldo fuera del repositorio: `.bak` del 12/11/2026 (antes de V010 y sin las lecturas del ESP32), guardado en un correo; falta copiarlo a un segundo correo y a una USB, y después se borra del PC. Para un respaldo al día, sacarlo del servidor.
+- Para volver a trabajar en local: restaurar un `.bak` (mejor uno reciente del servidor) con `RESTORE DATABASE … WITH MOVE`, volver a crear los logins (`app_demo_user`, `app_real_user`, `vertex_seed_user`) si faltan y aplicar las migraciones pendientes. Sin eso, `start-vertex.ps1` no pasa de la espera de `db: "conectada"`.
 - Pendientes antes de `VERTEX_REAL`: las rutas `/api/equipos/...` no exigen token; V010 y el registro del dispositivo en `VERTEX_REAL`. La base ya separa `event_time` (hora de la lectura en la fuente) de `received_time`.
 
 ### Sitio de demostración (Cloudflare)
@@ -394,6 +401,8 @@ Ningún `.env` se sube a git (`.gitignore`). Cada carpeta tiene su `.env.example
 **`.env` raíz:** instalador y `scripts/create_demo_users.ts` (`VERTEX_DEMO_*`, `DEMO_PWD_*`).
 
 ## Comandos de desarrollo
+
+> Desde el 25/11/2026 el PC no tiene base local (ver **Base local del PC**): antes de usar el arranque rápido hay que restaurarla.
 
 **Arranque rápido:** doble clic en el acceso directo "Iniciar VERTEX" del escritorio, que ejecuta
 `powershell -ExecutionPolicy Bypass -File start-vertex.ps1`. El script:
